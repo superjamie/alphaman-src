@@ -1,0 +1,418 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE FUNCTION lev% (n%)
+DECLARE FUNCTION exper! (n%)
+DEFINT A-Z
+' $INCLUDE: 'alpha.dec'
+DIM att(0 TO 5), btt(0 TO 5), typ(0 TO 5), str(0 TO 5)
+DIM tohit(0 TO 5), rng(0 TO 5), atk$(1 TO 27), sus$(0 TO 15)
+DIM shortsus$(0 TO 15)
+DIM atkcnt(0 TO 27), defcnt(0 TO 15), movcnt(0 TO 7), susccnt(0 TO 15)
+DIM letters(1 TO 26, 0 TO 1)
+
+DATA Kinetic, Radiation, Poison 1, Poison 2, Poison 3, Acid, Laser
+DATA Mental Blast, Electricity, Heat, Cold, Tentical, Life Leech
+DATA Steal, Tickle, "Damage Armor", "Poop Out", Spore, Trample, Aroma, Drain
+DATA Blinding, Sickening, Help, Gore, Special, Snooze
+FOR i = 1 TO 27: READ atk$(i): NEXT
+DATA Kinetic, Acid, Electricity, Radiation, Heat, Cold, Lasers, Tickling
+DATA "Always Asleep", "Mental Attacks", Poison, "Resist Sneeze"
+DATA "Resist Blind", "-not used-", "ac+10", "Sluggish"
+FOR i = 0 TO 15: READ sus$(i): NEXT
+DATA k, a, e, r, h, c, l, t, z, m, p, "", "", "", "", "S"
+FOR i = 0 TO 15: READ shortsus$(i): NEXT
+OPEN "alpha.cre" FOR INPUT AS #1
+OPEN "creature.txt" FOR OUTPUT AS #2
+numcre = 0
+'FOR l = 1 TO 10
+WHILE NOT EOF(1)
+  CLS
+  INPUT #1, creat$
+  IF LEFT$(LTRIM$(creat$), 1) = CHR$(39) THEN GOTO fin
+  numcre = numcre + 1
+  INPUT #1, a, defense, c, susc, expr
+  FOR i = 1 TO 5: INPUT #1, att(i), btt(i): NEXT i
+  hd = (a \ 10) MOD 1000: mov = a \ 10000
+  ac = a MOD 10
+  IF (defense AND 16384) THEN ac = ac - 10
+  IF (susc AND 16384) THEN ac = ac + 10
+  IF (defense AND -32768) THEN mov = mov + 4
+  sym = c MOD 1000: fc = c \ 1000
+  IF fc = 0 THEN bc = 1 ELSE bc = 0
+  IF sym < 97 THEN casepos = 0 ELSE casepos = 1
+  letpos = sym - 64 - 32 * casepos
+  IF fc < 15 THEN bitpos = 2 ^ fc ELSE bitpos = -2 ^ fc
+  IF letters(letpos, casepos) AND bitpos THEN
+    LOCATE 22, 1: COLOR 13: PRINT "*** Critter symbol/color combo already used! ***";
+  ELSE
+    letters(letpos, casepos) = letters(letpos, casepos) OR bitpos
+  END IF
+  FOR i = 1 TO 5
+    tohit(i) = att(i) MOD 100: str(i) = att(i) \ 100
+    rng(i) = btt(i) MOD 100: typ(i) = btt(i) \ 100
+  NEXT i
+  atkcnt(typ(1)) = atkcnt(typ(1)) + 1
+  movcnt(mov) = movcnt(mov) + 1
+  COLOR 15: LOCATE 5, 5: PRINT creat$; SPACE$(4);
+  COLOR fc, bc:  PRINT " "; CHR$(sym); " ";
+  COLOR 14, 0: PRINT USING "    Exp :#### (####.##)"; expr; exper(numcre);
+  COLOR 15: PRINT USING "    Level :###"; lev(numcre)
+  COLOR 9: LOCATE 7, 5
+  PRINT USING "Hit dice :###     Movement rate :##     AC :##"; hd; mov; ac
+  COLOR 3: row = 9
+  PRINT #2, creat$; TAB(19); hd; TAB(27);
+  FOR i = 1 TO 5
+    IF att(i) <> 0 THEN
+      IF i = 1 THEN PRINT #2, atk$(typ(i)); str(i);
+      LOCATE row, 5: PRINT USING "& attack,  Strength :##"; atk$(typ(i)); str(i)
+      LOCATE row + 1, 5: PRINT USING "Range :##           To Hit :##"; rng(i); tohit(i)
+      row = row + 3
+    END IF
+  NEXT i
+  PRINT #2, TAB(47);
+  COLOR 13: LOCATE 9, 53: PRINT "Resistances"
+  COLOR 5: row = 10
+  FOR i = 0 TO 13
+    IF (defense AND 2 ^ i) THEN
+      defcnt(i) = defcnt(i) + 1
+      LOCATE row, 53: row = row + 1
+      SELECT CASE i
+        CASE 0: PRINT "1/3 from Kinetic": PRINT #2, "k ";
+        CASE 1: PRINT "Acid":             PRINT #2, "a ";
+        CASE 2: PRINT "Electricity":      PRINT #2, "e ";
+        CASE 3: PRINT "Radiation":        PRINT #2, "r ";
+        CASE 4: PRINT "Heat":             PRINT #2, "h ";
+        CASE 5: PRINT "Cold":             PRINT #2, "c ";
+        CASE 6: PRINT "Lasers":           PRINT #2, "l ";
+        CASE 7: PRINT "Grow from heat/laser": PRINT #2, "g ";
+        CASE 8: PRINT "Regenerate 1/turn":    PRINT #2, "1 ";
+        CASE 11: PRINT "Regenerate 3/turn":   PRINT #2, "3 ";
+        CASE 9: PRINT "Mental Attacks":       PRINT #2, "m ";
+        CASE 10: PRINT "Poison":              PRINT #2, "p ";
+        CASE 12: PRINT "Quills/shock for 1-4": PRINT #2, "q4 ";
+        CASE 13: PRINT "Quills/shock for 1-10": PRINT #2, "q10 ";
+      END SELECT
+    END IF
+  NEXT
+  IF susc AND 2 ^ 11 THEN
+    defcnt(i) = defcnt(i) + 1: LOCATE row, 53: row = row + 1
+    PRINT "Sneeze/Burp": PRINT #2, "s ";
+  END IF
+  IF susc AND 2 ^ 12 THEN
+    defcnt(i) = defcnt(i) + 1: LOCATE row, 53: row = row + 1
+    PRINT "Blindness": PRINT #2, "d ";
+  END IF
+  PRINT #2, TAB(68);
+  row = row + 1: COLOR 12: LOCATE row, 53: PRINT "Susceptibilities";
+  COLOR 4: row = row + 1
+  FOR i = 0 TO 15
+    IF (susc AND 2 ^ i) AND (i < 11 OR i > 13) THEN
+      susccnt(i) = susccnt(i) + 1
+      IF row <= 25 THEN LOCATE row, 53: row = row + 1
+      PRINT sus$(i)
+      PRINT #2, shortsus$(i);
+    END IF
+  NEXT
+  PRINT #2,
+
+  LOCATE 23, 10
+  SELECT CASE numcre
+    CASE ncreat: PRINT "This is the last regular critter";
+    CASE ncreat + crecas: PRINT "This is the last castle critter";
+    CASE ncreat + crecas + crefor: PRINT "This is the last forest critter";
+    CASE ncreat + crecas + crefor + creswa: PRINT "This is the last swamp critter";
+    CASE ncreat + crecas + crefor + creswa + crepla: PRINT "This is the last plains critter";
+    CASE ncreat + crecas + crefor + creswa + crepla + creh2o: PRINT "This is the last water critter";
+  END SELECT
+  LOCATE 24, 10
+  SELECT CASE numcre
+    CASE wimp: PRINT "Wimpy";
+    CASE centi: PRINT "Centipede";
+    CASE snail: PRINT "Snail";
+    CASE daff: PRINT "daffodil";
+    CASE aspa: PRINT "asparagus";
+    CASE ant: PRINT "fire ant";
+    CASE gspore: PRINT "gas spore";
+    CASE dfly: PRINT "dragonfly";
+    CASE lotus: PRINT "lotus";
+    CASE cb: PRINT "crunchberry beast";
+    CASE dung: PRINT "dung beetle";
+    CASE fish: PRINT "flying fish";
+    CASE rose: PRINT "rosebush";
+    CASE japb: PRINT "japanese beetle";
+    CASE mant: PRINT "mantis";
+    CASE zap: PRINT "zapweed";
+    CASE mph: PRINT "Mr. potato head";
+    CASE sunf: PRINT "sunflower";
+    CASE rweed: PRINT "ragweed";
+    CASE bee: PRINT "killer bee";
+    CASE roach: PRINT "roach";
+    CASE pryor: PRINT "richard pryor";
+    CASE rotf: PRINT "rotfungus";
+    CASE pokey: PRINT "pokey";
+    CASE gumby: PRINT "gumby";
+    CASE tworm: PRINT "tapeworm";
+    CASE slug: PRINT "slug";
+    CASE goat: PRINT "goat";
+    CASE venus: PRINT "venus flytrap";
+    CASE blob: PRINT "the blob";
+    CASE bush: PRINT "Bush";
+    CASE quayle: PRINT "Quayle";
+    CASE tara: PRINT "tarantula";
+    CASE mosq: PRINT "mosquito";
+    CASE phoe: PRINT "phoenix";
+    CASE scor: PRINT "scorpion";
+    CASE robot: PRINT "robot";
+    CASE bwid: PRINT "black widow";
+    CASE wdro: PRINT "war droid";
+    CASE kong: PRINT "king kong";
+    CASE rodan: PRINT "rodan";
+    CASE godz: PRINT "godzilla";
+    CASE slime: PRINT "slime";
+    CASE ooze: PRINT "ooze";
+    CASE rdro: PRINT "repair droid";
+    CASE magg: PRINT "maggot";
+    CASE pmold: PRINT "purple mold";
+    CASE rat: PRINT "rat";
+    CASE ddro: PRINT "defense droid";
+    CASE efung: PRINT "enzyme fungus";
+    CASE brecl: PRINT "brown recluse";
+    CASE wspid: PRINT "wolf spider";
+    CASE gmold: PRINT "gray mold";
+    CASE sdro: PRINT "security droid";
+    CASE brain: PRINT "brain beast";
+    CASE tfrog: PRINT "tree frog";
+    CASE svine: PRINT "stranglevine";
+    CASE pivy: PRINT "poison ivy";
+    CASE stool: PRINT "toadstool";
+    CASE term: PRINT "termite";
+    CASE mush: PRINT "mushroom";
+    CASE puff: PRINT "giant puffball";
+    CASE nshade: PRINT "nightshade";
+    CASE algore: PRINT "algore";
+    CASE fern: PRINT "deathfern";
+    CASE bfoot: PRINT "bigfoot";
+    CASE wil: PRINT "willow";
+    CASE raptor: PRINT "raptor";
+    CASE leec: PRINT "leech";
+    CASE mold: PRINT "slime mold";
+    CASE gcrab: PRINT "giant crab";
+    CASE bbeet: PRINT "bombadier beetle";
+    CASE tick: PRINT "tick";
+    CASE dweed: PRINT "dartweed";
+    CASE gworm: PRINT "giant worm";
+    CASE bogh: PRINT "bog horror";
+    CASE chick: PRINT "chicken";
+    CASE moth: PRINT "moth";
+    CASE stink: PRINT "stinkbug";
+    CASE hyena: PRINT "hyena";
+    CASE fox: PRINT "fox";
+    CASE gwasp: PRINT "giant wasp";
+    CASE locust: PRINT "locust";
+    CASE bunny: PRINT "bunny";
+    CASE cact: PRINT "cactus";
+    CASE kelp: PRINT "kelp";
+    CASE sard: PRINT "sardine";
+    CASE sgull: PRINT "seagull";
+    CASE lobstr: PRINT "lobster";
+    CASE urchin: PRINT "urchin";
+    CASE squid: PRINT "squid";
+    CASE rsnap: PRINT "red snapper";
+    CASE octopus: PRINT "octopus";
+    CASE jelly: PRINT "jellyfish";
+    CASE webspid: PRINT "big hairy spider";
+    CASE gill: PRINT "gilligan";
+    CASE skip: PRINT "skipper";
+    CASE prof: PRINT "professor";
+    CASE ging: PRINT "ginger";
+    CASE mary: PRINT "mary ann";
+    CASE mrhow: PRINT "mr howell";
+    CASE mrshow: PRINT "mrs howell";
+    CASE herm: PRINT "herman";
+    CASE lily: PRINT "lily";
+    CASE gramp: PRINT "grandpa";
+    CASE eddie: PRINT "eddie";
+    CASE mara: PRINT "maralyn";
+    CASE spot: PRINT "spot";
+    CASE igor: PRINT "igor";
+    CASE elvimp: PRINT "elvis impersonator";
+    CASE elvis: PRINT "elvis";
+    CASE buzz: PRINT "buzz aldrin";
+    CASE zola: PRINT "zola bud";
+    CASE mdeck: PRINT "mary decker";
+    CASE ghart: PRINT "gary hart";
+    CASE cubs: PRINT "chicago cub";
+    CASE saddam: PRINT "saddam";
+    CASE unk1: PRINT "unk1";
+    CASE unk2: PRINT "unk2";
+    CASE unk3: PRINT "unk3";
+    CASE trump: PRINT "trump";
+    CASE ivana: PRINT "ivana";
+    CASE marla: PRINT "marla";
+    CASE grinch: PRINT "grinch";
+    CASE gdog: PRINT "grinch's dog";
+  END SELECT
+
+pse:  a$ = INKEY$
+  IF a$ = "" THEN GOTO pse ELSE IF a$ = "e" THEN GOTO fin
+WEND
+'NEXT
+fin: CLS
+COLOR 15: LOCATE 1, 64: PRINT USING "& creatures"; LTRIM$(STR$(numcre))
+COLOR 11: LOCATE 1, 1: PRINT "Move Rate"
+LOCATE 9, 1: PRINT "Defenses"
+LOCATE 1, 23: PRINT "Attacks :"
+LOCATE 3, 62: PRINT "Susceptibilities";
+COLOR 5
+FOR i = 0 TO 5: LOCATE 2 + i, 4: PRINT movcnt(i): NEXT
+COLOR 2
+FOR i = 0 TO 13: LOCATE 10 + i, 1: PRINT LTRIM$(STR$(defcnt(i))): NEXT
+COLOR 4
+FOR i = 1 TO 25: LOCATE i, 32
+  IF i = 24 THEN i = 25 ELSE IF i = 25 THEN i = 26
+  PRINT atkcnt(i); TAB(36); atk$(i);
+  IF i = 25 THEN i = 24 ELSE IF i = 26 THEN i = 25
+NEXT
+FOR i = 0 TO 15: LOCATE i + 4, 61
+  PRINT susccnt(i); TAB(65); sus$(i)
+NEXT
+COLOR 2
+LOCATE 10, 5: PRINT "1/3 from Kinetic"
+LOCATE 11, 5: PRINT "Acid"
+LOCATE 12, 5: PRINT "Electricity"
+LOCATE 13, 5: PRINT "Radiation"
+LOCATE 14, 5: PRINT "Heat"
+LOCATE 15, 5: PRINT "Cold"
+LOCATE 16, 5: PRINT "Lasers"
+LOCATE 17, 5: PRINT "Grow from heat/laser"
+LOCATE 18, 5: PRINT "Regenerate 1/turn"
+LOCATE 19, 5: PRINT "Mental Attacks"
+LOCATE 20, 5: PRINT "Poison"
+LOCATE 21, 5: PRINT "Regenerate 3/turn"
+LOCATE 22, 5: PRINT "Quills/shock for 1-4"
+LOCATE 23, 5: PRINT "Quills/shock for 1-10"
+COLOR 9
+
+pse2:  a$ = INKEY$
+  IF a$ = "" THEN GOTO pse2
+
+  CLS
+  FOR i = 1 TO 26
+    FOR j = 0 TO 15
+      LOCATE j + 1, i * 3 - 2: COLOR j, 0
+      IF letters(i, 0) AND 2 ^ j THEN
+        IF j = 0 THEN COLOR , 1
+        PRINT CHR$(i + 64);
+      ELSE
+        PRINT ":"
+      END IF
+    NEXT
+  NEXT
+  FOR i = 1 TO 26
+    FOR j = 0 TO 15
+      LOCATE j + 1, i * 3 - 1: COLOR j, 0
+      IF letters(i, 1) AND 2 ^ j THEN
+        IF j = 0 THEN COLOR , 1
+        PRINT CHR$(i + 96);
+      ELSE
+        PRINT ":"
+      END IF
+    NEXT
+  NEXT
+END
+
+FUNCTION exper! (n)
+  SHARED hd, ac, mov, defense, susc, fc, rng(), str(), typ(), tohit()
+  DIM sumstr AS SINGLE, sss AS SINGLE
+
+  acmult! = (15 - ac) / 8
+  IF mov > 0 THEN movmult! = 2! - 1! / mov ELSE movmult! = .5
+
+  numdef = 0
+  FOR i = 0 TO 13
+    IF (defense AND 2 ^ i) THEN numdef = numdef + 1
+  NEXT i
+  IF (defense AND 1) THEN numdef = numdef + 2
+  IF (defense AND 128) THEN numdef = numdef + 1
+  IF (defense AND 2048) THEN numdef = numdef + 1
+  IF (defense AND 8192) THEN numdef = numdef + 1
+  defmult! = (4 + numdef) / 4
+  IF fc = 0 THEN defmult! = defmult! * 1.5
+
+  numsus = 0
+  FOR i = 0 TO 10
+    IF (susc AND 2 ^ i) THEN numsus = numsus + 1
+  NEXT i
+  IF (susc AND 1) THEN numsus = numsus + 2
+  IF (susc AND 512) THEN numsus = numsus + 1
+  IF (susc AND -32768) THEN numsus = numsus + 2
+  susmult! = 4 / (4 + numsus)
+
+  sumstr = 0
+  FOR i = 1 TO 5
+    IF rng(i) > 0 THEN
+      SELECT CASE typ(i)
+        CASE 17, 20, 21, 24: sss = 2
+        CASE 13, 16, 22, 23: sss = str(i) / 3 + 2
+        CASE 14, 26, 27: sss = 5
+        CASE ELSE: sss = 2 * str(i) + 1
+      END SELECT
+      sss = sss * (2 - 2! / (1 + rng(i)))
+      SELECT CASE typ(i)
+        CASE 8, 13: sm! = (4 + tohit(i)) / 4!
+        CASE 16, 22, 23, 27: sm! = (22 - tohit(i)) / 6!
+        CASE 20, 12: sm! = (22 - tohit(i)) / 6!
+        CASE ELSE
+          SELECT CASE tohit(i)
+            CASE IS > 18: sm! = 1
+            CASE ELSE: sm! = (25 - tohit(i)) / 8!
+          END SELECT
+      END SELECT
+      sumstr = sumstr + sss * sm!
+    END IF
+  NEXT i
+  sumstr = sumstr * .75
+
+  ii = CSRLIN: jj = POS(0): LOCATE 1, 1
+  PRINT USING "acmult:#.##  movmult:#.##  defmult:#.##  susmult:#.##  sumstr:##.##"; acmult!; movmult!; defmult!; susmult!; sumstr
+  LOCATE ii, jj
+  exper! = hd * acmult! * movmult! * defmult! * susmult! * sumstr
+END FUNCTION
+
+FUNCTION lev (n)
+  SELECT CASE n
+    CASE 1 TO ncreat
+      lll = INT(n / 3.49)
+    CASE 1 TO ncreat + crecas
+      lll = (n - ncreat - 1)
+    CASE 1 TO ncreat + crecas + crefor
+      lll = (n - ncreat - crecas)
+    CASE 1 TO ncreat + crecas + crefor + creswa
+      lll = (n - ncreat - crecas - crefor)
+    CASE 1 TO ncreat + crecas + crefor + creswa + crepla
+      lll = (n - ncreat - crecas - crefor - creswa)
+    CASE 1 TO ncreat + crecas + crefor + creswa + crepla + creh2o
+      lll = (n - ncreat - crecas - crefor - creswa - crepla - 2) / 1.5
+  END SELECT
+  IF lll < 1 THEN lll = 1
+  lev = lll
+END FUNCTION
+

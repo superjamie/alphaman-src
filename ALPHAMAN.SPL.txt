@@ -1,0 +1,797 @@
+AlphaMan Spoilers -                                    updated:  August 1995
+Most recent version: 1.1
+
+Please direct all questions and suggestions to Jeff Olson:
+Jeffrey Olson
+214 E. Sherwin Dr.
+Urbana, IL  61801  USA
+76473.225@compuserve.com.
+
+This file contains details about the game AlphaMan, a Rogue-like game set
+in post-holocaust Earth.  AlphaMan is available from:
+ftp.win.tue.nl  in the directory  /pub/games/alphaman
+The FAQ file, alphaman.faq, is also available there, and provides more basic
+information than this file (which is intended for experienced players).
+____________________________________________________________________________
+
+Contents:
+1. Detailed descriptions of the various Mental and Physical Mutations
+2. Weapons, Armor and Shield ratings
+3. Detailed berry descriptions
+4. Detailed tech device descriptions
+5. Overview of creatures
+6. Details about the 6 castles which one must visit to complete the quest.
+____________________________________________________________________________
+
+1.  MUTATIONS
+All characters have 1 Physical and 1 Mental Mutation.
+
+  A. Physical Mutations
+     1.  Acidic Saliva
+         This mutation can be used every 8 rounds.  You can spit a caustic
+         substance at a distance, although you hit more easily and do slightly
+         more damage at close range.  You do 4 dice damage, where the dice
+         size is given by 3 + (your level - distance between you & target)/2
+     2.  Blood Structure Change
+         Your Constitution is raised to somewhere between 19 and 23.  You
+         consequently have more hit points, and you take much-reduced damage
+         from poison (half what a character without Blood Structure Change
+         would take, even with the same Constitution).  You also are less
+         likely to suffer lingering stat losses from poison, and recover from
+         sickness attacks (like the skunk) three times faster.
+     3.  Electrical Generation
+         You can generate electrical currents on your skin which will damage
+         any creature touching you during the round used (touching means the
+         creature scores a successful hit on you with a contact-attack like
+         a bite, but not no-touch attacks like radiation or mental attacks.
+         The damage done to each creature is 2 dice of size (4 + your level).
+         This is extremely useful against swarms like Killer Bees, Locusts.
+     4.  Foul Musk
+         You can generate a cloud of stinking gas that causes creatures to
+         flee from you.  You will occasionally make creatures sick, causing
+         them to barf (during which time they are mostly defenseless from
+         attack).  This is effective as a defense, particularly when you get
+         surrounded by beasties.
+     5.  Heightened Dexterity
+         Your Dexterity is raised to somewhere in the range of 19-23.  Your
+         Armor Class is much improved, and you can hit significantly easier
+         with range weapons (even range tech weapons).
+     6.  Heightened Endurance
+         You have more hit points than most characters, can carry more than
+         twice the weight with the same encumberance, you grow hungry less
+         quickly, and can endure time underwater much longer.
+     7.  Heightened Speed
+         You can temporarily double your speed, allowing you more attacks and
+         enabling you to outrun many creatures if you're in a bind.  A very
+         useful mutation, especially if coupled with an attack-type mental
+         mutation such as Life Leech or Cryogenics.
+     8.  Heightened Strength
+         Your Strength is raised to somewhere in the range of 19-23.  You
+         consequently do more damage and hit more often with contact weapons.
+         You can also carry more stuff, and have an easier time getting out
+         of spiderwebs, breaking down doors, etc.
+     9.  Heightened Vision
+         You can see more clearly and in a broader EM spectrum, giving you
+         minor bonuses to hit with weapons, allowing you to see further in
+         darkness, and allowing you to look over long ranges to see, for
+         example, whether there are any goodies in nearby regions of the map.
+         You can also see radiation zones and avoid them.  With this mutation,
+         one can usually skip the Munsters' Castle, since spotting the hidden
+         castle of the Grinch is relatively straightforward.
+     10. Laser Generation
+         Every 10 rounds you can fire a laser beam.  This beam can strike a
+         single target at a fairly long range, hitting often and doing 3 dice
+         damage, with dice size given by 5 + (your level)/3
+     11. Poison Claws
+         These do very irregular damage, occasionally only doing 1-4 points,
+         but capable of doing up to 10-40 when you are at 10th level.
+         Although their range is short, they have several advantages.  If you
+         miss, they are immediately available for use again.  They occasionally
+         make the creature hit nauseous (barf).  It is also useful to have a
+         readily-available non-kinetic attack form for those creatures which
+         take only 1/3 damage from kinetic attacks (like Zapweed, Rot Fungus,
+         Slugs).
+     12. Quills
+         Quills provide protection from creatures which must touch you to do
+         damage, inflicting 1 die damage of size (3 + (your level/3)).  You
+         may also shoot them at a single creature for 3 dice damage of size
+         (2 + (your level)/2, but you will then be unprotected until they
+         regrow (in 8 rounds).
+     13. Radiation Generation
+         You can shoot a beam of radiation every 15 turns that is capable of
+         causing damage to any creature in its path.  The damage done is 2
+         dice of size (3 + (your level)/2).
+     14. Reflective Skin
+         Your Radiation Resistance is raised to somewhere in the range of
+         19-23.  The damage you receive from laser attacks is halved, while
+         you only receive 2/3 damage from heat attacks.
+     15. Sonic Attack
+         You are able to generate an ultrasonic blast that does heat damage to
+         all creatures standing next to you.  The damage done is 1 die of size
+         (5 + (your level)*1.5)
+     16. Tenticles
+         You can entwine a creature (which makes it harder for them to hit
+         you, and impossible for them to run away) and cause constriction
+         damage to them every round.  The damage done is 1 die of size
+         (3 + (your level)/2), and you are able to do other things (like use
+         your weapon or tech devices) while constricting.  If you move, the
+         tenticles release.
+     17. Tough Exoskeleton
+         Your Armor Class is always at least as good as if you were wearing
+         Titanium Chainmail, and you sustain only 80 percent normal damage
+         from kinetic attacks.  You are slightly encumbered by this
+         exoskeleton, but no more so than if you were wearing the equivalent
+         armor.
+
+  B. Mental Mutations
+     1.  Cryogenics
+         This attack mutation is particularly effective against powerful
+         creatures.  It does exponential damage, first 1 die, then 2 dice,
+         then 4, 8, 16 etc on progressive "hits".  The dice size is given by
+         (5 + (your level)/2).
+     2.  Force Field
+         While this mutation is being used, you sustain reduced damage (in
+         general, about 2/3 normal) from all attacks.  This can be tiring
+         to use, and if you become too fatigued, it will turn itself off.
+     3.  Heightened Willpower
+         Your Mental Resistance is raised to somewhere in the range of 19-23,
+         and you are able to periodically raise all of your stats and your
+         hit points for a brief period.  Note that you will never die when
+         your hit points are reduced back to normal.
+     4.  Hypnosis
+         You can use this mutation to put creatures to sleep.  This is usable
+         fairly often, and can be a real asset when fighting several creatures
+         at once, or when you want to flee.
+     5.  Invisibility
+         You can make yourself invisible, making creatures wander at random and
+         enabling you to get off "free" attacks.  This is also useful when you
+         need to retreat.  In addition, since this mutation is the ability to
+         bend light rays around you, you are less susceptible to blindness
+         attacks (you typically recover in one third the time).
+     6.  Life Leech
+         A powerful mutation, you are able to leech hit points from creatures
+         standing next to you and add them to your own.  The number of points
+         damage done (and subsequently added to your total) is 2 dice where
+         the dice size is given by (2 + (your level)/2).
+     7.  Mental Blast
+         This mutation allows you to psionically blast a selected creature
+         every 10 rounds up to 7 squares away.  The damage done is 2 dice
+         of size given by (your Mental Resistance + your level)/2.
+     8.  Mental Healing
+         This mutation allows you to heal yourself rapidly.  When used, you
+         select how many rounds you will sit motionless (and prone to attack),
+         during which time you will heal back 3 hit points per round.  This
+         mutation is best used after battles, so that you are always at full
+         hit points when venturing into uncharted territory.
+     9.  Military Genius
+         You recieve a +2 to hit and +4 damage with all weapons you use.
+         This includes contact and thrown weapons, and tech weapons as well.
+     10. Molecular Disruption
+         You can disintegrate matter, destroying a creature or other object
+         at which it is targeted.  This is useful for going through walls,
+         and will kill a creature if a random roll of dice size
+         (25 + the creature's hit points/2) is less than a random roll of
+         dice size (15 + your mental resistance + your level).
+     11. Psychokinesis
+         You can create a grenade-like explosion that does kinetic damage to
+         all creatures in its blast radius.  The damage done is 2 dice of size
+         (2 + (your mental resistance)/6 + (your level)/3 ).
+     12. Scientific Genius
+         Your Intelligence is raised to somewhere in the range of 19-23, and
+         you are able to build new tech devices from parts and energy salvaged
+         from old devices.  You are potentially able to build any device which
+         you are familiar with (those listed when you press F3) and for which
+         you have enough parts.  Often, you must try several times in order
+         to be able to build the device you would like.
+     13. Teleportation
+         You are able to transport yourself over either long distances (useful
+         as a speedy mode of transportation and as a means of escape) or short
+         distances (useful when you want to get to another part of a castle
+         level or lair).  Teleporting blind is dangerous, and if you end up
+         inside a solid object, you may be killed.  It is occasionally an
+         effective attack to teleport into a creature if you are at full hit
+         points, but not one generally recommended.  Note that short range
+         teleporting isn't 100% accurate, so if you try to teleport next to a
+         castle wall, you may end up inside the wall, which tends to be
+         unhealthy.
+____________________________________________________________________________
+
+2.  WEAPONS, ARMOR and SHIELDS
+
+  A. Contact Weapons
+     Name          Base Damage   To Hit Bonus*    Weight (kg)
+     Dagger            1-4            -2                  .2
+     Club              1-5            -2                  .6
+     Pitchfork         1-6            -1                 1.0
+     Hand Axe          1-7            -1                  .7
+     Mace              1-8             0                 1.2
+     Short Sword       1-9             0                  .8
+     Flail             1-10           +1                 1.5
+     Long Sword        1-11           +1                 1.5
+     Halberd**         1-12           +1                 2.0
+     Titanium Dagger   2-10           +2                  .2
+     Titanium Sword    2-12           +2                  .7
+     Titanium Axe**     2-14          +2                 1.2
+     Duralloy Pitchfork  3-15         +3                  .2
+     Duralloy Sword      3-18         +3                  .2
+  *  The To Hit bonus is in addition to whatever other bonuses you have.
+  ** Technically, this weapon should require 2 hands, but doesn't.
+
+  A. Range Weapons
+     Name          Base Damage   To Hit Bonus*   Range   Weight (kg)
+     Shuriken         1-3            -3            10        .1
+     Dart             1-4            -2             9        .1
+     Throwing Axe     1-5             0             5        .3
+     Arrow            1-6            -1             8        .1
+     Javelin          1-7             0             8        .3
+     War Boomerang    1-8            -1             7        .2
+     Lawn Dart        1-9             0             5        .2
+     Spear            1-10           +1             6        .4
+     Titanium Dart    2-8            +2            10        .1
+     Titanium Javelin 2-12           +2             9        .2
+     Duralloy Arrow   3-12           +3            11        .1
+     Duralloy Spear   3-18           +3             9        .2
+  * As above
+
+  B. Armor
+     Name           Base Armor Class    Max hits sustainable*   Weight (kg)
+     No Armor             10                     -                 -
+     Heavy Fur             9                     2                1.5
+     Cured Hides           8                     3                2.0
+     Ringmail              7                     4                4.0
+     Chainmail             6                     5                6.0
+     Fiberglass            5                     6                3.5
+     Plastic               4                     7                2.5
+     Titanium Chainmail    3                     7                4.0
+     Platemail             2                     8               10.0
+     Titanium Platemail    1                     9                6.0
+     Duralloy Chainmail    0                     8                1.0
+     Duralloy Platemail   -1                    10                1.5
+  * This is the maximum number of "damaging" hits a particular kind of
+    armor can sustain in its pristine condition.
+
+C. Shields
+     Name     Reduction to Armor Class    Max hits sustainable*   Weight (kg)
+     Small Wooden      -1                         2                  .5
+     Large Wooden      -1 1/2                     3                 1.0
+     Small Metal       -2                         3                 1.0
+     Large Metal       -2 1/2                     4                 2.0
+     Small Titanium    -3                         4                 1.0
+     Large Titanium    -3 1/2                     5                 2.0
+     Small Duralloy    -4                         4                  .2
+     Large Duralloy    -4 1/2                     5                  .3
+  * As above
+____________________________________________________________________________
+
+3.  BERRIES
+Berries are named at random each game, so it is a waste of time to write
+down the names during one game for the sake of using them in the next.  The
+random names were intended to sound like Dr. Seuss names.
+
+  A. Treatise on Berry Colors  (available from a Computer Workstation)
+     The color of a berry reveals its degree of ripeness. The six colors
+     a berry can have are red, orange, yellow,  green, blue, and purple,
+     in increasing  order of ripeness.   Berries which are more ripe are
+     more potent, and will have effects which last longer.  For example,
+     purple exploding berries do much more damage than orange ones,  and
+     forcefields created by blue  berries last longer than those created
+     by red ones.  In addition, if a berry can have either a good or bad
+     effect, the ripe berries are more likely to cause the good effects.
+     Thus, a blue berry that alters speed tends to speed you up, while a
+     red one is likely to slow you down.   Berries that alter your stats
+     are particularly important examples of this, wherein red and purple
+     ones change your stats permanantly, purple usually raising, and red
+     usually lowering;  the effect of the orange-blue ones is temporary.
+     Berries will ripen with time;  using  X(amine) can be illuminating.
+
+  B. Berry descriptions
+     Exploding berries are effective grenades with a blast radius of 1 square.
+     Radiating berries are effective grenades with a blast radius of 1 square.
+     Hunger-satisfying berries provide significant nourishment, and can make
+        critters burp if thrown at them.
+     Refresh berries make you well-rested and help keep you rested.
+     Poison berries can be thrown to do poison damage if they hit a critter.
+     Curing berries will restore some hit points, and some reduced by poison.
+     Extra-curing berries are like normal curing berries, only more potent.
+     Expertise-altering berries add or subtract experience points depending on
+        their color.
+     Strength-altering berries raise or lower strength, depending on color.
+     Dexterity-altering berries raise or lower dexterity, depending on color.
+     Constitution-altering berries raise or lower CON, depending on color.
+     Radiation Resistance-altering berries modify RR, depending on color.
+     Mental Resistance-altering berries modify MR, depending on color.
+     Intelligence-altering berries modify intelligence, depending on color.
+     Speed-altering berries will make you fast or slow, depending on color.
+        These work on creatures, too, if thrown.
+     Berries that toughen skin will permanantly lower your armor class.
+        These work on creatures, too, if thrown.
+     Intoxicating berries will confuse you if eaten, or a critter if thrown.
+     Cleverness berries make you better at figuring out and using tech devices.
+     Berries which add body parts are generally useless except for nourishment.
+        Purple ones will cause you to grow a cumbersome udder.
+     Mutation-affecting berries quench or heighten a mutation, depending on
+        their color.  Heightened mutations are much more powerful.
+     Detection berries help you see invisible things, and will map a lair
+        or castle level if you are indoors.
+     Blindness berries will blind you temporarily if eaten.
+        These work on creatures, too, if thrown.
+     Tact-reducing berries make you burp, sneeze, etc. if eaten.
+        These work on creatures, too, if thrown.
+     Mind-clouding berries make you forget things but will confuse creatures
+        if thrown at them.
+     Fright-inducing berries will frighten critters away temporarily.
+     Detoxifying berries will remove the lingering adverse effects of poisons.
+     Rambifying berries give you a Rambo complex, making you strong but dumb.
+        These work on creatures, too, if thrown.
+     Invisibility berries will make you temporarily invisible.
+        These work on creatures, too, if thrown.
+     Teleport berries randomly teleport you over a long distance, and work on
+        critters too.
+     Relax berries will put you or a creature to sleep.
+     Klutz berries will make you extremely clumsy, but work on critters too.
+     Regeneration berries, cause you to regain lost hit points much faster.
+     Berries which "smell nice" give you an odor that attracts creatures.
+     Force Field berries will protect you so you sustain reduced damage.
+     Acid berries are effective weapons if thrown.
+
+____________________________________________________________________________
+
+4.  TECH DEVICES
+The following is a list of all the tech items currently implemented in
+AlphaMan.  These are the specifics one can learn by using a Microcomputer.
+
+   A. Small Tech Gadgets:
+     Alza-seltzer relieves sickness, and can get rid of tapeworms
+     An Answering Machine will occasionally receive useful messages
+     ArmorAll will restore armor to pristine condition, and may even improve it
+     A Backpack can hold up to 10 reasonably-sized items
+     A Bionic Cranium Implant can raise your Mental Resistance & Intelligence
+     A Bionic Muscle Implant can raise your Strength and Dexterity
+     A Bionic Spleen Implant can raise your Constitution & Radiation Resistance
+     A Boise Souvenir Ashtray is useless
+     Brandy will boost your strength temporarily, but may make you sleepy
+     A Breathalyzer will reveal your blood alcohol content (mostly useless)
+     Cap'n Crunch gives you a sugar high and speeds you up temporarily
+     A Cheese Grater is useless
+     Chemical Analyzers reveal the potential effects of unknown berries
+     A Chia Pet is useless
+     Coffee will boost your constitution temporarily, and can keep you awake
+     Duct Tape can incapitate creatures, and repair damaged armor and suits
+     Flares will illuminate the outdoors when dark, but cause damage indoors
+     A Force Field Generator will help protect you from attacks
+     A Fountain Pen is useless
+     A Gas Mask will protect completely from poison gas
+     A Geiger Counter reveals nearby radiation zones outdoors, or traps indoors
+     A Grenade Launcher can fire grenades and berries accurately at long range
+     A Hammock will put you to sleep immediately
+     A Hand Massager will reduce fatigue
+     An ID Card will unlock most locked doors, and can deactivate some robots
+     A Kalediscope is useless
+     A Knife Sharpener can sharpen blade weapons so they are more effective
+     A Lava Lamp will help illuminate during darkness
+     A Medkit will restore some lost hit points and poison damage
+     A Microcomputer can reveal a variety of useful information
+     A MindWeb Generator will protect you from mental attacks
+     A Mirror can be used to reflect laser attacks
+     A Motion Sensor will reveal the location of invisible creatures
+     A Mr. Misty provides nourishment, and also is an effective freeze grenade
+     A Pencil Sharpener can sharpen pointy weapons so they are more effective
+     The flash from a Pocket Instamatic can blind creatures that see it
+     Power Packs recharge devices which require energy
+     A Radar Detector is useless
+     A Radar Gun will reveal how fast a creature can move (mostly useless)
+     ServoBoots greatly reduce the effects of encumberance
+     A Slinky is useless
+     A Sony Watchman can map levels in some of the special castles
+     Sunglasses protect against blindness & give added influence over robots
+     Sunscreen provides some protection against laser attacks
+     Tape Recorders reveal a variety of information about your mission
+     A Tip O'Neill mask will frighten creatures away when worn
+     A Toaster is useless
+     Toilet Paper is an effective weapon against Dung Beetles and Seagulls
+     A Tricorder will map castles and lairs, and can reveal creature specifics
+     A Turbocharger will speed up any vehicle
+     Tylenol can restore lost hit points
+     A UV Helmet helps greatly when searching for hidden things
+     A Veg-O-Matic can injure nearby creatures, especially edible ones
+     A VisiScope allows you to see long distances
+     A Voodoo Doll will kill all nearby creatures of a specific type
+     A Wrist Watch will tell you how much time remains to complete your mission
+
+     A Cannister Grenade inflicts modest shrapnel damage (kinetic damage type).
+     A Disintegration Grenade is lethal to almost everything.
+     A Fission Grenade inflicts substantial radiation damage.
+     A Flash Grenade can blind everything in a large area.
+     A Fusion Grenade inflicts tremendous damage in a large area.
+     A Gas Grenade inflicts poison damage and leaves poisonous gas.
+     A Glue Grenade will imobilize anything in its sizable blast area.
+     An Incendiary Grenade inflicts moderate heat damage.
+     A Lightning Grenade inflicts modest electrical damage in a large area.
+     A Neutrino Grenade inflicts moderate damage.
+     A Photon Grenade inflicts tremendous laser-type damage.
+     A Psychosis Grenade inflicts variable mental-type damage.
+     A Stun Grenade paralyzes and inflicts minor damage in a large area.
+     A Vial of Acid inflicts modest damage.
+ 
+     A Blaster can fire many shots at a time, inflicting modest heat damage.
+     A Blowtorch does moderate heat damage.
+     A Can of Mace does modest poison damage and makes the target flee.
+     A Chainsaw inflicts horrible wounds.
+     A Flamethrower does substantial heat damage in line with the target.
+     A Freeze Gun does substantial cold damage in line with the target.
+     A Fusion Rifle does substantial radiation damage.
+     A Laser Pistol does substantial laser damage.
+     A Light Sabre inflicts moderate laser-type damage.
+     A Missile Launcher does substantial damage in a large blast area.
+     Mr. Clean is especially effective against slimes, molds, etc.
+     A Pepper Shaker can be a grenade, and makes targets sneeze.
+     A Phaser can stun (putting enemy to sleep) or kill (doing heat damage).
+     Raid is particularly effective against insects.
+     A Salt Shaker can be a grenade, but is only useful on Slugs-like things.
+     A Shock Rod does modest electrical damage.
+     A Shotgun does substantial kinetic damage.
+     Silly String will immobilize a target.
+     A Squirt Gun does minimal damage except against Fire Ants, Phoenixes, etc.
+     A Staple Gun does minimal kinetic damage.
+     A Stun Gun will paralyze a target.
+     A Tickle Feather Gun (from the UnderDog show) inflicts tremendous damage.
+     A Weedeater is effective against plants.
+ 
+   B. Large Tech Devices:
+     A Bulletproof Suit lowers your AC and reduces damage from kinetic attacks
+     A Cabinet is useless
+     A Camoflage Suit makes you somewhat harder to detect
+     A Cigarette Machine is useless
+     A Cloaking Device renders you temporarily invisible
+     A Computer Workstation can reveal a plethota of useful information
+     A Cyclotron just might win you the Nobel Prize in physics
+     A Dialysis Machine will cure you and remove poison effects, tapeworms, etc
+     A Displacer allows you to teleport over short distances
+     A Golf Cart provides transportation at a faster pace than walking
+     A Home Movie Projector will put creatures to sleep
+     A Hovercraft provides very fast transportation over any terrain
+     A Jackhammer can blast through walls, and is an effective weapon
+     A Jetpack gives rapid movement for short periods of time
+     A Kayak can be used to move through water
+     A Kevorkian Machine is useless
+     A Laser Printer is useless
+     A Leafblower is useless
+     A Liposuction Device will remove an udder
+     A Microwave Oven can prematurely ripen berries, and makes food tastier
+     A Neutron Suit irradiates nearby critters each turn but hurts you somewhat
+     A Pinstripe Suit gives added influence over robots when an ID card is used
+     A Pogo Stick provides an alternative form of transportation
+     A Porta-Potty is useless
+     A Prosthetic Leg is useless
+     A Radiation Suit will reduce the damage caused by radiation
+     A Reflective Suit will reduce the damage caused by lasers
+     A Repulsion Generator will prevent creatures from moving next to you. 
+        Creatures already next to you can continue to attack
+     A Rubber Raft can be used to move through water
+     A Safe will protect up to 10 items, and can be left outside of castles
+     A Sousaphone can make critters stand still, run away, become confused, etc
+     A Still will distill berries to nectar, and nectar to extract
+     A Tent will allow you to sleep in relative safety outdoors at night
+     A Thermal Suit will reduce the damage caused by heat and cold
+     A TK-5 AntiTank Gun is an extremely effective long-range weapon
+     A Transmogrifier will polymorph creatures, and can change berry types
+     A Wetsuit allows water movement, and will reduce acid and shock damage
+     A Wide Screen TV can map levels in some of the special castles
+
+_________________________________________________________________________
+
+5.  CREATURES
+
+   This is a brief overview of the creatures found in AlphaMan.
+
+   Name           Hit dice   Attack type* Damage  Resist**    Susceptible***
+  --------        ---------  -----------  ------  ---------   -----------
+   A.  Creatures found anywhere -----------------------------------------
+   Wimpy critter       1      Bite          1-3     
+   Housecat            1      Bite/Claws    2-9      h,c          m
+   Centipede           1      Poison I      1-4      1,s
+   Snail               1      Mental Blast  2-6      e            a
+   Warthog             2      Life Leech    1-3      l
+   Owl                 1      Bite/Claws    2-9      m            e
+   Daffodil            2      Spores        1-5      l,b,s        r
+   Asparagus           3      Radiation     1-5      p,r,b,s      l
+   Dung Beetle         3      Poop Out       0       a            p
+   Fire Ant            1      Heat          1-5      g            c
+   Woodpecker          1      Bite          2-12     p
+   Gas Spore           1      Darts         2-6      m,r,s
+       Gas Spores cause explosion damage when they are killed.
+   Dragonfly           2      Cold          2-14     p,e          a
+   Skunk               3      Nausea         0                    k
+   Chameleon           3      Bite          1-6      i,1
+   Boa                 3      Constrict     2-6      p,r,e,a
+   Porcupine           2      Quills        2-6      q4           l
+   Lotus               2      Confusion      0       m,b,s        s
+   Crunchberry Beast   4      Eat Berries    0       l,s
+   Viper               3      Poison II     1-4      e            c
+   Venetian            5      Blind          0       l,b          k
+   Flying Fish         5      Radiation     3-15     c,a          l
+   Rosebush            5      Attraction     0       k,q14,s,b
+   Zapweed             4      Electricity   2-16     m,e,k        h
+   Mantis              6      Mental Blast  4-12     l,a
+   Japanese Beetle     3      Steal Tech     0       e            m
+   Mr. Potato Head     8 hp   Bite          2-12
+       Mr. Potato Head takes only 1 hp damage from any attack.
+   Sunflower           5      Laser         3-12     g,p           a
+   Ragweed             3      Sneeze         0       l,s           p
+   Killer Bee          2      Poison III    2-4                    e
+   Python             10      Constriction  6-18     c,1           r
+   Vulture             7      Life Leech    2-12     h,m           c
+   Huge Cockroach      4      Radiation     4-20     k
+       Cockroaches, after being exposed to an particular attack type,
+       become resistant to it.
+   Sandman             1      Cause Slumber  0
+   Pryor               8      Acid          3-18     1             a,h
+       The Pryor can burst into flames, causing substantial heat damage
+   Spitting Cobra      4      Poison II     2-8      r             m
+   Goat                5      Eat Items      0
+   Ice Wolf            9      Cold          3-21     c,1           h
+   Rot Fungus          8      Damage Armor   0       k,a,q4,b      e
+   Pokey              10      Bite          4-24                   c
+   Gumby              12      Mental Blast  8-32                   c
+   Tapeworm            2      Special        0       4             p
+       Tapeworms lead to increased hunger if they hit
+   Slug                7      Acid          4-24     k,a,m         s
+   Cheetah             9      Laser         4-16     r,h,g
+   Tortoise            9      Bite          3-9      r,c           l
+   Venus Flytrap      11  Attract,Constrict 6-18     e,p           r
+   the Blob           10      Acid          5-30     k,b           c
+   Grizzly Bear       14      Bite/Claws    4-24     h             a
+   Bush               18      Life Leech    2-10                   m
+   Quayle             15      Bite          1-6    e,r,h,c,l,1,m,p
+       The Quayle only appears if the Bush has been defeated
+   Rhinocerous        14      Gore          7-42     a,r,p         h
+   Giant Tarantula    11      Poison I      9-36     3             e
+   Phoenix             7      Heat          6-30     h             c
+       When defeated, the Phoenix may rise from its ashes
+   Scorpion           10      Poison II     4-16     a,l           r
+   Mastodon           22      Trample       6-42     c
+   Berserk Robot  apprx 15   Electricity  apprx 4-32 r,c,m,p,s     e
+   Black Widow        10      Poison III    5-20     r             e
+   Sabretooth Tiger   17      Bite/Claws    7-42     r,h
+   Mosquito           11      Life Leech    2-20     h,m           k
+   Anklyosaurus       15      Bite          6-36     1             r
+   Triceratops        21      Gore          6-36     r,p           a
+   Polar Worm         25      Cold          8-56     c,3           h
+   Tyrannosaurus      30      Bite         12-72     c             p
+   King Kong          40      Trample      14-84                   t
+   Rodan              35      Bite         14-84                   l
+   Godzilla           45      Radiation    15-75     r,m           e
+   
+   B.  Creatures found in Castles  --------------------------------------
+   Slime               1      Damage Armor   0       c,b           h
+   Ooze                1      Heat          1-5      k,h,b         c
+   Vampire Bat         2      Energy Drain   0                     l
+   Repair Droid   apprx 3    Electricity  apprx 2-12  m,p,s         e
+   Maggot              3      Acid          1-6      1             p
+       Maggots may become Flies, which regenerate faster and do more damage
+   Giant Rat           3      Bite          1-6      r             h,p
+   Purple Mold         3      Nausea         0       k,b           r
+   Ghoul               8      Bite          2-12     r,c
+   Defense Droid  apprx 6     Radiation   apprx 2-10 r,m,p,s       e
+   Gray Mold           9      Spores        variable k,a,s,b       h,s
+       Gray Mold spores interfere with your healing, and do more damage the
+       more there are in your system.
+   Phantom             7      Cold          2-14     m
+   Wolf Spider         7      Poison III    3-10     p             m
+   Enzyme Fungus       3      Acid          4-24     k,a,m,q10,b   h,s
+   Volte               6      Electricity   5-40     k,e,s         a
+   Brown Recluse       9      Poison II     4-16     1             r
+   Security Droid  apprx 10   Laser       apprx 5-18 a,c,m,p,s     e
+   Brain Beast         5      Life Leech    1-5      m             a
+       Brain Beasts can attack through walls.
+   War Droid          15      Various       9-51    a,r,c,m,p,3,s  e
+   
+   C.  Creatures found in Forest   --------------------------------------
+   Tree Frog           1      Poison I      1-4      a
+   Stranglevine        2      Constriction  1-3      p
+   Poison Ivy          2      Poison II     3-12     h,d,i
+   Toadstool           5      Nausea         0       p,s,b         k
+   Termite             1      Eat Items      0                     h,p
+       Termites eat anything they step on
+   Mushroom            2      Energy Drain   0       m,s,b         a,c
+   Panther             5      Electricity   4-24     e             r
+   Moose              14      Trample       4-24
+   Jaguar             11      Radiation     4-20     r             e
+   Deadly Nightshade   5      Poison II     4-16     m,p           l,s
+   Algore              5      -none-                 m,i           e,s
+       Trees and bushes grow profusely around an Algore
+   Death Fern          7      Heat          4-20     h,i           s
+   Bigfoot            13      Trample       4-24     1             m
+   Komodo Dragon      15      Bite          6-36     c
+   Willow              6      Constrict     7-21     g,p,s         s
+   Raptor              8      Bite/Claws    5-30     c
+   Giant Sloth        15      Cold 6        6-42                   h
+   
+   D.  Creatures found in Swamp    --------------------------------------
+   Toad                2      Radiation     2-10     c,l           h
+   Leech               1      Energy Drain   0       a,i           p
+   Slime Mold          2      Acid          1-6      k,a,b         p
+   Giant Crab          3      Electricity   1-8      e,r           m
+   Alligator           5      Bite          3-18     p             l
+   Lungfish            6      Laser         3-12     e             a
+   Bombadier Beetle    4      Damage Armor   0       a,e           r
+   Tick                2      Life Leech    2-8      i             s
+   Giant Puffball      1 hp   -none-                 i
+       Puffballs explode if touched
+   Dartweed            3      Poison III    3-12     l             r,c
+   Hippopotamus       13      Bite          4-24     r             h
+   Giant Worm          2      Bite          1-6
+       Giant Worms split into parts if hit by weaponry
+   Crocodile          10      Mental Blast  12-36    c             m
+   Water Moccasin      6      Poison II     4-14     p
+   Snapping Turtle     9      Bite          5-30     c             h,l
+   Pteradactyl         9      Radiation     6-30     r,m
+   Bog Horror         16      Constrict     3-30     a,h,c,1,m,i   p
+   
+   E.  Creatures found in Plains   --------------------------------------
+   Prairie Chicken     1      Bite          1-3      k             h
+   Lizard              2      Heat          1-5      h,l           e
+   Antelope            3      Trample       1-6      h,l
+   Moth                4      Life Leech    1-6      m             a
+   Gazelle             5      Laser         2-6      l
+   Stink Bug           6      Nausea         0       a             m
+   Armadillo           6      Bite/Claws    3-9                    p
+   Blue Jay            4      Mental Blast  6-18     e
+   Laughing Hyena      4      Tickle        2-8                    t
+   Fox                 5      Eat Food       0       1             m
+   Giant Wasp          6      Poison III    3-10     r             h,l
+   Locust              3      Bite          1-3            k,a,e,r,h,c,l,m,p
+   Coral Snake         5      Poison II     4-16     h
+   Bunny Rabbit        4      Bite          1-6                    p
+       Bunnies reproduce.
+   Voracious Shrew     2      Bite          7-42
+   Cactus              8      Darts         5-30    r,g,q14,s,b    c
+   Giraffe            16      Trample       6-42
+   
+   F.  Creatures found in Water    --------------------------------------
+   Kelp                2      Constrict     1-3      c
+   Sardine             1      Bite          1-3      a             e
+   Electric Eel        2      Electricity   1-8      e
+   Seagull             3      Poop Out       0       1             m
+   Lobster             2      Claws         2-12     l             h
+   Lamprey             1      Life Leech    1-4
+   Barracuda           3      Bite          2-12     a
+   Sunfish             3      Laser         2-8      l             p
+   Urchin              3      Darts         5-15     q10,b
+   Jellyfish           4      Poison II,III 3-12     a,3,s,b       r,s
+   Squid               5    Blind,Constrict 2-6      c             k
+   Fire Coral          1      Heat          4-20     k,s,b         l
+   Trilobite           5      Radiation     3-15     e             m
+   Red Snapper         4      Bite          5-30
+   Nauteloid           7      Mental Blast  4-12
+   Sting Ray           7      Poison III    3-12     p
+   Octopus             6      Constrict     7-21     a
+   Moray Eel           9      Bite          3-18
+   Narwal             10      Gore          4-24     c
+   Hammerhead Shark   10      Bite          5-30     m
+   Killer Whale       22      Bite          6-36     c
+   Great White Shark  15      Bite          6-36     m
+   Plesiosaurus       25      Bite          7-42     r                    
+
+* Attack types:
+Radiation damage is multiplied by 10 / (your radiation resistance)
+Poison damage is multiplied by 10 / (your constitution)
+Poison I simply does damage
+Poison II has a chance to reduce your strength
+Poison III has a chance to reduce your constitution and hit points
+Mental Blast, Life Leech damage is multiplied by 10 / (your mental resistance)
+Constrict attacks, once they hit, do damage every round thereafter
+Energy Drain attacks can quench mutations or drain experience points
+
+Some damage amounts are approximate;  for example, a Cactus has 5 separate
+dart attacks for 1-6 each, with differing ranges, so it will only do the
+maximum of 5-30 at close range.  Mental Blast damage amounts can vary widely
+from those given.  Damage Armor and Steal/Eat attacks may do some damage if
+they don't successfully damage armor / steal an item.
+
+** resistances:
+a:  resist acid
+b:  resist blindness
+c:  resist cold
+e:  resist electricity
+g:  grow from heat or laser attacks
+h:  resist heat
+i:  invisible
+k:  take 1/3 damage from kinetic attacks
+l:  resist lasers
+m:  resist mental attacks
+p:  resist poison
+r:  resist radiation
+s:  resist sneezing/burping
+1:  regenerate 1 hit point/round
+3:  regenerate 3 hit points/round
+4:  regenerate 4 hit points/round
+q4: quills or shock if touched for  1-4 points damage
+q10: quills or shock if touched for 1-10 points damage
+q14: quills or shock if touched for 2-14 points damage
+
+*** susceptibilities
+a:  double damage from acid
+b:  double damage from blindness
+c:  double damage from cold
+e:  double damage from electricity
+h:  double damage from heat
+k:  double damage from kinetic
+l:  double damage from lasers
+m:  double damage from mental attacks
+p:  double damage from poison
+r:  double damage from radiation
+s:  sluggish (only move every other round)
+
+_________________________________________________________________________
+
+6.  CASTLES
+  Your overall mission is to save the world from the Grinch and his nerve
+toxin.  You must complete a series of missions in order to accomplish this
+goal.  You do not need to visit these castles in any particular order, 
+despite the suggestions of the Tape Recorders you'll find along the way.
+You will usually need to visit 5 different castles in order to properly equip
+yourself.  Specifically, you'll need the following items: 
+1.  A map from the Munsters in order to locate the Grinch's hidden castle.
+    All the Munsters are dangerous foes, Grampa in particular.  You need to
+    use the teleport trap somewhere in the room with Grampa to get to the
+    sealed room containing the map (as well as another teleport trap).  To
+    render Grampa harmless, find the Green Gregre berry on Level -6 of the
+    castle, the level before you get to the Munsters level.  This berry will
+    turn you green for a short period of time, and all the Munsters will
+    mistake you for Herman and consequently ignore you.
+    Note:  a character with Heightened Vision shouldn't have to visit this
+    castle at all.  Also, a JackHammer or Molecular Disruption makes the
+    Gregre Berry unnecessary.
+2.  Buzz Aldrin's Space Suit to protect yourself from the radiation which
+    protects the Grinch's castle.  Buzz is protected by a variety of losers,
+    the most dangerous of which are the 9 Chicago Cubs.  If you are wearing
+    the Mets Hat which you can find in a secret room soon after entering
+    Buzz's level, the Cubs are much less harmful.  Buzz is on the deepest
+    level in his castle.
+3.  Elvis' Blue Suede Shoes so you can cross the bottomless chasm that 
+    surrounds the Grinch's castle.  Elvis is a good guy like you, but you
+    have to get rid of all the Elvis Impersonators on his castle level with
+    him before he'll give you the goods.  You can tell the difference between
+    the real and fake Elvii be noting that when you wake them up and they
+    sing the line of an Elvis song, only Elvis gets the words right.  If you
+    wake the real Elvis before finishing off the Impersonators (ie, he
+    doesn't immediately give you the stuff), run away from him and he'll fall
+    back asleep fairly soon.  Elvis's special level may be on the top-most
+    or the bottom-most level;  only a Tricorder can tell you ahead of time
+    where he is.
+4.  Donald Trump's Presidential ID card to get through the locked door into
+    the castle.  Donald, Marla and Ivana all have nasty Life Leech attacks.
+    If possible, try to have a MindWeb Generator or some Mental Resistance-
+    enhancing berries available.  Donald is easier to deal with if you can
+    find and defeat Ivana first (Donald tends to doze off like Elvis, by the
+    way) and get her blonde wig (which will raise your Mental Resistance and
+    lower your Intelligence by 15 while wearing it).  Donald is on the
+    highest level of his castle.
+5.  Gilligan's Keptibora serum to protect yourself from the nerve toxin which
+    permeates the Grinch's castle.  Getting to this castle can be tricky, and
+    if you find a WetSuit, Kayak, Rubber Raft, Hovercraft, Jetpack or 
+    Transporter Monolith, try to proceed directly to this castle, which is
+    always located in the middle of a body of water.  Gilligan is very
+    dangerous to your belongings.  You should try to find and defeat the
+    Skipper to retrieve his hat, which you'll hit Gilligan with.  Before
+    going after Gilligan, it is wise to drop all your belongings since
+    Gilligan has a knack for breaking things.  If you used a Transporter
+    Monolith to get to this castle, be sure to grab the Bamboo Raft for
+    return transportation.  Save the Keptibora Serum until you are ready to
+    go to the Grinch's castle, since it only lasts for a single day.  Gilligan
+    is on the highest level of his castle.
+
+    The Grinch's castle can be very dangerous if you're unprepared.  The
+Grinch's special level is either on the top-most or bottom-most level;
+unless you have a Tricorder, you'll have a 50-50 chance of going the wrong
+way.  Tech items won't work on the Grinch's special level, so begin collecting
+useful berries on your way there.  Since the Grinch is surrounded by nasty
+guardians, berries like Invisibility, Fright-Inducing, Speed-Enhancing are
+especially useful.  You may want to save a Detox berry, too. Don't try to
+defeat the Grinch in out-and-out combat; with his dying gasp he'll trigger
+the release of the nerve toxin, sending doom upon the remains of the Earth.
+Instead, go to the castle level furthest from the Grinch, (ie, the top-most
+floor if he is on the bottom-most floor) where you can find a can of Roast
+Beast.  Tossing this at the Grinch will cause his heart to grow 3 sizes, and
+he'll destroy the toxin.

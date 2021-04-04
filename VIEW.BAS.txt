@@ -1,0 +1,238 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE SUB scannames ()
+DECLARE SUB chartdefenses (i%)
+DECLARE SUB chartsusc (i%)
+DECLARE SUB pauseforkey (a$)
+DECLARE SUB chartexperience ()
+DECLARE FUNCTION clr% (i%)
+DECLARE SUB chartattacktypes (i%)
+DECLARE FUNCTION lev! (n%)
+DEFINT A-Z
+' $INCLUDE: 'alpha.dec'
+DIM SHARED expr(300), defense(300), susc(300), att(300, 5)
+DIM SHARED atk$(27), def$(15), sus$(15), creat$(300)
+
+DATA Kinetic, Radiation, Poison 1, Poison 2, Poison 3, Acid, Laser
+DATA Mental Blast, Electricity, Heat, Cold, Tentical, Life Leech
+DATA Steal, Tickle, "Damage Armor", "Poop Out", Spore, Trample, Aroma, Drain
+DATA Blinding, Sickening, Help, Gore, Special, Snooze
+FOR i = 1 TO 27: READ atk$(i): NEXT
+
+DATA "1/3 from Kinetic", "Resist Acid", "Resist Electricity"
+DATA "Resist Radiation", "Resist Heat", "Resist Cold", "Resist Lasers"
+DATA "Grow from heat/laser", "Regenerate 1/turn", "Resist Mental Attacks"
+DATA "Resist Poison", "Regenerate 3/turn"
+DATA "Quills/shock for 1-4", "Quills/shock for 1-10"
+
+FOR i = 0 TO 13: READ def$(i): NEXT
+
+DATA "Susceptible to Kinetic", "Susceptible to Acid"
+DATA "Susceptible to Electricity", "Susceptible to Radiation"
+DATA "Susceptible to Heat", "Susceptible to Cold"
+DATA "Susceptible to Lasers", "Susceptible to Tickling"
+DATA "Always Asleep", "Susceptible to Mental Attacks"
+DATA "Susceptible to Poison", "Resist Sneeze/Burp", "Resist Blindness"
+DATA "Susc 13", "ac+10", "Sluggish"
+FOR i = 0 TO 15: READ sus$(i): NEXT
+
+OPEN "alpha.cre" FOR INPUT AS #1
+numcre = 0
+WHILE NOT EOF(1)
+  INPUT #1, creat$
+  IF LEFT$(LTRIM$(creat$), 1) = CHR$(39) THEN GOTO fin
+  numcre = numcre + 1
+  creat$(numcre) = creat$
+  INPUT #1, a, defense(numcre), c, susc(numcre), expr(numcre)
+  FOR i = 1 TO 5
+    INPUT #1, att, btt: att(numcre, i) = btt \ 100
+    'tohit(i) = att(i) MOD 100: str(i) = att(i) \ 100
+    'rng(i) = btt(i) MOD 100: typ(i) = btt(i) \ 100
+  NEXT i
+WEND
+fin: CLOSE #1: SCREEN 12
+chartexperience
+FOR i = 1 TO 27: chartattacktypes i: NEXT
+FOR i = 0 TO 13: chartdefenses i: NEXT: chartsusc 11: chartsusc 12
+FOR i = 0 TO 15
+  IF i <> 11 AND i <> 12 THEN chartsusc i
+NEXT
+END
+
+SUB chartattacktypes (i)
+  CLS : WINDOW (0, 0)-(ncreat + creextra + 1, 9)
+  FOR j = 1 TO ncreat + creextra
+    sho = false
+    FOR k = 1 TO 5
+      IF att(j, k) = i THEN sho = true
+    NEXT k
+    IF sho THEN LINE (j, 0)-(j + .5, 5), clr(j), BF
+  NEXT j
+  LINE (1, 0)-(ncreat, .07), 7, BF
+  LINE (ncreat + 1, 0)-(ncreat + crecas, .07), 8, BF
+  LINE (ncreat + crecas + 1, 0)-(ncreat + crecas + crefor, .07), 10, BF
+  LINE (ncreat + crecas + crefor + 1, 0)-(ncreat + crecas + crefor + creswa, .07), 6, BF
+  LINE (ncreat + crecas + crefor + creswa + 1, 0)-(ncreat + crecas + crefor + creswa + crepla, .07), 14, BF
+  LINE (ncreat + crecas + crefor + creswa + crepla + 1, 0)-(ncreat + crecas + crefor + creswa + crepla + creh2o, .07), 9, BF
+  COLOR 13: LOCATE 1, 1: PRINT atk$(i)
+  pauseforkey a$
+  IF a$ = "n" THEN scannames
+END SUB
+
+SUB chartdefenses (i)
+  CLS : WINDOW (0, 0)-(ncreat + creextra + 1, 9)
+  FOR j = 1 TO ncreat + creextra
+    sho = false
+    IF defense(j) AND 2 ^ i THEN sho = true
+    IF sho THEN LINE (j, 0)-(j + .5, 5), clr(j), BF
+  NEXT j
+  LINE (1, 0)-(ncreat, .07), 7, BF
+  LINE (ncreat + 1, 0)-(ncreat + crecas, .07), 8, BF
+  LINE (ncreat + crecas + 1, 0)-(ncreat + crecas + crefor, .07), 10, BF
+  LINE (ncreat + crecas + crefor + 1, 0)-(ncreat + crecas + crefor + creswa, .07), 6, BF
+  LINE (ncreat + crecas + crefor + creswa + 1, 0)-(ncreat + crecas + crefor + creswa + crepla, .07), 14, BF
+  LINE (ncreat + crecas + crefor + creswa + crepla + 1, 0)-(ncreat + crecas + crefor + creswa + crepla + creh2o, .07), 9, BF
+  COLOR 13: LOCATE 1, 1: PRINT def$(i)
+  pauseforkey a$
+  IF a$ = "n" THEN scannames
+END SUB
+
+SUB chartexperience
+' chart experience
+  CLS : WINDOW (0, 0)-(20, 9)
+  PSET (lev(1), LOG(expr(1))), 7
+  FOR i = 2 TO ncreat
+    LINE -(lev(i), LOG(expr(i))), 7
+  NEXT i
+  PSET (lev(ncreat + 1), LOG(expr(ncreat + 1))), 8
+  FOR i = ncreat + 2 TO ncreat + crecas
+    LINE -(lev(i), LOG(expr(i))), 8
+  NEXT i
+  PSET (lev(ncreat + crecas + 1), LOG(expr(ncreat + crecas + 1))), 10
+  FOR i = ncreat + crecas + 2 TO ncreat + crecas + crefor
+    LINE -(lev(i), LOG(expr(i))), 10
+  NEXT i
+  PSET (lev(ncreat + crecas + crefor + 1), LOG(expr(ncreat + crecas + crefor + 1))), 6
+  FOR i = ncreat + crecas + crefor + 2 TO ncreat + crecas + crefor + creswa
+    LINE -(lev(i), LOG(expr(i))), 6
+  NEXT i
+  PSET (lev(ncreat + crecas + crefor + creswa + 1), LOG(expr(ncreat + crecas + crefor + creswa + 1))), 14
+  FOR i = ncreat + crecas + crefor + creswa + 2 TO ncreat + crecas + crefor + creswa + crepla
+    LINE -(lev(i), LOG(expr(i))), 14
+  NEXT i
+  PSET (lev(ncreat + crecas + crefor + creswa + crepla + 1), LOG(expr(ncreat + crecas + crefor + creswa + crepla + 1))), 9
+  FOR i = ncreat + crecas + crefor + creswa + crepla + 2 TO ncreat + crecas + crefor + creswa + crepla + creh2o
+    LINE -(lev(i), LOG(expr(i))), 9
+  NEXT i
+  COLOR 13: LOCATE 1, 1: PRINT "log-Experience vs level"
+  pauseforkey a$
+  IF a$ = "n" THEN scannames
+END SUB
+
+SUB chartsusc (i)
+  CLS : WINDOW (0, 0)-(ncreat + creextra + 1, 9)
+  FOR j = 1 TO ncreat + creextra
+    sho = false
+    IF susc(j) AND 2 ^ i THEN sho = true
+    IF sho THEN LINE (j, 0)-(j + .5, 5), clr(j), BF
+  NEXT j
+  LINE (1, 0)-(ncreat, .07), 7, BF
+  LINE (ncreat + 1, 0)-(ncreat + crecas, .07), 8, BF
+  LINE (ncreat + crecas + 1, 0)-(ncreat + crecas + crefor, .07), 10, BF
+  LINE (ncreat + crecas + crefor + 1, 0)-(ncreat + crecas + crefor + creswa, .07), 6, BF
+  LINE (ncreat + crecas + crefor + creswa + 1, 0)-(ncreat + crecas + crefor + creswa + crepla, .07), 14, BF
+  LINE (ncreat + crecas + crefor + creswa + crepla + 1, 0)-(ncreat + crecas + crefor + creswa + crepla + creh2o, .07), 9, BF
+  COLOR 13: LOCATE 1, 1: PRINT sus$(i)
+  pauseforkey a$
+  IF a$ = "n" THEN scannames
+END SUB
+
+FUNCTION clr (i)
+  SELECT CASE i
+    CASE 1 TO ncreat: c = 7
+    CASE 1 TO ncreat + crecas: c = 8
+    CASE 1 TO ncreat + crecas + crefor: c = 10
+    CASE 1 TO ncreat + crecas + crefor + creswa: c = 6
+    CASE 1 TO ncreat + crecas + crefor + creswa + crepla: c = 14
+    CASE 1 TO ncreat + crecas + crefor + creswa + crepla + creh2o: c = 9
+  END SELECT
+  clr = c
+END FUNCTION
+
+FUNCTION lev! (n)
+  DIM lll AS SINGLE
+  SELECT CASE n
+    CASE 1 TO ncreat
+      lll = INT(n / 3.49)
+    CASE 1 TO ncreat + crecas
+      lll = (n - ncreat - 1)
+    CASE 1 TO ncreat + crecas + crefor
+      lll = (n - ncreat - crecas)
+    CASE 1 TO ncreat + crecas + crefor + creswa
+      lll = (n - ncreat - crecas - crefor)
+    CASE 1 TO ncreat + crecas + crefor + creswa + crepla
+      lll = (n - ncreat - crecas - crefor - creswa)
+    CASE 1 TO ncreat + crecas + crefor + creswa + crepla + creh2o
+      lll = (n - ncreat - crecas - crefor - creswa - crepla - 2) / 1.5
+  END SELECT
+  IF lll < 1 THEN lll = 1
+  lev! = lll
+END FUNCTION
+
+SUB pauseforkey (a$)
+  a$ = INKEY$: WHILE a$ = "": a$ = INKEY$: WEND
+END SUB
+
+SUB scannames
+  j = 1: COLOR 12
+topscan:
+  LINE (j, 5.05)-(j + .5, 6), 12, BF
+  LOCATE 1, 40: PRINT creat$(j); SPACE$(20);
+  pauseforkey a$
+  SELECT CASE a$
+    CASE "+": j = j + 1: IF j > ncreat + creextra THEN j = 1
+      LINE (j - 1, 5.05)-(j - .5, 6), 0, BF: GOTO topscan
+    CASE "-": j = j - 1: IF j < 1 THEN j = ncreat + creextra
+      LINE (j + 1, 5.05)-(j + 1.5, 6), 0, BF: GOTO topscan
+    CASE "E"
+    CASE ELSE: GOTO topscan
+  END SELECT
+END SUB
+
+SUB unused
+      SELECT CASE i
+        CASE 0: PRINT "1/3 from Kinetic"
+        CASE 1: PRINT "Acid"
+        CASE 2: PRINT "Electricity"
+        CASE 3: PRINT "Radiation"
+        CASE 4: PRINT "Heat"
+        CASE 5: PRINT "Cold"
+        CASE 6: PRINT "Lasers"
+        CASE 7: PRINT "Grow from heat/laser"
+        CASE 8: PRINT "Regenerate 1/turn"
+        CASE 9: PRINT "Mental Attacks"
+        CASE 10: PRINT "Poison"
+        CASE 11: PRINT "Regenerate 3/turn"
+        CASE 12: PRINT "Quills/shock for 1-4"
+        CASE 13: PRINT "Quills/shock for 1-10"
+      END SELECT
+END SUB
+

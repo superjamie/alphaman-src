@@ -1,0 +1,30 @@
+alpman11.zip: AlphaMan version 1.1 for MS-DOS, by Jeff Olson.  A roleplaying
+  game set in post-holocaust Earth.  You play a mutated human who must use a
+  variety of technological relics and mutated berries to save the world from
+  the Grinch's evil schemes.  Occasional humorous twists.  Game uses colorful 
+  text-based graphics in the spirit of NetHack.  Requires 640K, color.
+
+  Version 1.01 added a "fast fight" mode that speeds up combat, added 2 easier 
+  modes of play for beginners, and made food more plentiful.
+
+  Version 1.02 fixed a bug that caused unpredictable effects when one went
+  from "very hungry" to "famished", and improved the effects of the mutations
+  Invisibility, Quills and Heightened Endurance, to make them more powerful.
+
+  Version 1.03 fixed saved filename convention so the game no longer dies when
+  trying to save games with character names that include odd characters
+  like ? and +.
+
+  Version 1.1 allows the game to remember recent castle and lair levels, so
+  remapping is no longer necessary.  For example, most dropped items will
+  still be there when you return to a place already visited.
+  Entering 'alphaman somename' will now generate a new character if the saved
+  file somename.alf doesn't exist.
+  There are now separate "Halls of the Dead" for the different difficulty
+  levels, and experience bonuses at the end of the game for each "subquest"
+  successfully completed.
+  The Main Map key (F5) now shows regions where you've visited (useful for
+  looking for Monoliths).
+  A few new devices - Flash Grenade, UV Helmet, Geiger Counter, Neutron Suit,
+  Radar Detector.
+

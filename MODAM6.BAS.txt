@@ -1,0 +1,328 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE SUB modam6 ()
+CALL modam6
+END
+
+SUB modam6
+CONST max = 294
+DIM j(1 TO max) AS STRING * 74
+j(1) = "A Lava Lamp will help illuminate during darkness"
+j(2) = "A Backpack can hold up to 10 reasonably-sized items"
+j(3) = "A Gas Mask will protect completely from poison gas"
+j(4) = "A Medkit will restore some lost hit points and poison damage"
+j(5) = "Tape Recorders reveal a variety of information about your mission"
+j(6) = "Power Packs recharge devices which require energy"
+j(7) = "Chemical Analyzers reveal the potential effects of unknown berries"
+j(8) = "A VisiScope allows you to see long distances"
+j(9) = "Tylenol can restore lost hit points"
+j(10) = "A Tip O'Neill mask will frighten creatures away when worn"
+j(11) = "ServoBoots greatly reduce the effects of encumberance"
+j(12) = "An Answering Machine will occasionally receive messages"
+j(13) = "A Force Field Generator will help protect you from attacks"
+j(14) = "A Bionic Cranium Implant can raise your Mental Resistance & Intelligence"
+j(15) = "A Bionic Muscle Implant can raise your Strength and Dexterity"
+j(16) = "Duct Tape can incapitate creatures, and repair damaged armor and suits"
+j(17) = "Toilet Paper is an effective weapon against Dung Beetles and Seagulls"
+j(18) = "Sunscreen provides some protection against laser attacks"
+j(19) = "An ID Card will unlock most locked doors, and can deactivate some robots"
+j(20) = "Flares will illuminate the outdoors when dark, but cause damage indoors"
+j(21) = "A Mirror can be used to reflect laser attacks"
+j(22) = "A Mr. Misty provides nourishment, and also is an effective freeze grenade"
+j(23) = "A Tricorder will map castles and lairs, and can reveal creature specifics"
+j(24) = "A Hand Massager will reduce fatigue"
+j(25) = "Coffee will boost your constitution temporarily, and can keep you awake"
+j(26) = "A Grenade Launcher can fire grenades and berries accurately at long range"
+j(27) = "Brandy will boost your strength temporarily, but may make you sleepy"
+j(28) = "A Microcomputer can reveal a variety of useful information"
+j(29) = "A Breathalyzer will reveal your blood alcohol content"
+j(30) = "Alza-seltzer relieves sickness, and can get rid of tapeworms"
+j(31) = "A MindWeb Generator will protect you from mental attacks"
+j(32) = "Cap'n Crunch gives you a sugar high and speeds you up temporarily"
+j(33) = "A Motion Sensor will reveal the location of invisible creatures"
+j(34) = "A Pencil Sharpener can sharpen pointy weapons so they are more effective"
+j(35) = "A Knife Sharpener can sharpen blade weapons so they are more effective"
+j(36) = "ArmorAll will restore armor to pristine condition, and may even improve it"
+j(37) = "A UV Helmet helps greatly when searching for hidden things"
+j(38) = "A Geiger Counter reveals nearby radiation zones outdoors, or traps indoors"
+'        1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(39) = "A Cannister Grenade inflicts modest shrapnel damage (kinetic damage type)."
+j(40) = "A Neutrino Grenade inflicts moderate damage."
+j(41) = "An Incendiary Grenade inflicts moderate heat damage."
+j(42) = "A Psychosis Grenade inflicts variable mental-type damage."
+j(43) = "A Gas Grenade inflicts poison damage and leaves poisonous gas."
+j(44) = "A Photon Grenade inflicts tremendous laser-type damage."
+j(45) = "A Fission Grenade inflicts substantial radiation damage."
+j(46) = "A Vial of Acid inflicts modest damage."
+j(47) = "A Stun Grenade paralyzes and inflicts minor damage in a large area."
+j(48) = "A Disintegration Grenade is lethal to almost everything."
+j(49) = "A Lightning Grenade inflicts modest electrical damage in a large area."
+j(50) = "A Glue Grenade will imobilize anything in its sizable blast area."
+j(51) = "A Fusion Grenade inflicts tremendous damage in a large area."
+j(52) = "A Flash Grenade can blind everything in a large area."
+
+j(53) = "A Blowtorch does moderate heat damage."
+j(54) = "A Staple Gun does minimal kinetic damage."
+j(55) = "A Shock Rod does modest electrical damage."
+j(56) = "A Shotgun does substantial kinetic damage."
+j(57) = "A Laser Pistol does substantial laser damage."
+j(58) = "A Phaser can stun (putting enemy to sleep) or kill (doing heat damage)."
+j(59) = "A Fusion Rifle does substantial radiation damage."
+j(60) = "A Tickle Feather Gun (from the UnderDog show) inflicts tremendous damage."
+j(61) = "A Weedeater is effective against plants."
+j(62) = "A Missile Launcher does substantial damage in a large blast area."
+j(63) = "Raid is particularly effective against insects."
+j(64) = "A Flamethrower does substantial heat damage in line with the target."
+j(65) = "A Light Sabre inflicts moderate laser-type damage."
+j(66) = "A Freeze Gun does substantial cold damage in line with the target."
+j(67) = "A Can of Mace does modest poison damage and makes the target flee."
+j(68) = "Mr. Clean is especially effective against slimes, molds, etc."
+j(69) = "A Squirt Gun does minimal damage except against Fire Ants, Phoenixes, etc."
+j(70) = "A Chainsaw inflicts horrible wounds."
+j(71) = "A Blaster can fire many shots at a time, inflicting modest heat damage."
+j(72) = "Silly String will immobilize a target."
+j(73) = "A Stun Gun will paralyze a target."
+j(74) = "A Salt Shaker can be a grenade, but is only useful on Slugs-like things."
+j(75) = "A Pepper Shaker can be a grenade, and makes targets sneeze."
+'        1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(76) = "A Boise Souvenir Ashtray is useless"
+j(77) = "Sunglasses protect against blindness & give added influence over robots"
+j(78) = "A Toaster is useless"
+j(79) = "A Cheese Grater is useless"
+j(80) = "A Bionic Spleen Implant can raise your Constitution & Radiation Resistance"
+j(81) = "A Sony Watchman can map levels in some of the special castles"
+j(82) = "A Slinky is useless"
+j(83) = "A Veg-O-Matic can injure nearby creatures, especially edible ones"
+j(84) = "A Kalediscope is useless"
+j(85) = "A Fountain Pen is useless"
+j(86) = "The flash from a Pocket Instamatic can blind creatures that see it"
+j(87) = "A Hammock will put you to sleep immediately"
+j(88) = "A Voodoo Doll will kill all nearby creatures of a specific type"
+j(89) = "A Turbocharger will speed up any vehical"
+j(90) = "A Chia Pet is useless"
+j(91) = "A Wrist Watch will tell you how much time remains to complete your mission"
+j(92) = "A Radar Gun will reveal how fast a creature can move"
+j(93) = "A Radar Detector is useless"
+'        1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(94) = "A Radiation Suit will reduce the damage caused by radiation"
+j(95) = "A Thermal Suit will reduce the damage caused by heat and cold"
+j(96) = "A Reflective Suit will reduce the damage caused by lasers"
+j(97) = "A Hovercraft provides very fast transportation over any terrain"
+j(98) = "A Computer Workstation can reveal a plethota of useful information"
+j(99) = "A Microwave Oven can prematurely ripen berries, and makes food tastier"
+'        1    6   11   16   21   26   31   36   41   46   51   56   61   66
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66
+j(100) = "A Wetsuit allows water movement, and will reduce acid and shock damage"
+j(101) = "A Safe will protect up to 10 items, and can be left outside of castles"
+j(102) = "A Transmogrifier will polymorph creatures, and can change berry types"
+j(103) = "A TK-5 AntiTank Gun is an extremely effective long-range weapon"
+j(104) = "A Jetpack gives rapid movement for short periods of time"
+j(105) = "A Golf Cart provides transportation at a faster pace than walking"
+j(106) = "A Pogo Stick provides an alternative form of transportation"
+j(107) = "A Cloaking Device renders you temporarily invisible"
+j(108) = "A Kayak can be used to move through water"
+j(109) = "A Rubber Raft can be used to move through water"
+j(110) = "A Home Movie Projector will put creatures to sleep"
+j(111) = "A Camoflage Suit makes you somewhat harder to detect"
+j(112) = "A Pinstripe Suit gives added influence over robots when an ID card is used"
+j(113) = "A Bulletproof Suit lowers your AC and reduces damage from kinetic attacks"
+j(114) = "A Repulsion Generator will prevent creatures from moving next to you"
+j(115) = "A Displacer allows you to teleport over short distances"
+j(116) = "A Jackhammer can blast through walls, and is an effective weapon"
+j(117) = "A Tent will allow you to sleep in relative safety outdoors at night"
+j(118) = "A Neutron Suit irradiates nearby critters each turn but hurts you somewhat"
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(119) = "A Cigarette Machine is useless"
+j(120) = "A Cabinet is useless"
+j(121) = "A Liposuction Device will remove an udder"
+j(122) = "A Still will distill berries to nectar, and nectar to extract"
+j(123) = "A Cyclotron just might win you the Nobel Prize in physics"
+j(124) = "A Laser Printer is useless"
+j(125) = "A Wide Screen TV can map levels in some of the special castles"
+j(126) = "A Prosthetic Leg is useless"
+j(127) = "A Dialysis Machine will cure you and remove poison effects, tapeworms, etc"
+j(128) = "A Porta-Potty is useless"
+j(129) = "A Sousaphone can make critters stand still, run away, become confused, etc"
+j(130) = "A Kevorkian Machine is useless"
+j(131) = "A Leafblower is useless"
+
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(150) = "The color of a berry reveals its degree of ripeness. The six colors"
+j(151) = "a berry can have are red, orange, yellow,  green, blue, and purple,"
+j(152) = "in increasing  order of ripeness.   Berries which are more ripe are"
+j(153) = "more potent, and will have effects which last longer.  For example,"
+j(154) = "purple exploding berries do much more damage than orange ones,  and"
+j(155) = "forcefields created by blue  berries last longer than those created"
+j(156) = "by red ones.  In addition, if a berry can have either a good or bad"
+j(157) = "effect, the ripe berries are more likely to cause the good effects."
+j(158) = "Thus, a blue berry that alters speed tends to speed you up, while a"
+j(159) = "red one is likely to slow you down.   Berries that alter your stats"
+j(160) = "are particularly important examples of this, wherein red and purple"
+j(161) = "ones change your stats permanantly, purple usually raising, and red"
+j(162) = "usually lowering;  the effect of the orange-blue ones is temporary."
+j(163) = "Berries will ripen with time;  using  X(amine) can be illuminating."
+
+j(164) = "This is  the Grinch,  a crazed psychotic  intent upon destroying the"
+j(165) = "world.   He has obtained a  deadly toxin capable  of eradicating all"
+j(166) = "life and intends to release it at noon on September 8th, just a week"
+j(167) = "away.   He lives in a castle hidden  within a radiation zone.   Your"
+j(168) = "mission,  should you choose to accept it,  is to stop the Grinch and"
+j(169) = "destroy his nerve toxin.  This tape will self-destruct in 5 seconds."
+
+j(170) = "Here is the first castle  you should infiltrate,  the secret hideout"
+j(171) = "of Elvis, thought by some to be dead for many years.  He is an agent"
+j(172) = "like you who holds for you a secret device you'll  need to cross the"
+j(173) = "bottomless chasm.  Be wary of counterspies, "
+
+j(174) = "This is the second stronghold you must visit, 1313 Mockingbird Lane."
+j(175) = "You must retrieve a map showing the location of the Grinch's castle."
+j(176) = "The map is known to be guarded by Grampa, a dangerous enemy who will"
+j(177) = "require special measures to neutralize.  Good luck, "
+
+j(178) = "Here is the third castle you should visit,  the castaways' fortress."
+j(179) = "Here the impervious Gilligan holds an anti-viral serum you will need"
+j(180) = "to ward off the effects of the Grinch's nerve toxin.  It isn't known"
+j(181) = "what forces, if any, Gilligan is susceptible to. Consult the lore of"
+j(182) = "the computer if you can.  This tape will self-destruct in 5 seconds."
+
+j(183) = "This is the fourth castle you should visit, the Trump Castle. Held"
+j(184) = "within, in the posession of the Trump King,  is the only surviving"
+j(185) = "Presidential ID Card,  which you  will need  to gain access to the"
+j(186) = "Grinch's stronghold.  This tape will self-destruct in 5 seconds."
+
+j(187) = "Here is  the final  castle you  should attempt  to infiltrate,  the"
+j(188) = "castle of Those Who Came In Second.  The cult leader,  Buzz Aldrin,"
+j(189) = "has a space suit necessary to ward off the powerful radiation which"
+j(190) = "protects the Grinch.  This tape will self-destruct in 5 seconds."
+
+j(191) = "This is the  Grinch's  stronghold,  hidden in a  radiation zone and"
+j(192) = "protected by nerve toxin. It's locked and encircled by a bottomless"
+j(193) = "chasm.  The Grinch is tremendously powerful and psychotic.   He may"
+j(194) = "have a weakness, however.  Be careful, "
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+
+j(195) = "    Congratulations!  You have successfully completed AlphaMan!"
+j(196) = "Now would be an excellent time to register this software.  By doing this,"
+j(197) = "you will help support the ShareWare concept which allows users to try out"
+j(198) = "software before paying for it.   You will also help to support the author"
+j(199) = "financially, allowing him to continue to create new products."
+j(200) = "Anyone sending  $15 or more will receive the most recent version, and will"
+j(201) = "receive notification of updates (which will include lots of new features)."
+j(202) = "Updates will cost just $4 to cover shipping and handling, but will be free"
+j(203) = "if serious bugs are found. You will also receive answers to any questions."
+j(204) = "Send check, disk type and version number (shown on opening screen) to:"
+j(205) = "Jeffrey R. Olson,  214 E. Sherwin Dr.,  Urbana, IL  61801"
+j(206) = "Please send any suggestions,  comments or bugs to the above address,  even"
+j(207) = "if you don't intend to  register your copy.   The author will consider all"
+j(208) = "ideas for incorporation into the game, will credit you if an idea is used,"
+j(209) = "and guarantees a response if you include a self-addresed stamped envelope."
+j(210) = "                    Please distribute this game widely."
+
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(211) = "Weapons,  armor and shields are of varying  effectiveness depending on the"
+j(212) = "type and condition  of the item.   Specifics such as the base damage done,"
+j(213) = "base armor class provided, etc, of specific items  can be obtained using a"
+j(214) = "computer.  Using 'X'(amine) will reveal the condition an item:"
+j(215) = "    Weapons may have bonuses to hit and/or to damage; for example, a +1 to"
+j(216) = "hit dagger will hit more often than a normal dagger, and a -1 damage flail"
+j(217) = "will do less damage than a normal flail."
+j(218) = "    Armor and shields  can sustain a varying  number of 'damaging' attacks"
+j(219) = "before they are destroyed, and may have modifiers to the defense that they"
+j(220) = "provide; for example, a +1 shield protects better, while -1 armor protects"
+j(221) = "worse than average for that specific type of shield or armor."
+
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(222) = "Jeffrey Olson  is a member of the  Association of  Shareware Professionals"
+j(223) = "(ASP).  ASP wants to make sure that the shareware principle works for you."
+j(224) = "If you are  unable to  resolve a  shareware-related  problem with  an ASP"
+j(225) = "member by contacting  the member directly,  ASP may be able to help.  The"
+j(226) = "ASP Ombudsman can help you resolve a dispute or problem with an ASP member"
+j(227) = "but does not provide technical support for members' products. Please write"
+j(228) = "to the  ASP Ombudsman at  545 Grover Road,  Muskegon, MI  49442-9427  USA"
+j(229) = "FAX 616-788-2765 or send a CompuServe message via CompuServe Mail to:"
+j(230) = "ASP Ombudsman 70007,3536."
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(231) = "Exploding berries are effective grenades with a blast radius of 1 square."
+j(232) = "Radiating berries are effective grenades with a blast radius of 1 square."
+j(233) = "These berries provide significant nourishment, and can make critters burp."
+j(234) = "Refresh berries make you well-rested and temporarily help keep you rested."
+j(235) = "Poison berries can be thrown to do poison damage if they hit a critter."
+j(236) = "Curing berries will restore some hit points, and some reduced by poison."
+j(237) = "These berries are like normal curing berries, only more potent."
+j(238) = "These berries will add or subtract experience points depending on color."
+j(239) = "Strength-altering berries raise or lower strength, depending on color."
+j(240) = "Dexterity-altering berries raise or lower dexterity, depending on color."
+j(241) = "Constitution-altering berries raise or lower CON, depending on color."
+j(242) = "Radiation Resistance-altering berries modify RR, depending on color."
+j(243) = "Mental Resistance-altering berries modify MR, depending on color."
+j(244) = "Intelligence-altering berries modify intelligence, depending on color."
+j(245) = "Speed-altering berries will make you fast or slow, depending on color."
+j(246) = "Berries that toughen skin will permanantly lower your armor class."
+j(247) = "Intoxicating berries will confuse you if eaten, or a critter if thrown."
+j(248) = "Cleverness berries make you better at figuring out and using tech devices."
+j(249) = "Berries which add body parts are generally useless except for nourishment."
+j(250) = "These berries quench or heighten a mutation, depending on color."
+j(251) = "These berries help you see invisible things, and will map a castle level."
+j(252) = "These berries will blind you if eaten, but work on critters if thrown."
+j(253) = "These berries make you burp or sneeze, but work on critters if thrown."
+j(254) = "These berries make you forget things but will confuse creatures if thrown."
+j(255) = "These berries will frighten critters away temporarily."
+j(256) = "Detoxifying berries will remove the lingering adverse effects of poisons."
+j(257) = "These berries give you a Rambo complex, making you strong but dumb."
+j(258) = "These berries will make you temporarily invisible."
+j(259) = "Teleport berries randomly teleport you, and work on critters too."
+j(260) = "Relax berries will put you or a creature to sleep."
+j(261) = "Klutz berries will make you extremely clumsy, but work on critters too."
+j(262) = "While regenerating, you regain lost hit points much faster."
+j(263) = "These berries give you an odor that attracts creatures."
+j(264) = "While protected by a forcefield, you'll sustain reduced damage."
+j(265) = "These berries are effective weapons if thrown."
+
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(280) = "You are an agent who must use all available  means to save the world from"
+j(281) = "disaster. These means include arms and armor, technological items you can"
+j(282) = "find and figure out, mutated berries which bestow special powers and your"
+j(283) = "own mutations.  You can learn your mission by using a Tape Recorder which"
+j(284) = "can be found nearby at the start of the game. See the file README.TXT for"
+j(285) = "additional information regarding AlphaMan.   Press '?' at any time to see"
+j(286) = "a list of commands or for context-sensitive help."
+'         1    6   11   16   21   26   31   36   41   46   51   56   61   66   71   76
+j(287) = "You can 'u'se most items in the game. If you use a weapon, shield or armor"
+j(288) = "it will be in use until it is  destroyed or you 'U'nuse it  (that is, it's"
+j(289) = "not necessary to  use one repeatedly).  You can also use most tech devices"
+j(290) = "after you've figured them out (some will stay in use until Unused, such as"
+j(291) = "a Radiation Suit or Lava Lamp), although you throw grenades.  You must eat"
+j(292) = "Spam, Beef-a-Roni, and most berries.  You also use many mutations, such as"
+j(293) = "Laser Generation or Hypnosis.  Some mutations, however, such as Heightened"
+j(294) = "Dexterity or Military Genius, are constantly in use."
+
+OPEN "alphaman.6" FOR BINARY AS #1: CLS
+OPEN "items.txt" FOR OUTPUT AS #2
+FOR i = 1 TO max
+  PRINT #2, RTRIM$(j(i))
+  FOR k = 1 TO 74
+    MID$(j(i), k, 1) = CHR$(ASC(MID$(j(i), k, 1)) XOR (ABS(i * 17 + k * 31) MOD 256))
+  NEXT k
+  PUT #1, , j(i): LOCATE 1, 1: PRINT i;
+NEXT i
+CLOSE
+END SUB
+

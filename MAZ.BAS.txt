@@ -1,0 +1,265 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE SUB SetLengths ()
+DECLARE SUB fillin ()
+DECLARE SUB pause ()
+DECLARE SUB putx (x%, y%)
+DECLARE SUB maz ()
+DECLARE SUB drawwall ()
+DECLARE FUNCTION Roll% (x%)
+
+CONST false = 0, true = NOT false
+CONST Xaxis = 400, Yaxis = 400
+CONST CellsWide = 24, CellsTall = 9
+CONST maxcycles = 2, tpx = .4, tpy = .4
+
+DIM SHARED WallsToDraw AS INTEGER, MostX%, MostY%, CycleMostX%, CycleMostY%
+DIM SHARED walls(CellsWide, CellsTall) AS INTEGER
+DIM SHARED xwid AS INTEGER, ywid AS INTEGER
+DIM SHARED scrn(52, 22) AS INTEGER
+
+CLS : RANDOMIZE TIMER: t1! = TIMER
+
+
+FOR k% = 1 TO 1
+  xwid = 0
+  WHILE ywid * xwid < 8
+    xwid = Roll(4) + 2
+    ywid = 1 + Roll(2)
+  WEND
+  ii% = 9 + Roll(6) - xwid / 2
+  jj% = 3 + Roll(3) - ywid / 2
+
+  ERASE walls
+
+  COLOR 8
+  FOR i% = 3 TO CellsWide * 2 + 1
+    FOR j% = 3 TO CellsTall * 2 + 1
+      'LOCATE j%, i%: PRINT CHR$(250);
+      scrn(i%, j%) = 250
+    NEXT j%
+  NEXT i%
+  COLOR 9
+
+  FOR c% = 0 TO CellsWide
+    walls(c%, 0) = 1
+    putx 2 * c% + 2, 2
+    IF c% < CellsWide THEN putx 2 * c% + 3, 2
+    walls(c%, CellsTall) = 1
+    putx 2 * c% + 2, 2 * CellsTall + 2
+    IF c% < CellsWide THEN putx 2 * c% + 3, 2 * CellsTall + 2
+  NEXT
+  FOR c% = 0 TO CellsTall
+    walls(0, c%) = 1:
+    putx 2, 2 * c% + 2
+    IF c% < CellsTall THEN putx 2, 2 * c% + 3
+    walls(CellsWide, c%) = 1
+    putx 2 * CellsWide + 2, 2 * c% + 2
+    IF c% < CellsTall THEN putx 2 * CellsWide + 2, 2 * c% + 3
+  NEXT
+  FOR x% = 4 TO CellsWide * 2 STEP 2
+    FOR y% = 4 TO CellsTall * 2 STEP 2
+      'LOCATE y%, x%: PRINT CHR$(219);
+      scrn(x%, y%) = 219
+    NEXT y%
+  NEXT x%
+
+  FOR i% = ii% TO ii% + xwid: FOR j% = jj% TO jj% + ywid: walls(i%, j%) = 1: NEXT j%, i%
+  FOR x% = 2 * ii% + 2 TO 2 * (ii% + xwid) + 2
+    FOR y% = 2 * jj% + 2 TO 2 * (jj% + ywid) + 2
+      'LOCATE y%, x%: PRINT CHR$(219);
+      scrn(x%, y%) = 219
+    NEXT y%
+  NEXT x%
+  COLOR 8
+  FOR x% = 2 * ii% + 3 TO 2 * (ii% + xwid) + 1
+    FOR y% = 2 * jj% + 3 TO 2 * (jj% + ywid) + 1
+      'LOCATE y%, x%: PRINT CHR$(250);
+      scrn(x%, y%) = 250
+    NEXT y%
+  NEXT x%
+
+  COLOR 9: maz: COLOR 8
+  SELECT CASE Roll(4)
+    CASE 1: x% = ii%: y% = jj% + Roll(ywid)
+      'LOCATE 2 * y% + 1, 2 * x% + 2: PRINT CHR$(250)
+      scrn(2 * x% + 2, 2 * y% + 1) = 250
+    CASE 2: x% = ii% + xwid: y% = jj% + Roll(ywid)
+      'LOCATE 2 * y% + 1, 2 * x% + 2: PRINT CHR$(250)
+      scrn(2 * x% + 2, 2 * y% + 1) = 250
+    CASE 3: x% = ii% + Roll(xwid): y% = jj%
+      'LOCATE 2 * y% + 2, 2 * x% + 1: PRINT CHR$(250)
+      scrn(2 * x% + 1, 2 * y% + 2) = 250
+    CASE 4: x% = ii% + Roll(xwid): y% = jj% + ywid
+      'LOCATE 2 * y% + 2, 2 * x% + 1: PRINT CHR$(250)
+      scrn(2 * x% + 1, 2 * y% + 2) = 250
+  END SELECT
+  FOR i% = 1 TO 51: FOR j% = 1 TO 21
+    LOCATE j%, i%: PRINT CHR$(scrn(i%, j%));
+  NEXT j%, i%
+  t1! = TIMER
+  FOR zz% = 1 TO 30: SetLengths: NEXT
+NEXT k%
+'LOCATE 22, 2: PRINT USING "Time to generate one maze:#.###"; (TIMER - t1!) / 30
+LOCATE 22, 2: PRINT USING "Time to do one path-search:#.###"; (TIMER - t1!) / 30
+
+END
+
+SUB drawwall
+  FOR Which% = 1 TO 0 STEP -1
+     Direc% = Roll(4)
+     InitMostX% = MostX%: InitMostY% = MostY%
+     WHILE (walls(MostX%, MostY%) = Which%)
+        SELECT CASE Direc%
+           CASE 1: MostX% = MostX% - 1
+           CASE 2: MostY% = MostY% + 1
+           CASE 3: MostX% = MostX% + 1
+           CASE 4: MostY% = MostY% - 1
+        END SELECT
+        IF ((MostX% < 0) OR (MostX% > CellsWide) OR (MostY% < 0) OR (MostY% > CellsTall)) THEN
+            IF Direc% = 4 THEN Direc% = 1 ELSE Direc% = Direc% + 1
+            MostX% = InitMostX%
+            MostY% = InitMostY%
+         END IF
+     WEND
+  NEXT
+  SELECT CASE Direc%
+     CASE IS = 1: LastDirec% = 3
+     CASE IS = 2: LastDirec% = 4
+     CASE IS = 3: LastDirec% = 1
+     CASE IS = 4: LastDirec% = 2
+  END SELECT
+  LastX% = MostX%: LastY% = MostY%
+  DeadEndReached% = false
+  DO
+     Cycles% = 0
+     KeepLooking% = true
+     DO
+        Cycles% = Cycles% + 1
+        NewX% = LastX%
+        NewY% = LastY%
+        Direc% = LastDirec%
+        IF Direc% = 1 OR Direc% = 3 THEN tp! = tpx ELSE tp! = tpy
+        IF RND < tp! THEN Turn% = (Roll(3) - 2) ELSE Turn% = 0
+        Direc% = Direc% + Turn%
+        IF Direc% > 4 THEN Direc% = 1
+        IF Direc% < 1 THEN Direc% = 4
+        SELECT CASE Direc%
+           CASE IS = 1: NewX% = LastX% - 1       'up
+           CASE IS = 2: NewY% = LastY% + 1       'right
+           CASE IS = 3: NewX% = LastX% + 1       'down
+           CASE IS = 4: NewY% = LastY% - 1      'left
+        END SELECT
+        IF Cycles% < maxcycles THEN
+           IF ((NewX% >= CellsWide) OR (NewX% <= 0) OR (NewY% >= CellsTall) OR (NewY% <= 0)) THEN
+              KeepLooking% = true
+           ELSE
+              IF walls(NewX%, NewY%) = 0 THEN KeepLooking% = false
+           END IF
+        ELSE
+           KeepLooking% = false
+        END IF
+     LOOP WHILE (KeepLooking%)
+     IF Cycles% < maxcycles THEN
+        putx LastX% + NewX% + 2, LastY% + NewY% + 2': pause
+        walls(NewX%, NewY%) = 1
+        WallsToDraw = WallsToDraw - 1
+        LastX% = NewX%: LastY% = NewY%
+        LastDirec% = Direc%
+        DeadEndReached% = false
+     ELSE
+        DeadEndReached% = true
+     END IF
+  LOOP WHILE (DeadEndReached% = false)
+END SUB
+
+SUB maz
+   WallsToDraw = (CellsTall - 1) * (CellsWide - 1) - ((xwid - 1) * (ywid - 1) + 2 * (xwid + ywid))
+
+   PartWallsToDraw% = WallsToDraw * .3
+   WHILE (WallsToDraw > PartWallsToDraw%)
+      DO
+         MostX% = Roll(CellsWide): MostY% = Roll(CellsTall)
+      LOOP WHILE (walls(MostX%, MostY%) = 1)
+      drawwall
+   WEND
+   CyclicMostX% = 1: CyclicMostY% = 1
+   WHILE (WallsToDraw > 0)
+      DO
+         CyclicMostY% = CyclicMostY% + 1
+         IF CyclicMostY% = CellsTall THEN
+            CyclicMostY% = 1
+            CyclicMostX% = CyclicMostX% + 1
+            IF CyclicMostX% = CellsWide THEN CyclicMostX% = 1
+         END IF
+      LOOP WHILE (walls(CyclicMostX%, CyclicMostY%) = 1)
+      MostX% = CyclicMostX%: MostY% = CyclicMostY%
+      drawwall
+   WEND
+END SUB
+
+SUB pause
+WHILE INKEY$ = "": WEND
+END SUB
+
+SUB putx (x%, y%)
+  'LOCATE y%, x%: PRINT CHR$(219);
+  scrn(x%, y%) = 219
+END SUB
+
+FUNCTION Roll% (x%)
+  Roll = INT(RND * x%) + 1
+END FUNCTION
+
+DEFINT A-Z
+SUB SetLengths
+  DIM dis(52, 22)
+  FOR i = 1 TO 52: FOR j = 1 TO 22: dis(i, j) = 100: NEXT j, i
+  ready = false
+  WHILE NOT ready
+    xstart = Roll(51): ystart = Roll(21)
+    IF scrn(xstart, ystart) = 250 THEN ready = true
+  WEND
+  dis(xstart, ystart) = 0
+  FOR dist = 1 TO 20
+    xbeg = xstart - dist: IF xbeg < 1 THEN xbeg = 1
+    xend = xstart + dist: IF xend > 51 THEN xend = 51
+    FOR x = xbeg TO xend
+      ybeg = ystart - dist: IF ybeg < 1 THEN ybeg = 1
+      yend = ystart + dist: IF yend > 21 THEN yend = 21
+      FOR y = ybeg TO yend
+        FOR dx = -1 TO 1: FOR dy = -1 TO 1
+          IF (dis(x, y) = 100) AND (scrn(x, y) = 250) THEN
+            IF dis(x + dx, y + dy) = dist - 1 THEN
+              dis(x, y) = dist
+              LOCATE y, x: PRINT CHR$(dis(x, y) + 48);
+              EXIT FOR
+            END IF
+          END IF
+        NEXT dy, dx
+      NEXT y
+    NEXT x
+  NEXT dist
+'  FOR i% = 1 TO 51: FOR j% = 1 TO 21
+'    IF scrn(i%, j%) = 250 THEN LOCATE j%, i%: PRINT CHR$(dis(i%, j%) + 48);
+'  NEXT j%, i%
+END SUB
+

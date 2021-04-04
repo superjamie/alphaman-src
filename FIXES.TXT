@@ -1,0 +1,67 @@
+Fixes made to AlphaMan:
+
+Please send bug reports to
+Jeffrey Olson
+214 E. Sherwin Dr.
+Urbana, IL  61801
+76473.225@compuserve.com
+____________________________________________________________________
+
+Version 1.1:
+
+Game now remembers recent castle and lair levels, so remapping is no longer
+    necessary.  For example, most dropped items will still be there when
+    character returns to a place already visited.  Thanks to Tim Jordan for
+    lighting a fire under me to finally get this done.
+Entering  'alphaman somename' from the DOS prompt will now generate a new
+    character if the saved file 'somename.alf' doesn't exist.  Thanks to
+    Matthias Kring for the suggestion.
+Now separate "Halls of the Dead" for the different difficulty level.
+Now an experience bonus at the end of the game for each "subquest" 
+    successfully completed, an additional bonus if the game was won, and a
+    further bonus if it was won in a short amount of time.  Thanks to Tim
+    Jordan for the idea.
+The Main Map key (F5) now shows regions where you've visited (useful for
+    looking for Monoliths).  Another Tim Jordan idea.
+A few new items - Flash Grenade, UV Helmet, Geiger Counter, Neutron Suit,
+    Radar Detector.
+____________________________________________________________________
+
+Version 1.03:
+
+Fixed saved filename convention so the game no longer dies when trying to
+    save games with character names that include odd characters like ?, /.
+    Thanks to Tony Chang for pointing out the problem.
+____________________________________________________________________
+
+Version 1.02:
+
+Fixed a serious bug that could crash the game when you went from "very
+    hungry" to "famished".  Thanks to Carl Waldbieser for finding it.
+Modified the effects of a few mutations to make them more equally strong:
+    Invisibility lasts somewhat longer.
+    A character with Invisibility recovers from blindness 3x faster, since
+      invisibility is described as "ability to bend light rays around you".
+    Quills, when shot, hit more often and do more damage.
+    A character with Heightened Endurance recovers from sickness 3x faster.
+    Thanks to Gerry Kevin Wilson for many useful mutation suggestions.
+____________________________________________________________________
+
+Version 1.01:
+
+Fixed a bug that would very occasionally give a nonsense message when
+    character gained a level.
+There is now significantly more food found randomly.  Thanks to Chris
+    DiRubio and others for the suggestion.
+Fixed superglue trap - before, when stuck in trap, there would be extra,
+    annoying messages about falling blobs of glue.
+If your Tough Exoskeleton is quenched (by eating a berry, or a Vampire Bat,
+    for example), your AC now goes to the proper value of 10 instead of 15.
+Added Easy and Moderately Easy levels of difficulty.  Thanks to Dan Hayes
+    for the suggestion.
+Added a Fast Fight mode that allows you to bypass most of the spacebar
+    presses during combat.  Not recommended for beginners who would miss some
+    potentially useful information in the messages.  Thanks to Dan Hayes for
+    the suggestion.
+Made the Dung Beetle less nasty and annoying to a character who has passed
+    out from exhaustion (no more 10 or 15 attacks in a row).

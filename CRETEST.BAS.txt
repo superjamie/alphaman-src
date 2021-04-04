@@ -1,0 +1,120 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE SUB randum ()
+DECLARE SUB printcre (n%)
+DECLARE SUB modcreat (c$, cn$)
+DEFINT A-Z
+
+DIM SHARED att(5), btt(5), typ(5), str(5), tohit(5), rng(5), atk$(27)
+DIM SHARED atkcnt(27), defcnt(15), movcnt(4)
+DIM SHARED hd, mov, ac, sym, fc, bc, defense, expr, creat$
+
+DATA Kinetic, Radiation, Poison 1, Poison 2, Poison 3, Acid, Laser
+DATA Mental Blast, Electricity, Heat, Cold, Tentical, Life Leech
+DATA Steal, Tickle,"Damage Armor","Poop Out",Spore,Trample,Aroma,Drain
+DATA Sickening,Hmm,Help,Gore,Special,Snooze
+FOR i = 1 TO 27: READ atk$(i): NEXT
+
+CLS
+CALL randum
+
+COLOR 9
+CLS
+
+END
+
+SUB printcre (numcre)
+  CLS
+  COLOR 15: LOCATE 5, 5: PRINT creat$; SPACE$(4);
+  COLOR fc, bc:  PRINT " "; CHR$(sym); " ";
+  COLOR 14, 0: PRINT USING "    Exp : ####"; expr;
+  COLOR 15: PRINT USING "    Level :###"; INT((numcre + 1) / 4)
+  COLOR 9: LOCATE 7, 5
+  PRINT USING "Hit dice : ###     Movement rate : ##     AC :##"; hd, mov, ac
+  COLOR 3: row = 9
+  FOR i = 1 TO 5
+    IF att(i) <> 0 THEN
+      LOCATE row, 5: PRINT USING "& attack,  Strength : ##"; atk$(typ(i)), str(i)
+      LOCATE row + 1, 5: PRINT USING "Range : ##           To Hit : ##"; rng(i), tohit(i)
+      row = row + 3
+    END IF
+  NEXT i
+  COLOR 13: LOCATE 9, 55: PRINT "Resistances"
+  COLOR 5: row = 10
+  FOR i = 0 TO 13: j = 2 ^ i
+    IF (defense AND j) THEN
+      defcnt(i) = defcnt(i) + 1
+      LOCATE row, 55: row = row + 1
+      SELECT CASE i
+        CASE 0: PRINT "1/3 from Kinetic"
+        CASE 1: PRINT "Acid"
+        CASE 2: PRINT "Electricity"
+        CASE 3: PRINT "Radiation"
+        CASE 4: PRINT "Heat"
+        CASE 5: PRINT "Cold"
+        CASE 6: PRINT "Lasers"
+        CASE 7: PRINT "Grow from heat/laser"
+        CASE 8: PRINT "Regenerate 1/turn"
+        CASE 9: PRINT "Mental Attacks"
+        CASE 10: PRINT "Poison"
+        CASE 11: PRINT "Regenerate 3/turn"
+        CASE 12: PRINT "Quills/shock for 1-4"
+        CASE 13: PRINT "Quills/shock for 1-10"
+        CASE ELSE: PRINT "oops"
+      END SELECT
+    END IF
+  NEXT
+END SUB
+
+SUB randum
+  DIM cs AS STRING * 20
+  OPEN "alphaman.2" FOR RANDOM AS #2 LEN = 50
+  FIELD #2, 20 AS nam$, 2 AS a$, 2 AS b$, 2 AS c$, 2 AS d$, 2 AS e$, 2 AS a1$, 2 AS b1$, 2 AS a2$, 2 AS b2$, 2 AS a3$, 2 AS b3$, 2 AS a4$, 2 AS b4$, 2 AS a5$, 2 AS b5$
+ziz: LOCATE 25, 1: INPUT ; "Enter creature number (-1 to end) : ", num
+  IF num = 0 THEN numcre = numcre + 1 ELSE IF num < 0 THEN EXIT SUB ELSE numcre = num
+  GET #2, numcre: cs = nam$: creat$ = SPACE$(20)
+  k = 1: stopit = 0
+  DO
+   aa = ASC(MID$(cs, k, 1))
+    IF aa = 242 THEN stopit = -1 ELSE aa = aa XOR k * 6: MID$(creat$, k, 1) = CHR$(aa MOD 256)
+    k = k + 1
+  LOOP UNTIL stopit
+  ax = CVI(a$): defense = CVI(b$): c = CVI(c$): dum = CVI(d$): expr = CVI(e$)
+  att(1) = CVI(a1$): btt(1) = CVI(b1$)
+  att(2) = CVI(a2$): btt(2) = CVI(b2$)
+  att(3) = CVI(a3$): btt(3) = CVI(b3$)
+  att(4) = CVI(a4$): btt(4) = CVI(b4$)
+  att(5) = CVI(a5$): btt(5) = CVI(b5$)
+  hd = INT(ax / 10) MOD 1000: mov = INT(ax / 10000)
+  ac = ax MOD 10
+  IF (defense AND 16384) THEN ac = ac - 10
+  sym = c MOD 1000: fc = INT(c / 1000)
+  IF fc = 0 THEN bc = 1 ELSE bc = 0
+  FOR i = 1 TO 5
+    tohit(i) = att(i) MOD 100: str(i) = INT(att(i) / 100)
+    rng(i) = btt(i) MOD 100: typ(i) = INT(btt(i) / 100)
+  NEXT i
+  atkcnt(typ(1)) = atkcnt(typ(1)) + 1
+  movcnt(mov) = movcnt(mov) + 1
+  CALL printcre(numcre)
+  GOTO ziz
+END SUB
+

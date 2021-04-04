@@ -1,0 +1,2039 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE SUB Explode (dx%, dy%, damage%, damtype%, need%, r!, slf%, clr%, div%)
+DECLARE SUB KillBadMaps (mode%)
+DECLARE SUB MaybeMessPause (fc%, bc%)
+DECLARE SUB DisplayCritter (typ%)
+DECLARE SUB Scatter (i%)
+DECLARE SUB KillItem (i%)
+DECLARE SUB CrDamAlter (num%, dam%, damtype%)
+DECLARE SUB mphk (ch%, atktyp%)
+DECLARE SUB KillCreat (i%)
+DECLARE SUB TapeRecorder (i%)
+DECLARE SUB RemoveCreat (i%)
+DECLARE SUB ShiftDropped (rm%)
+DECLARE SUB Awaken (i%)
+DECLARE SUB CheckFil (a$)
+DECLARE SUB Printjnk (a%, b%, c%)
+DECLARE SUB Ljnkbig (a%, b%, c%, d%, e%, F%, a$, n%, i%)
+DECLARE SUB ljnk (a%, b%, c%, i%)
+DECLARE SUB DetermineWep (dropped%)
+DECLARE SUB AddToDrop (i%)
+DECLARE SUB DotIt (xdot%, ydot%)
+DECLARE SUB DotCorn ()
+DECLARE SUB FindDot CDECL (x%, y%, BYVAL i%)
+DECLARE SUB ffEffect (damage%, ffkill%)
+DECLARE SUB DamSuit (damtyp%, dam%)
+DECLARE SUB Timely ()
+DECLARE SUB ChangeDark ()
+DECLARE SUB SetDark (dark%, olddark%, changed%)
+DECLARE SUB HungFatEnc ()
+DECLARE SUB RemoveGoody (i%, p%)
+DECLARE SUB DisplayGoodies (p%)
+DECLARE SUB DisplayCharacter ()
+DECLARE SUB Dead (spec%)
+DECLARE SUB ShowHits ()
+DECLARE SUB PauseForKey ()
+DECLARE SUB SetCombatStats ()
+DECLARE SUB ClearRight CDECL (BYVAL pag%)
+DECLARE SUB FindMPos (i%, mx%, my%, mlocx%, mlocy%)
+DECLARE SUB SortGoody ()
+DECLARE SUB DumpBuffer ()
+DECLARE SUB MessPause (fc%, bc%)
+DECLARE SUB ClearMess ()
+DECLARE SUB PutSym (sym%, col%, row%, fcolr%, bcolr%, pag%)
+DECLARE SUB GetSym (sym%, col%, row%, fcolr%, bcolr%, pag%)
+DECLARE SUB PrintMessage (fcolr%, bcolr%)
+DECLARE FUNCTION RollDice% CDECL (BYVAL dsize%, BYVAL nroll%, BYVAL nuse%)
+DECLARE SUB Box CDECL (BYVAL lc%, BYVAL rc%, BYVAL tc%, BYVAL bc%, BYVAL nl%, BYVAL fclr%, BYVAL pag%)
+DECLARE SUB Wrong ()
+DECLARE SUB cRandomize CDECL (BYVAL seed!)
+DECLARE SUB ccls CDECL (BYVAL pag%)
+DECLARE FUNCTION CreatNam$ (typ%, num%)
+DECLARE FUNCTION Creature% (typ%, stat%)
+DECLARE FUNCTION jnk$ (num%, strt%, leng%)
+DECLARE FUNCTION cRdSimp% CDECL (BYVAL x%, BYVAL y%)
+DECLARE FUNCTION cRd% CDECL (BYVAL x%, BYVAL y%)
+DECLARE FUNCTION cRoll% CDECL (BYVAL max%)
+DECLARE FUNCTION Terr$ (i%)
+DECLARE FUNCTION Insect% (num%)
+DECLARE FUNCTION Plant% (num%)
+DECLARE FUNCTION Yuck% (num%)
+DECLARE FUNCTION SameRoom% (ddx%, ddy%)
+DECLARE FUNCTION Der$ (kil%, num%, i%)
+DECLARE FUNCTION BerEff$ (i%)
+DECLARE FUNCTION ssdnm$ (i%)
+DECLARE FUNCTION lsdnm$ (i%)
+DECLARE FUNCTION wepnm$ (i%)
+DECLARE FUNCTION shnm$ (i%)
+DECLARE FUNCTION armnm$ (i%)
+DECLARE FUNCTION pmutnm$ (i%)
+DECLARE FUNCTION mmutnm$ (i%)
+DECLARE FUNCTION Kolr$ (i%)
+
+REM $INCLUDE: 'alpha.dc2'
+REM $INCLUDE: 'alpha.dec'
+
+symbol: DATA 1,15,"You",15,10,"Thick Forest",42,2,"Light Woods",32,7,"Plains"
+  DATA 176,6,"Marsh",177,6,"Swamp",247,1,"Water"
+  DATA 30,127,94,239,234
+  DATA 15,10,"Tree",42,2,"Bush",249,2,"Underbrush"
+  DATA 250,6,"Brush",176,6,"Bog",247,9,"Deep Water",240,5,"Lair Entrance"
+  DATA 24,1,"Weapon",9,11,"Shield",8,7,"Armor",22,5,"Spam",254,6,"Beef-a-Roni"
+  DATA 5,236,4,"Berries",11,12,14,"Small Tech Device",21,157,11,"Large Shiny Device"
+  DATA 43,9,"Locked Door",10,8,"Pit",19,4,"Trap",240,13,"Stairs Up",240,5,"Stairs Down"
+
+END
+
+DEFINT A-Z
+FUNCTION BerEff$ (i)
+  SELECT CASE i
+    CASE 0: a = 297: b = 48: c = 14
+    CASE 1: a = 32: b = 61: c = 7
+    CASE 2: a = 65: b = 58: c = 7
+    CASE 3: a = 206: b = 54: c = 14
+    CASE 4: a = 156: b = 60: c = 7
+    CASE 5: a = 207: b = 20: c = 6
+    CASE 6: a = 204: b = 60: c = 4
+    CASE 7: a = 204: b = 60: c = 9
+    CASE 8: a = 207: b = 33: c = 13
+    CASE 9: a = 207: b = 46: c = 10
+    CASE 10: a = 207: b = 56: c = 9
+    CASE 11: a = 208: b = 1: c = 10
+    CASE 12: a = 208: b = 11: c = 9
+    CASE 13: a = 208: b = 20: c = 9
+    CASE 14: a = 208: b = 29: c = 9
+    CASE 15: a = 208: b = 38: c = 11
+    CASE 16: a = 208: b = 49: c = 12
+    CASE 17: a = 209: b = 1: c = 10
+    CASE 18: a = 209: b = 11: c = 16
+    CASE 19: a = 209: b = 27: c = 14
+    CASE 20: a = 209: b = 41: c = 19
+    CASE 21: a = 210: b = 1: c = 18
+    CASE 22: a = 210: b = 19: c = 15
+    CASE 23: a = 210: b = 34: c = 11
+    CASE 24: a = 210: b = 45: c = 14
+    CASE 25: a = 208: b = 61: c = 8
+    CASE 26: a = 209: b = 60: c = 8
+    CASE 27: a = 205: b = 60: c = 7
+    CASE 28: a = 237: b = 45: c = 14
+    CASE 29: a = 241: b = 20: c = 8
+    CASE 30: a = 285: b = 60: c = 5
+    CASE 31: a = 304: b = 1: c = 15
+    CASE 32: a = 304: b = 40: c = 19
+    CASE 33: a = 305: b = 15: c = 10
+    CASE 34: a = 394: b = 25: c = 18
+    CASE 35: a = 67: b = 62: c = 7
+    CASE ELSE: a = 1: b = 1: c = 1
+  END SELECT
+  BerEff$ = jnk$(a, b, c)
+END FUNCTION
+
+SUB CheckFatPlus
+  fatadd! = fatadd! - 1.5 - .9 * (forcefield <> 0) - 5 * (mheal > 0)
+  fatadd! = fatadd! + (1 - 2 * (berhpmut > 0)) * (pmut = 10 AND berpmut = 0)
+  fatadd! = fatadd! + 3 * (berfresh > 0)
+  fatigue! = fatigue! + fatadd!
+  IF fatigue! < 0 THEN fatigue! = 0
+  IF fatigue! > 260 THEN fatigue! = 241: pooped = true ELSE pooped = false
+
+  hundel = 6 + (3 - 2 * (berhpmut > 0)) * (pmut = 10 AND berpmut = 0)
+  hundel = hundel * (1 - tapeworm)
+  IF asleep AND (nnear > 0) THEN hundel = hundel \ 5
+  hunger = hunger + hundel / 2 + hundel * fatigue! / 1600
+
+  IF neutronsuit THEN
+    IF berregen THEN prob = 0 ELSE prob = -2 * (lvl + 3)
+    IF (pmut = 8 AND berpmut = 0) THEN prob = prob \ 3
+    IF rr > -5 THEN prob = (prob * 15!) / (5 + rr) ELSE prob = prob * 20
+  ELSE
+    prob = (lvl + 3) * (4 - hunger / 1800!)
+    IF prob > 50 THEN prob = 50
+    IF (pmut = 10 AND berpmut = 0) THEN prob = prob + (10 - 10 * (berhpmut > 0))
+    IF (mmut = 3 AND bermmut = 0) THEN prob = prob * (1.3 - .3 * (berhmmut > 0))
+    IF berregen THEN prob = prob + 40
+    IF spore > 9 THEN prob = 0 ELSE IF spore > 0 THEN prob = prob * 2 \ (spore + 2)
+  END IF
+redoregen:
+  roll = cRoll(100)
+  IF roll < prob AND mheal = 0 AND hits < hitmax THEN
+    hits = hits + 1: prob = prob - roll - 10: GOTO redoregen
+  ELSEIF prob < 0 AND roll < -prob THEN
+    hits = hits - 1: IF hits < 0 THEN st1 = jnk$(362, 38, 17): Dead 0
+  END IF
+  IF (cRoll(5) = 1) AND (hits > hitmax) THEN hits = hits - 1
+  IF asleep AND incastle AND (nnear = 0) AND (hits < hitmax) THEN hits = hits + 2
+ 
+  IF mheal > 0 THEN
+    mult = 1 - (berhmmut > 0)
+    hunger = hunger + mult: mheal = mheal - 1: hits = hits + 3 * mult
+    IF hits > hitmax THEN hits = hitmax: mheal = 0
+  END IF
+
+  IF wpturns > 0 THEN
+    wpturns = wpturns - 1
+    IF wpturns = 0 THEN
+      str = str - 3: dex = dex - 3: con = con - 3: rr = rr - 3
+      intl = intl - 3: hitmax = hitmax - 6 - lvl: hits = hits - 6 - lvl
+      IF hits < 0 THEN hits = 0
+      IF rdisp = 1 THEN DisplayCharacter
+    END IF
+  END IF
+
+  IF tentgrab THEN
+    pmutturns = 5: l2 = bl
+    dam = cRoll(lvl \ 2 + 3) + otherdam + strdam
+    IF berhpmut > 0 THEN dam = dam * 2
+    CrDamAlter tentgrab, dam, 1: ncre(tentgrab, 2) = ncre(tentgrab, 2) - dam
+          
+    IF ncre(tentgrab, 10) AND 4096 THEN dam1 = cRoll(4)
+    IF ncre(tentgrab, 10) AND 8192 THEN dam2 = cRoll(10)
+    dam1 = dam1 + dam2: ffEffect dam1, ffkill
+    IF dam1 > 0 THEN
+      ljnk 86, 53, 16, 2: hits = hits - dam: ShowHits
+      IF hits < 0 THEN st1 = jnk$(296, 61, 8) + bl + Der$(true, tentgrab, 3): Dead 0
+    END IF
+    IF ffkill THEN Ljnkbig 83, 1, 5, 207, 1, 19, jnk$(205, 39, 21), 1, 2
+    a = 94: b = 1: c = 22: IF ncre(tentgrab, 2) < 0 THEN b = 23: c = 21
+    Ljnkbig a, b, c, 0, 0, 0, bl + Der$(false, tentgrab, 1), 1, 1
+    IF ncre(tentgrab, 2) < 0 THEN
+      tg = tentgrab: KillCreat tg
+    ELSE
+      MaybeMessPause 2, 0
+    END IF
+  END IF
+
+  IF invisible THEN
+    invisible = invisible - 1
+    IF invisible <= 0 THEN invisible = 0: PutSym 1, localx, localy, 15, 0, 1
+  END IF
+      
+
+  IF coffee = 1 THEN con = con - 1
+  IF coffee THEN coffee = coffee - 1: IF coffee < 0 THEN coffee = 0
+  IF brandy = 1 THEN str = str - 1
+  IF brandy THEN brandy = brandy - 1: IF brandy < 0 THEN brandy = 0
+
+  IF hail AND incastle = 0 AND (NOT tent) AND (cRoll(40) < lvl + 3) THEN
+    hits = hits - 1: IF hits < 0 THEN st1 = jnk$(25, 63, 4): Dead 0
+    ljnk 381, 39, 20, 3: PrintMessage 15, 0
+  END IF
+
+  IF radint THEN
+    dic = (radint - rr): IF dic < 1 THEN dic = 1
+    dam = RollDice(2, dic, dic)
+    DamSuit 1, dam
+    IF spacesuit OR bergreen THEN
+      dam = 0
+    ELSE
+      ljnk 219, 1, 21, 3: PrintMessage 20, 0
+    END IF
+    ffEffect dam, ffkill: hits = hits - dam
+    IF hits < 0 THEN
+      st1 = jnk$(11, 17, 9): Dead 0
+    ELSEIF ffkill THEN
+      l1 = l3: l3 = "": Ljnkbig 83, 1, 5, 207, 1, 19, jnk$(205, 39, 21), 1, 2
+      MessPause 12, 0
+    END IF
+  END IF
+
+  tox = false: toxpause = false: d = 0
+  IF notoxin = 1 THEN                        'toxin already released?
+    IF gt! > serum! THEN tox = true: toxpause = 1: : d = 322: e = 46: F = 23
+  ELSEIF gt! > 10800 AND notoxin = 0 THEN    'time to release toxin?
+    notoxin = 1: toxpause = true
+    a = 413: b = 28: c = 30: d = 415: e = 1: F = 41
+    IF gt! > serum! THEN tox = true
+    FOR i = nnear TO 1 STEP -1
+      IF (ncre(i, 1) = gdog) OR (ncre(i, 1) = grinch) THEN RemoveCreat i
+    NEXT i
+  ELSEIF terrain = 71 THEN                   'in Grinch square?
+    IF notoxin = 0 AND gt! > serum! THEN
+      tox = true: toxpause = true: d = 322: e = 46: F = 23
+    END IF
+  END IF
+  IF toxpause THEN
+    ClearMess
+    IF c > 0 THEN ljnk a, b, c, 1
+    ljnk d, e, F, 2: PrintMessage 26, 0
+    IF toxpause = -1 THEN MessPause 26, 0
+  END IF
+  IF tox THEN
+    add = gasmask + spacesuit + 3: IF asleep THEN asleep = false: zippy = -10
+    hits = hits - cRoll(add): hitmax = hitmax - 1
+    IF hits < 0 THEN st1 = jnk$(139, 5, 11): Dead 0
+  END IF
+
+  IF hittox THEN
+    IF (cRoll(2000) < 3 - 150 * (berregen > 0)) THEN
+      hittox = hittox - 1: hits = hits + 1: hitmax = hitmax + 1
+    END IF
+  END IF
+
+  IF spore > 0 THEN
+    siz = 30 + 10 * (pmut = 10 AND berpmut = 0) * (1 - (berhpmut > 0))
+    siz = siz + 20 * (pmut = 7 AND berpmut = 0) * (1 - .45 * (berhpmut > 0))
+    IF asleep THEN siz = siz \ 6
+    IF cRoll(siz) = 1 THEN spore = spore - 1
+  END IF
+
+  IF neutronsuit THEN
+    suitdam = cRoll(3)
+    FOR icreat = nnear TO 1 STEP -1
+      IF cRdSimp(ncre(icreat, 4), ncre(icreat, 5)) <= 1 THEN  'creat adjacent
+        dam = suitdam: CrDamAlter icreat, dam, 2
+        ncre(icreat, 2) = ncre(icreat, 2) - dam
+        IF ncre(icreat, 2) < 0 THEN
+          Ljnkbig 362, 38, 25, 0, 0, 0, Der$(false, icreat, 1), 1, 1: l2 = ""
+          KillCreat icreat
+        END IF
+      END IF
+    NEXT icreat
+  END IF
+ 
+  SetDark dark, olddark, changed: IF changed THEN ChangeDark
+
+  Timely
+ 
+  IF rdisp = 1 THEN ShowHits
+END SUB
+
+SUB Dead (spec)
+  REDIM nn(42, 0 TO 2) AS STRING * 20, ee&(42, 0 TO 2), dd(21, 0 TO 2) AS STRING * 29, numdead(0 TO 2), numretired(0 TO 2)
+
+  IF difficulty = easyplay THEN
+    deadpage = 2
+  ELSEIF difficulty = moderateplay THEN
+    deadpage = 1
+  ELSE
+    deadpage = 0
+  END IF
+
+  killedby$ = st1
+  IF UCASE$(LEFT$(killedby$, 4)) = "YOUR" THEN killedby$ = "a" + RIGHT$(killedby$, LEN(killedby$) - 4)
+  IF LEFT$(killedby$, 3) = "The" THEN killedby$ = "a" + RIGHT$(killedby$, LEN(killedby$) - 3)
+  rdisp = 1: ClearMess: DisplayCharacter
+  IF spec = 0 OR spec = 2 THEN
+    Ljnkbig 3, 19, 24, 0, 0, 0, killedby$, 1, 1: ljnk 3, 1, 18, 3
+    MessPause 12, 0
+  END IF
+
+  notingrinch = NOT ((incastle = -1) AND (castle = 6) AND (castlelevel = grinchlevel))
+
+  IF spec = 0 AND notingrinch THEN
+    triedmedkit = false
+    FOR md = 1 TO ngoody
+      IF ABS(goody(md, 1)) = 7 AND goody(md, 11) = 4 AND goody(md, 3) > 0 AND hits < 0 THEN
+        triedmedkit = true
+        DO
+          diff = hitmax - hits: IF diff < 2 THEN diff = 2
+          add = RollDice(diff \ 2, 2, 2)
+          IF add > 20 THEN add = 20 ELSE IF add < 3 THEN add = 3
+          hits = hits + add
+          goody(md, 3) = goody(md, 3) - 1
+        LOOP UNTIL hits >= 0 OR goody(md, 3) <= 0
+        goody(md, 3) = 0
+      END IF
+    NEXT md
+    IF (hits >= 0) AND triedmedkit THEN
+      ClearMess
+      ljnk 148, 42, 24, 1: MessPause 10, 0: ShowHits: EXIT SUB
+    ELSEIF triedmedkit THEN
+      ClearMess
+      ljnk 265, 1, 36, 1: MessPause 12, 0
+    END IF
+  END IF
+
+  IF spec <> 1 THEN
+    filout$ = LEFT$(RTRIM$(LTRIM$(name$)), 8): CheckFil filout$
+    filout$ = UCASE$(filout$ + ".alf")
+    OPEN filout$ FOR BINARY AS #2: lof2 = LOF(2): CLOSE #2
+    IF lof2 > 0 THEN
+      IF spec <> 3 THEN
+        LOCATE 24, 1: PRINT "Delete "; filout$; " [N]:"; : PauseForKey
+      ELSE
+        st1 = "Y"
+      END IF
+      IF UCASE$(LEFT$(st1, 1)) = "Y" THEN GOSUB killsavefiles
+    ELSE
+      GOSUB killsavefiles
+    END IF
+  END IF
+  KillBadMaps 0   ' always kill "deleteme" files
+
+  filout$ = jnk$(3, 43, 12)
+  OPEN filout$ FOR APPEND AS #2: CLOSE #2: OPEN filout$ FOR INPUT AS #2
+  FOR deadpages = 0 TO 2
+    IF EOF(2) THEN numdead(deadpages) = 0 ELSE LINE INPUT #2, a$: numdead(deadpages) = VAL(a$)
+    IF numdead(deadpages) < 0 THEN numdead(deadpages) = 0
+    FOR i = 1 TO numdead(deadpages)
+      INPUT #2, nn(i, deadpages), ee&(i, deadpages), dd(i, deadpages)
+      nn(i, deadpages) = RTRIM$(LTRIM$(nn(i, deadpages)))
+      dd(i, deadpages) = RTRIM$(LTRIM$(dd(i, deadpages)))
+    NEXT i
+    IF EOF(2) THEN numretired(deadpages) = 0 ELSE INPUT #2, a$: numretired(deadpages) = VAL(a$)
+    IF numretired(deadpages) < 0 THEN numretired(deadpages) = 0
+    FOR ii = 1 TO numretired(deadpages)
+      INPUT #2, nn(ii + 21, deadpages), ee&(ii + 21, deadpages)
+      nn(ii + 21, deadpages) = RTRIM$(LTRIM$(nn(ii + 21, deadpages)))
+    NEXT ii
+  NEXT deadpages
+  CLOSE #2
+
+  IF spec <> 1 AND spec <> 2 THEN
+    IF spec = 3 THEN
+      numretired(deadpage) = numretired(deadpage) + 1
+      nn(numretired(deadpage) + 21, deadpage) = RTRIM$(LTRIM$(name$))
+      ee&(numretired(deadpage) + 21, deadpage) = expr&
+    ELSE
+      totalcastles = 0
+      FOR lll = 0 TO 5
+        totalcastles = totalcastles - ((finishedcastles AND 2 ^ lll) = 2 ^ lll)
+      NEXT lll
+      IF totalcastles > 0 THEN
+        expr& = expr& + 5000 * totalcastles: ClearMess: DisplayCharacter
+        Ljnkbig 395, 1, 11, 395, 19, 24, STR$(5000 * totalcastles), 1, 1
+        Ljnkbig 396, 8, 13, 395, 48, 8 + (totalcastles = 1), STR$(totalcastles), 1, 2
+        MessPause 10, 0
+      END IF
+
+      numdead(deadpage) = numdead(deadpage) + 1
+      nn(numdead(deadpage), deadpage) = RTRIM$(LTRIM$(name$))
+      ee&(numdead(deadpage), deadpage) = expr&
+      dd(numdead(deadpage), deadpage) = RTRIM$(LTRIM$(killedby$))
+    END IF
+  END IF
+
+  FOR deadpages = 0 TO 2
+    'check for duplicate dead guys:
+    FOR iii = numdead(deadpages) TO 2 STEP -1
+      FOR j = iii - 1 TO 1 STEP -1
+        IF UCASE$(nn(j, deadpages)) = UCASE$(nn(iii, deadpages)) THEN
+          IF (ee&(j, deadpages) < ee&(iii, deadpages)) THEN rid = j ELSE rid = iii
+          FOR iiii = rid TO numdead(deadpages) - 1
+            nn(iiii, deadpages) = nn(iiii + 1, deadpages)
+            ee&(iiii, deadpages) = ee&(iiii + 1, deadpages)
+            dd(iiii, deadpages) = dd(iiii + 1, deadpages)
+          NEXT
+          numdead(deadpages) = numdead(deadpages) - 1
+        END IF
+    NEXT j, iii
+    'sort dead guys by experience:
+    FOR j = 1 TO numdead(deadpages) - 1: FOR k = j + 1 TO numdead(deadpages)
+      IF ee&(j, deadpages) < ee&(k, deadpages) THEN
+        SWAP nn(j, deadpages), nn(k, deadpages)
+        SWAP ee&(j, deadpages), ee&(k, deadpages)
+        SWAP dd(j, deadpages), dd(k, deadpages)
+      END IF
+    NEXT k, j
+
+    FOR iii = numretired(deadpages) TO 1 STEP -1
+      'gets rid of jth dead character if character of same name has retired
+      FOR j = numdead(deadpages) TO 1 STEP -1
+        IF UCASE$(nn(j, deadpages)) = UCASE$(nn(iii + 21, deadpages)) THEN
+          IF j <> numdead(deadpages) THEN
+            SWAP nn(j, deadpages), nn(numdead(deadpages), deadpages)
+            SWAP ee&(j, deadpages), ee&(numdead(deadpages), deadpages)
+            SWAP dd(j, deadpages), dd(numdead(deadpages), deadpages)
+          END IF
+          numdead(deadpages) = numdead(deadpages) - 1
+        END IF
+      NEXT j
+      'check for duplicate retirees:
+      FOR j = iii - 1 TO 1 STEP -1
+        IF UCASE$(nn(j + 21, deadpages)) = UCASE$(nn(iii + 21, deadpages)) THEN
+          IF (ee&(j + 21, deadpages) < ee&(iii + 21, deadpages)) THEN rid = j ELSE rid = iii
+          FOR iiii = rid + 21 TO numretired(deadpages) + 20
+            nn(iiii, deadpages) = nn(iiii + 1, deadpages)
+            ee&(iiii, deadpages) = ee&(iiii + 1, deadpages)
+          NEXT iiii
+          numretired(deadpages) = numretired(deadpages) - 1
+        END IF
+      NEXT j
+    NEXT iii
+    'sort retirees by experience:
+    FOR iii = numretired(deadpages) TO 1 STEP -1
+      FOR j = 1 TO iii - 1
+        IF ee&(j + 21, deadpages) < ee&(iii + 21, deadpages) THEN
+          SWAP nn(j + 21, deadpages), nn(iii + 21, deadpages)
+          SWAP ee&(j + 21, deadpages), ee&(iii + 21, deadpages)
+        END IF
+      NEXT j
+    NEXT iii
+  NEXT deadpages
+
+  OPEN filout$ FOR OUTPUT AS #2
+  SCREEN , , 3
+  FOR deadpages = 0 TO 2
+    IF numdead(deadpages) > 20 THEN numdead(deadpages) = 20
+    WRITE #2, numdead(deadpages)
+
+    IF numdead(deadpages) > 0 THEN
+      ccls 3: Box 1, 80, 1, 24, 2, 12, 3
+      COLOR 12, 0: LOCATE 2, 4:  Printjnk 87, 14, 16
+      COLOR 4:  LOCATE 2, 26: Printjnk 279, 46, 17: LOCATE 2, 44
+      SELECT CASE deadpages
+        CASE 0: b = 4:  c = 6
+        CASE 1: b = 29: c = 13
+        CASE ELSE: b = 50: c = 4
+      END SELECT
+      Printjnk 280, b, c
+      FOR j = 1 TO numdead(deadpages)
+        WRITE #2, RTRIM$(nn(j, deadpages)), ee&(j, deadpages), RTRIM$(dd(j, deadpages))
+        COLOR 11: LOCATE j + 3, 4: PRINT nn(j, deadpages); TAB(25);
+        COLOR 9: PRINT STR$(ee&(j, deadpages)); bl;
+        Printjnk 6, 51, 10: PRINT CHR$(44); bl;
+        COLOR 3
+        c$ = RTRIM$(dd(j, deadpages)): Printjnk 11, 57, 10: PRINT c$;
+      NEXT j
+      COLOR 10: LOCATE 25, 10: Printjnk 35, 1, 32: DumpBuffer: PauseForKey
+    END IF
+
+    IF numretired(deadpages) > 20 THEN numretired(deadpages) = 20
+    WRITE #2, numretired(deadpages)
+    IF numretired(deadpages) > 0 THEN
+      ccls 3: Box 1, 80, 1, 24, 2, 13, 3
+      COLOR 13, 0: LOCATE 2, 4: Printjnk 410, 37, 12
+      COLOR 5:  LOCATE 2, 26: Printjnk 279, 46, 17: LOCATE 2, 44
+      SELECT CASE deadpages
+        CASE 0: b = 4:  c = 6
+        CASE 1: b = 29: c = 13
+        CASE ELSE: b = 50: c = 4
+      END SELECT
+      Printjnk 280, b, c
+      FOR j = 22 TO numretired(deadpages) + 21
+        WRITE #2, RTRIM$(nn(j, deadpages)), ee&(j, deadpages)
+        COLOR 11: LOCATE j - 18, 4: PRINT nn(j, deadpages); TAB(25);
+        COLOR 9: PRINT STR$(ee&(j, deadpages)); bl; : Printjnk 6, 51, 10
+        COLOR 3: PRINT SPACE$(3);
+        SELECT CASE cRoll(5)
+          CASE 1: a = 100: b = 22: c = 18
+          CASE 2: a = 100: b = 40: c = 17
+          CASE 3: a = 100: b = 57: c = 9
+          CASE 4: a = 101: b = 21: c = 13
+          CASE 5: a = 101: b = 34: c = 19
+        END SELECT
+        Printjnk a, b, c
+      NEXT j
+      COLOR 10: LOCATE 25, 10: Printjnk 35, 1, 32: DumpBuffer: PauseForKey
+    END IF
+  NEXT deadpages
+  CLOSE #2
+
+  bitit = true: IF spec THEN bitit = 1
+EXIT SUB
+
+killsavefiles:
+  KILL filout$: KillBadMaps -1   'kill saved files
+RETURN
+
+END SUB
+
+SUB DetermineArmor (dropped)
+  IF dropped THEN GOTO darm
+  typ = narm - cRoll(cRoll(narm - 1))
+  goody(ngoody, 1) = 4
+  goody(ngoody, 2) = arm(typ, 1)
+  goody(ngoody, 3) = typ
+  goody(ngoody, 5) = (cRoll(20) = 1) + (cRoll(20) = 1) - (cRoll(14) = 1) - (cRoll(14) = 1)
+  goody(ngoody, 4) = (cRoll(arm(typ, 2)) * 2 + arm(typ, 2)) / 3 + goody(ngoody, 5)
+  IF goody(ngoody, 4) = 0 THEN goody(ngoody, 4) = 1
+  gdy(ngoody) = armnm$(typ)
+darm: ClearMess
+  Ljnkbig 1, 1, 13, 2, 62, 5, RTRIM$(gdy(ngoody)), 2, 2
+  PrintMessage 7, 0
+  IF rdisp <> 1 THEN DisplayGoodies false
+END SUB
+
+SUB DetermineBerry (dropped)
+  IF dropped THEN GOTO dber
+  typ = cRoll(nberry)
+  goody(ngoody, 1) = 6: goody(ngoody, 2) = 1
+  goody(ngoody, 3) = typ
+  d = cRoll(6): goody(ngoody, 4) = d
+  zz = cRoll(10000)
+  IF zz < 5 THEN v = 2 ELSE IF zz < 100 THEN v = 1 ELSE v = 0
+  goody(ngoody, 5) = v
+  SELECT CASE v
+    CASE 0: a = -2: b = 37: c = 5
+    CASE 1: a = 7: b = 63: c = 6
+    CASE ELSE: a = 6: b = 61: c = 7
+  END SELECT
+  gdy(ngoody) = Kolr$(d) + berry$(typ) + bl + jnk$(a, b, c)
+  goody(ngoody, 6) = cRoll(3) - 1  'age
+dber: ClearMess
+  SELECT CASE d
+    CASE 2: st1 = "an "
+    CASE ELSE: st1 = "a "
+  END SELECT
+   Ljnkbig 1, 1, 13, 0, 0, 0, st1 + RTRIM$(gdy(ngoody)), 1, 2
+   PrintMessage 12, 0
+   IF rdisp <> 1 THEN DisplayGoodies false
+END SUB
+
+SUB DetermineLsd (dropped)
+  IF dropped < 0 THEN GOTO dlsd
+  IF dropped > 0 THEN
+    k = dropped
+  ELSE
+rdlsd: k = cRoll(nlsd + nltrash)
+    IF incastle AND (k = 4 OR k = 8 OR k = 10 OR k = 12) THEN GOTO rdlsd
+  END IF
+
+  IF k = 8 THEN   'safe
+    bad = false
+    FOR i = 1 TO ngoody
+      IF (ABS(goody(i, 1)) = 8) AND (goody(i, 11) = 8) THEN bad = true
+    NEXT
+    FOR i = 1 TO ndropped   'remove dropped safe if there is one
+      IF ABS(drgoody(i, 1)) = 8 AND drgoody(i, 11) = 8 THEN
+        IF drgoody(i, 13) = mainx AND drgoody(i, 14) = mainy THEN
+          GetSym sym, drgoody(i, 15), drgoody(i, 16), fc, bc, 1
+          IF sym = 21 OR sym = 157 THEN sc = -1 ELSE sc = 2
+          PutSym 250, drgoody(i, 15), drgoody(i, 16), 8, 0, sc
+        END IF
+        ShiftDropped i: EXIT FOR
+      END IF
+    NEXT
+    IF bad THEN k = nlsd + cRoll(nltrash)  'make cabinet
+  END IF
+
+  SELECT CASE cRoll(3)
+    CASE 1: a = -2: b = 44: c = 7
+    CASE 2: a = -2: b = 51: c = 7
+    CASE ELSE: a = 253: b = 61: c = 7
+  END SELECT
+  a$ = jnk$(a, b, c)
+  SELECT CASE cRoll(3)
+    CASE 1: a = 155: b = 7: c = 5
+    CASE 2: a = 155: b = 25: c = 4      'shiny, tech, bizarre
+    CASE 3: a = 163: b = 31: c = 7
+  END SELECT
+  bb$ = jnk$(a, b, c)
+  FOR j = 1 TO 12: goody(ngoody, j) = 0: NEXT
+  goody(ngoody, 1) = 8
+  FOR j = 1 TO 3: goody(ngoody, j + 1) = lsd(k, j): NEXT j
+  num = lsd(k, 2)
+  IF num > 0 THEN goody(ngoody, 3) = RollDice(num, 2, 1) ELSE goody(ngoody, 3) = -1
+  goody(ngoody, 10) = lsdknown(k)
+  goody(ngoody, 11) = k
+  IF lsdknown(k) THEN
+    gdy(ngoody) = lsdnm$(k)
+  ELSE
+    gdy(ngoody) = jnk$(-2, 58, 6) + bb$ + a$
+  END IF
+dlsd: ClearMess
+  SELECT CASE UCASE$(LEFT$(gdy(ngoody), 1))
+    CASE "A", "E", "I", "O", "U": aa$ = "an "
+    CASE ELSE: aa$ = "a "
+  END SELECT
+  Ljnkbig 1, 1, 13, 0, 0, 0, aa$ + gdy(ngoody), 1, 2
+  PrintMessage 11, 0
+
+  IF (goody(ngoody, 1) = 8) AND (goody(ngoody, 11) = 8) AND (nsafe > 0) THEN goody(ngoody, 1) = -8
+
+  IF rdisp <> 1 THEN DisplayGoodies false
+END SUB
+
+SUB DetermineParts (dropped)
+  IF dropped THEN GOTO dparts
+  FOR j = 1 TO 12: goody(ngoody, j) = 0: NEXT
+  goody(ngoody, 1) = 10
+  goody(ngoody, 2) = RollDice(5, 3, 3)
+  goody(ngoody, 3) = cRoll(4) + cRoll(3)
+  gdy(ngoody) = jnk$(319, 50, 17)
+dparts: ClearMess
+  Ljnkbig 1, 1, 13, 0, 0, 0, "some " + gdy(ngoody), 1, 2
+  PrintMessage 13, 0
+  IF rdisp <> 1 THEN DisplayGoodies false
+END SUB
+
+SUB DetermineShield (dropped)
+  IF dropped THEN GOTO dsh
+  typ = nsh - cRoll(cRoll(nsh - 1))
+  IF typ < 5 THEN typ = nsh - cRoll(cRoll(nsh - 1))
+  goody(ngoody, 1) = 5
+  goody(ngoody, 2) = sh(typ, 1)
+  goody(ngoody, 3) = typ
+  goody(ngoody, 5) = (cRoll(20) = 1) + (cRoll(20) = 1) - (cRoll(14) = 1) - (cRoll(14) = 1)
+  goody(ngoody, 4) = (cRoll(sh(typ, 2)) * 2 + sh(typ, 2)) / 3 + goody(ngoody, 5)
+  IF goody(ngoody, 4) = 0 THEN goody(ngoody, 4) = 1
+  gdy(ngoody) = shnm$(typ) + jnk$(3, 55, 7)
+dsh: ClearMess: Ljnkbig 1, 1, 15, 0, 0, 0, gdy(ngoody), 1, 2
+  PrintMessage 3, 0
+  IF rdisp <> 1 THEN DisplayGoodies false
+END SUB
+
+SUB DetermineSpecial (dropped, num)
+  ClearMess
+  IF num <> 1 THEN aa$ = "a " ELSE aa$ = ""
+  Ljnkbig 1, 1, 13, 0, 0, 0, aa$ + gdy(ngoody), 1, 2
+  PrintMessage 15, 0
+  goody(ngoody, 1) = 9: goody(ngoody, 2) = dropped: goody(ngoody, 3) = num
+  FOR i = 4 TO 11: goody(ngoody, i) = 0: NEXT
+  IF num = 7 THEN goody(ngoody, 4) = RollDice(5, 7, 4): goody(ngoody, 5) = 0
+  IF num = 9 THEN goody(ngoody, 4) = RollDice(3, 2, 2)       'wig condition
+  IF rdisp <> 1 THEN DisplayGoodies false
+END SUB
+
+SUB DetermineSsd (dropped)
+  IF dropped < 0 THEN GOTO dssd
+  IF dropped > 0 THEN
+    k = dropped
+  ELSE
+    k = cRoll(INT((nssd + ntechwep + nstrash) * 1.16))
+    IF k > nssd + ntechwep + nstrash THEN
+      zz = cRoll(8)
+      SELECT CASE zz
+        CASE 1 TO 3: k = 6       'powerpack
+        CASE 4: k = 23               'tricorder
+        CASE 5: k = 2                   'backpack
+        CASE 6: k = 28                    'microcomputer
+        CASE 7: k = nssd + ntechwep + 16   'wristwatch
+        CASE 8: k = 4                     'medkit
+      END SELECT
+    END IF
+    IF k = 5 THEN bad = true
+  END IF
+
+  IF k = 2 THEN   'backpack
+    FOR i = 1 TO ngoody
+      IF (ABS(goody(i, 1)) = 7) AND (goody(i, 11) = 2) THEN bad = true
+    NEXT
+    FOR i = 1 TO ndropped   'remove dropped backpack if there is one
+      IF ABS(drgoody(i, 1)) = 7 AND drgoody(i, 11) = 2 THEN
+        IF drgoody(i, 13) = mainx AND drgoody(i, 14) = mainy THEN
+          GetSym sym, drgoody(i, 15), drgoody(i, 16), fc, bc, 1
+          IF sym = 11 OR sym = 12 THEN sc = -1 ELSE sc = 2
+          PutSym 250, drgoody(i, 15), drgoody(i, 16), 8, 0, sc
+        END IF
+        ShiftDropped i: EXIT FOR
+      END IF
+    NEXT
+    FOR i = 1 TO nsafe
+      IF safe(i, 1) = 7 AND safe(i, 11) = 2 THEN bad = true
+    NEXT
+  END IF
+  IF bad THEN k = nssd + ntechwep + cRoll(nstrash)  'trash
+
+  SELECT CASE cRoll(3)
+    CASE 1: a = -2: b = 44: c = 7
+    CASE 2: a = -2: b = 51: c = 7       'device, object, gadget
+    CASE 3: a = 253: b = 61: c = 7
+  END SELECT
+  a$ = jnk$(a, b, c)
+  SELECT CASE cRoll(3)
+    CASE 1: a = 155: b = 7: c = 5
+    CASE 2: a = 155: b = 25: c = 4      'shiny, tech, bizarre
+    CASE 3: a = 163: b = 31: c = 7
+  END SELECT
+  bb$ = jnk$(a, b, c)
+  FOR j = 1 TO 12: goody(ngoody, j) = 0: NEXT
+  goody(ngoody, 1) = 7
+  FOR i = 1 TO 8: goody(ngoody, i + 1) = ssd(k, i): NEXT i
+  num = ssd(k, 2)
+  IF num > 0 THEN goody(ngoody, 3) = RollDice(num, 2, 1) ELSE goody(ngoody, 3) = -1
+  goody(ngoody, 10) = ssdknown(k)
+  goody(ngoody, 11) = k
+  IF ssdknown(k) THEN
+    gdy(ngoody) = ssdnm$(k)
+  ELSE
+    gdy(ngoody) = jnk$(3, 62, 6) + bb$ + a$
+  END IF
+
+  SELECT CASE k
+    CASE 19     'ID
+      goody(ngoody, 5) = cRoll(cRoll(cRoll(3)))
+    CASE nssd + ntechwep + 13  'voodoo
+      typ = cRoll(ncreat + creextra + 1): goody(ngoody, 5) = typ
+      IF ssdknown(k) THEN gdy(ngoody) = CreatNam$(typ, 0) + bl + gdy(ngoody)
+      IF LEFT$(UCASE$(gdy(ngoody)), 3) = "THE" THEN
+        gdy(ngoody) = RIGHT$(gdy(ngoody), LEN(gdy(ngoody)) - 4)
+      END IF
+    CASE ELSE
+  END SELECT
+
+dssd: ClearMess
+  SELECT CASE UCASE$(LEFT$(LTRIM$(gdy(ngoody)), 1))
+    CASE "A", "E", "I", "O", "U": a$ = "an "
+    CASE ELSE: a$ = "a "
+  END SELECT
+  Ljnkbig 1, 1, 13, 0, 0, 0, a$ + gdy(ngoody), 1, 2
+  PrintMessage 14, 0
+
+  IF (goody(ngoody, 1) = 7) AND (goody(ngoody, 11) = 2) AND (npack > 0) THEN goody(ngoody, 1) = -7
+ 
+  IF rdisp <> 1 THEN DisplayGoodies false
+END SUB
+
+SUB DetermineWep (dropped)
+  IF dropped THEN typ = 0: GOTO dwep
+  SELECT CASE cRoll(12)
+    CASE 1, 2, 3  'range
+      typ = cRoll(cRoll(nrwep - 2)) + nwep  'all but Ti, duralloy weps
+    CASE 4, 5     'range
+      typ = cRoll(cRoll(nrwep)) + nwep
+    CASE 6, 7, 8, 9
+      typ = cRoll(cRoll(nwep - 5))          'all but Ti, duralloy weps
+    CASE ELSE
+      typ = cRoll(cRoll(nwep))
+  END SELECT
+  IF (typ < 1) OR (typ > nwep + nrwep) THEN typ = 1
+  goody(ngoody, 1) = 3
+  FOR jj = 1 TO 6: goody(ngoody, jj + 1) = wep(typ, jj): NEXT jj
+  goody(ngoody, 8) = typ
+  ' + to hit, dam:
+  goody(ngoody, 9) = (cRoll(20) = 1) + (cRoll(20) = 1) - (cRoll(14) = 1) - (cRoll(14) = 1)
+  goody(ngoody, 10) = (cRoll(20) = 1) + (cRoll(20) = 1) - (cRoll(14) = 1) - (cRoll(14) = 1)
+  gdy(ngoody) = wepnm$(typ)
+dwep: bb$ = ""
+  IF typ > nwep THEN
+    num = RollDice(goody(ngoody, 3), 2, 1): goody(ngoody, 3) = num
+  END IF
+  SELECT CASE UCASE$(LEFT$(gdy(ngoody), 1))
+    CASE "A", "E", "I", "O", "U": aa$ = "an "
+    CASE ELSE: aa$ = "a "
+  END SELECT
+  IF goody(ngoody, 3) > 1 THEN aa$ = LTRIM$(STR$(goody(ngoody, 3))) + bl: bb$ = CHR$(115)
+  ClearMess
+  Ljnkbig 1, 1, 13, 0, 0, 0, aa$ + gdy(ngoody) + bb$, 1, 2
+  PrintMessage 9, 0
+  IF rdisp <> 1 THEN DisplayGoodies false
+END SUB
+
+SUB DisplayCharacter
+  IF rdisp <> 1 THEN DisplayGoodies false: EXIT SUB
+  rside = true
+  ClearRight vpage: SCREEN , , vpage: HungFatEnc: SetCombatStats
+  COLOR 11, 0: LOCATE 2, 55: PRINT name$; : COLOR 1
+  colm = 55
+  row = 3: a = 4: b = 1: c = 10: GOSUB locatnpr
+  row = 4: b = 11: c = 11: GOSUB locatnpr
+  row = 5: b = 22: c = 14: GOSUB locatnpr
+  row = 6: b = 36: c = 22: GOSUB locatnpr
+  row = 7: a = 5: b = 1: c = 19: GOSUB locatnpr
+  row = 8: b = 20: c = 14: GOSUB locatnpr
+  LOCATE 10, 54: COLOR 9: PRINT hits; bl;
+  COLOR 1: Printjnk 5, 34, 11: COLOR 9: PRINT hitmax; : COLOR 1
+  row = 11: a = 5: b = 45: c = 13: GOSUB locatnpr
+  row = 13: a = 6: b = 1: c = 8: GOSUB locatnpr
+  row = 14: b = 23: c = 9: GOSUB locatnpr
+  row = 15: b = 9: c = 14: GOSUB locatnpr
+  row = 17: b = 32: c = 12: GOSUB locatnpr
+  row = 18: b = 44: c = 7: GOSUB locatnpr
+  COLOR 9
+  LOCATE 3, 65: PRINT str + stradd;
+  LOCATE 4, 66: PRINT dex + dexadd;
+  LOCATE 5, 69: PRINT con;
+  LOCATE 6, 77: PRINT rr;
+  LOCATE 7, 74: PRINT mr;
+  LOCATE 8, 69: PRINT intl;
+  LOCATE 11, 68: PRINT ac;
+  LOCATE 17, 68: PRINT expr&;
+  LOCATE 18, 63: PRINT lvl;
+  IF berhpmut > 0 THEN COLOR 13
+  LOCATE 20, 54: IF pmutturns > 0 THEN PRINT pmutturns;  ELSE PRINT " * ";
+  PRINT pmutn$; bl;
+  IF pmut = 17 THEN IF tentgrab THEN PRINT " grabbed";  ELSE PRINT SPACE$(8);
+  IF berhmmut > 0 THEN COLOR 13 ELSE COLOR 9
+  LOCATE 21, 54: IF mmutturns > 0 THEN PRINT mmutturns;  ELSE PRINT " * ";
+  PRINT mmutn$; bl;
+  IF mmut = 7 THEN IF forcefield THEN PRINT " on ";  ELSE PRINT " off";
+EXIT SUB
+
+locatnpr:
+  LOCATE row, colm: Printjnk a, b, c
+RETURN
+
+END SUB
+
+SUB DisplayGoodies (pak)
+  rside = false: SortGoody: ClearRight vpage: SCREEN , , vpage
+  IF pak = 1 THEN
+    n = npack
+  ELSEIF pak = 2 THEN
+    n = nsafe
+  ELSE
+    n = ngoody
+  END IF
+  FOR i = 1 TO n
+    IF pak = 1 THEN
+      mm = ABS(backpack(i, 1)): nums = backpack(i, 3): nm$ = bakpak(i)
+      aaa = backpack(i, 11)
+    ELSEIF pak = 2 THEN
+      mm = ABS(safe(i, 1)): nums = safe(i, 3): nm$ = saf(i)
+      aaa = safe(i, 11)
+    ELSE
+      mm = ABS(goody(i, 1)): nums = goody(i, 3): nm$ = gdy(i)
+      aaa = goody(i, 11)
+    END IF
+    j$ = nm$
+    SELECT CASE mm
+      CASE 1, 2
+        IF nums = 1 THEN st1 = bl + jnk$(2, 47, 7) ELSE st1 = jnk$(2, 53, 9)
+        j$ = LTRIM$(STR$(nums) + st1 + RTRIM$(nm$))
+        IF mm = 1 THEN fc = 13 ELSE fc = 6
+      CASE 3
+        IF nums > 1 THEN
+          j$ = LTRIM$(STR$(nums) + bl + RTRIM$(nm$) + CHR$(115))
+        END IF
+        fc = 1
+      CASE 4: fc = 7
+      CASE 5: fc = 3
+      CASE 6: fc = 12: IF knownb(nums) THEN j$ = j$ + " *"
+      CASE 7
+        IF aaa = 19 AND ssdknown(19) THEN
+          a = 263
+          IF pak = 1 THEN
+            gg = backpack(i, 5)
+          ELSEIF pak = 2 THEN
+            gg = safe(i, 5)
+          ELSE
+            gg = goody(i, 5)
+          END IF
+          SELECT CASE gg
+            CASE 2: b = 1: c = 10
+            CASE 3: b = 11: c = 8
+            CASE 4: b = 19: c = 12
+            CASE ELSE: a = 262: b = 58: c = 8
+          END SELECT
+          j$ = jnk$(a, b, c) + bl + nm$
+        END IF
+        fc = 14
+      CASE 8: fc = 11
+      CASE 9: fc = 15
+      CASE ELSE: fc = 13
+    END SELECT
+    COLOR fc, 0
+    IF (pak = 0) AND (goody(i, 1) < 0) THEN
+      LOCATE i + 1, 54: PRINT CHR$(42);
+    END IF
+    LOCATE i + 1, 55: PRINT CHR$(i + 96); bl; LEFT$(RTRIM$(j$), 23);
+  NEXT i
+END SUB
+
+SUB EquipCharacter (super)
+  num = (str + dex) \ 2: IF pmut = 2 OR pmut = 3 THEN num = num - 6
+  IF super THEN num = 1
+  SELECT CASE num
+    CASE IS < 5: weapon = 8
+    CASE IS < 8: weapon = 7
+    CASE 8, 9, 10: weapon = 6
+    CASE 11, 12: weapon = 5
+    CASE 13, 14: weapon = 4
+    CASE 15, 16: weapon = 3
+    CASE 17, 18: weapon = 2
+    CASE ELSE: weapon = 1
+  END SELECT
+  gdy(1) = wepnm$(weapon): goody(1, 1) = -3
+  FOR i = 1 TO 6: goody(1, i + 1) = wep(weapon, i): NEXT i
+  goody(1, 8) = weapon
+ 
+  num = 16 - hits: IF super THEN num = 4
+  SELECT CASE num    'nwep selection
+    CASE IS < 0: del = 1
+    CASE 0, 1: del = 2
+    CASE 2: del = 3
+    CASE 3: del = 4
+    CASE ELSE: del = 5
+  END SELECT
+  gdy(2) = wepnm$(nwep + del): goody(2, 1) = 3
+  FOR i = 1 TO 6: goody(2, i + 1) = wep(nwep + del, i): NEXT i
+  goody(2, 8) = nwep + del
+  dic = (str + dex + con + mr + rr + intl) \ 3: dic = 50 - dic
+  IF dic < 12 THEN dic = 12
+  num = RollDice(dic, 3, 1): goody(2, 3) = goody(2, 3) * num / 20
+ 
+  num = (con + rr) \ 2
+  IF pmut = 7 OR pmut = 8 THEN num = num - 6 ELSE IF pmut = 5 THEN num = 15
+  ridarmor = false: IF super THEN num = 1
+  SELECT CASE num
+    CASE IS < 5: armor = 8
+    CASE IS < 8: armor = 9
+    CASE 8 TO 10: armor = 10
+    CASE 11 TO 14: armor = 11
+    CASE ELSE: armor = 11: ridarmor = true
+  END SELECT
+  gdy(3) = armnm$(armor)
+  goody(3, 1) = -4: goody(3, 2) = arm(armor, 1)
+  goody(3, 3) = armor: goody(3, 4) = arm(armor, 2)
+
+  gdy(4) = "Spam": goody(4, 1) = 1: goody(4, 2) = 0: goody(4, 3) = 1 - (hits < 14)
+  ngoody = 4
+ 
+  num = (intl + mr) \ 2: IF mmut = 2 OR mmut = 3 THEN num = num - 6
+  IF pmut = 5 THEN num = 16
+  IF super THEN num = 1
+  SELECT CASE num
+    CASE IS < 5: shield = 4
+    CASE IS < 7: shield = 5
+    CASE IS < 9: shield = 6
+    CASE 10 TO 11: shield = 7
+    CASE 12 TO 15: shield = 8
+    CASE ELSE: shield = 9
+  END SELECT
+  IF shield < 9 THEN
+    gdy(5) = shnm$(shield) + jnk$(3, 55, 7): goody(5, 1) = -5
+    goody(5, 2) = sh(shield, 1): goody(5, 3) = shield: goody(5, 4) = sh(shield, 2)
+    ngoody = 5
+  END IF
+ 
+  SELECT CASE mmut
+    CASE 2, 3: GOSUB givber
+    CASE ELSE
+  END SELECT
+  SELECT CASE pmut
+    CASE 4, 7, 8, 10, 13: GOSUB givber
+    CASE 5: RemoveGoody 3, false
+    CASE ELSE
+  END SELECT
+  IF goody(3, 1) = 4 AND ridarmor THEN RemoveGoody 3, false
+  SetCombatStats
+
+EXIT SUB
+
+givber:
+  ngoody = ngoody + 1
+  typ = cRoll(nberry): knownb(typ) = true: d = cRoll(6)
+  goody(ngoody, 1) = 6: goody(ngoody, 2) = 1
+  goody(ngoody, 3) = typ: goody(ngoody, 4) = d: goody(ngoody, 5) = 0
+  gdy(ngoody) = Kolr$(d) + berry$(typ) + bl + jnk$(-2, 37, 5)
+RETURN
+END SUB
+
+SUB EraseCreat (i)
+  FindMPos i, mmainx, mmainy, mlocx, mlocy
+  IF (mmainx = mainx) AND (mmainy = mainy) THEN
+    cresym = ncre(i, 8) MOD 1000: cref = ncre(i, 8) \ 1000
+    PutSym cresym, mlocx, mlocy, cref, 0, 2
+    IF cresym = 228 THEN    'ä
+      GetSym sym, mlocx, mlocy - 1, fc, bc, 2
+      IF fc = wallcolr THEN cresym = ver ELSE cresym = hor
+    END IF
+    GetSym sym, mlocx, mlocy, fc, bc, 1
+    IF (sym <> 32 AND fc <> 0) THEN
+      PutSym cresym, mlocx, mlocy, cref, 0, 1
+    END IF
+  END IF
+END SUB
+
+SUB FindMPos (i, mx, my, mlocx, mlocy)
+  IF incastle THEN
+    mx = mainx: my = mainy:
+    mlocx = localx + ncre(i, 4): mlocy = localy + ncre(i, 5)
+  ELSE
+    mmx = mainx * 50 + localx + ncre(i, 4) - 2
+    mmy = mainy * 20 + localy + ncre(i, 5) - 2
+    mx = mmx \ 50: my = mmy \ 20
+    mlocx = (mmx MOD 50) + 2: mlocy = (mmy MOD 20) + 2
+    IF mx = mainx - 1 AND mlocx = 51 THEN
+      mx = mainx: mlocx = 1
+    ELSEIF mx = mainx + 1 AND mlocx = 2 THEN
+      mx = mainx: mlocx = 52
+    END IF
+    IF my = mainy - 1 AND mlocy = 21 THEN
+      my = mainy: mlocy = 1
+    ELSEIF my = mainy + 1 AND mlocy = 2 THEN
+      my = mainy: mlocy = 22
+    END IF
+  END IF
+END SUB
+
+SUB KillItem (i)  'l2 returns message, i returns number (zero if did nothing)
+  l2 = bl
+  SELECT CASE i
+    CASE 0  'destroy any ---------------------------
+      itemfind = 0: GOSUB getitem: IF item THEN GOSUB destroy
+    CASE 1  'destroy tech --------------------------
+      itemfind = 7: GOSUB getitem: IF item THEN GOSUB destroy
+    CASE 2  'totally drain tech --------------------
+      itemfind = 7: GOSUB getitem
+      IF item AND goody(item, 3) > 0 THEN
+        goody(item, 3) = 0
+        l2 = "Your " + gdy(item) + " " + jnk$(274, 1, 22)
+      END IF
+    CASE 3  'partially drain tech ------------------
+      itemfind = 7: GOSUB getitem
+      IF item AND goody(item, 3) > 0 THEN
+        goody(item, 3) = cRoll(goody(item, 3)) - 1
+        l2 = "Your " + gdy(item) + " " + jnk$(274, 23, 32)
+      END IF
+    CASE 4  'damage armor --------------------------
+      itemfind = 4: GOSUB getitem
+      IF item THEN
+        goody(item, 4) = goody(item, 4) - 1
+        IF goody(item, 4) = 0 THEN GOSUB destroy ELSE l2 = "Your " + gdy(item) + " " + jnk$(270, 50, 18)
+      END IF
+    CASE 5  'damage shield -------------------------
+      itemfind = 5: GOSUB getitem
+      IF item THEN
+        goody(item, 4) = goody(item, 4) - 1
+        IF goody(item, 4) = 0 THEN GOSUB destroy ELSE l2 = "Your " + gdy(item) + " " + jnk$(272, 42, 19)
+      END IF
+    CASE 6  'Remove + from armor -------------------
+      itemfind = 4: GOSUB getitem
+      IF item THEN
+        goody(item, 5) = goody(item, 5) - 1
+        l2 = "Your " + gdy(item) + " " + jnk$(275, 1, 19)
+      END IF
+    CASE 7  'Remove + from shield ------------------
+      itemfind = 5: GOSUB getitem
+      IF item THEN
+        goody(item, 5) = goody(item, 5) - 1
+        l2 = "Your " + gdy(item) + " " + jnk$(275, 20, 20)
+      END IF
+    CASE 8  'Remove + from weapon ------------------
+      itemfind = 3: GOSUB getitem
+      IF item THEN
+        c = cRoll(2): goody(item, 8 + c) = goody(item, 8 + c) - 1
+        l2 = "Your " + gdy(item) + " " + jnk$(275, 27, 13)
+      END IF
+    CASE 9  'Destroy berry -------------------------
+      itemfind = 6: GOSUB getitem: IF item THEN GOSUB destroy
+  END SELECT
+  i = item: IF item > 0 AND rdisp <> 1 THEN DisplayCharacter
+EXIT SUB
+'--------------------------------------------
+getitem:
+  item = cRoll(ngoody): IF ngoody = 0 THEN item = 0
+  SELECT CASE itemfind
+    CASE 0: IF ABS(goody(item, 1)) = 9 THEN item = 0
+    CASE 3 TO 6: IF ABS(goody(item, 1)) <> itemfind THEN item = 0
+    CASE 7: IF (ABS(goody(item, 1)) <> 7 AND ABS(goody(item, 1)) <> 8) THEN item = 0
+  END SELECT
+  IF item > 0 THEN    'no steal Pres ID
+    IF ABS(goody(item, 1)) = 7 AND goody(item, 11) = 19 AND goody(item, 5) > 3 THEN stol = 0
+  END IF
+  IF item OR (cRoll(15) = 1) THEN RETURN ELSE GOTO getitem
+'--------------------------------------------
+destroy:
+  IF ABS(goody(item, 1)) = 7 AND goody(item, 11) = 2 THEN 'backpack
+    Scatter 1
+  ELSEIF ABS(goody(item, 1)) = 8 AND goody(item, 11) = 8 THEN 'safe
+    Scatter 2
+  END IF
+  IF ABS(goody(item, 1)) < 3 THEN  'food
+    goody(item, 3) = goody(item, 3) - 1
+    Ljnkbig 1, 14, 9, 275, 40, 15, gdy(item), 1, 2
+    IF goody(item, 3) <= 0 THEN RemoveGoody item, false
+  ELSE
+    l2 = "Your " + gdy(item) + " " + jnk$(275, 41, 14)
+    RemoveGoody item, false
+  END IF
+RETURN
+END SUB
+
+SUB MakeCharacter (super)
+  str = RollDice(6, 4, 3): dex = RollDice(6, 4, 3)
+  con = RollDice(6, 4, 3): rr = RollDice(6, 4, 3)
+  mr = RollDice(6, 4, 3): intl = RollDice(6, 4, 3)
+  hunger = 0: fatigue! = 0
+  expr& = 0: lvl = 1
+  IF super THEN str = 18: dex = 18: con = 18: rr = 18: mr = 18: intl = 18
+  pmut = cRoll(nphysmut): pmutn$ = pmutnm$(pmut)
+  mmut = cRoll(nmentmut): mmutn$ = mmutnm$(mmut)
+  SELECT CASE pmut
+    CASE 2  'H Dex
+      dex = 19 + dex \ 4
+    CASE 3  'H Str
+      str = 19 + str \ 4
+    CASE 4  'H Vis
+      other2hitc = other2hitc + 2: other2hitr = other2hitr + 2
+    CASE 7  'Blood SC
+      con = 19 + con \ 4
+    CASE 8  'Rad ref
+      rr = 19 + rr \ 4
+  END SELECT
+
+  SELECT CASE mmut
+    CASE 1  'Mil gen
+      other2hitc = other2hitc + 2: other2hitr = other2hitr + 2: otherdam = otherdam + 4
+    CASE 2  'Sci Genius
+      intl = 19 + intl \ 4
+    CASE 3  'H Willpower
+      mr = 19 + mr \ 4
+    CASE 4, 8, 9, 11: res = RollDice(6, 3, 3): IF mr < res THEN mr = res
+  END SELECT
+
+  hitmax = 7 + RollDice(con / 3 + 1, 3, 2)
+  IF pmut = 7 THEN hitmax = hitmax + 2
+  IF pmut = 10 THEN hitmax = hitmax + 10
+  hits = hitmax
+
+  knownberry = RollDice(intl \ 4, 2, 2)
+  FOR i = 1 TO knownberry: knownb(berord(cRoll(nberry))) = true: NEXT i
+   
+  knownssd = RollDice(intl \ 5, 2, 2)
+  FOR i = 1 TO knownssd: ssdknown(cRoll(nssd + ntechwep + nstrash)) = true
+  NEXT i
+  
+  knownlsd = cRoll(intl \ 3) - 1
+  FOR i = 1 TO knownlsd
+    lsdknown(cRoll(nlsd + nltrash)) = true
+  NEXT i
+
+  SetCombatStats
+END SUB
+
+SUB MakeKnownScreen
+  SCREEN , , 3: ccls 3: row = 2: colm = 2: haspack = false: hassafe = false
+
+  FOR ii = 1 TO ngoody
+    IF goody(ii, 1) = -7 AND goody(ii, 11) = 2 THEN haspack = true
+    IF goody(ii, 1) = -8 AND goody(ii, 11) = 8 THEN hassafe = true
+  NEXT ii
+
+  COLOR 12, 0: LOCATE 1, 2: Printjnk 36, 1, 15
+
+  FOR i = 0 TO nberry
+    IF knownb(berord(i)) THEN
+      COLOR 4
+      GOSUB chk: LOCATE row, colm: PRINT berry$(berord(i));
+      Printjnk 22, 5, 9: PRINT BerEff$(berord(i));
+      COLOR 12
+      IF haspack THEN
+        FOR ii = 1 TO npack
+          IF backpack(ii, 1) = 6 AND backpack(ii, 3) = berord(i) THEN
+            LOCATE row, colm - 1: PRINT "+";
+          END IF
+        NEXT ii
+      ELSEIF hassafe THEN
+        FOR ii = 1 TO nsafe
+          IF safe(ii, 1) = 6 AND safe(ii, 3) = berord(i) THEN
+            LOCATE row, colm - 1: PRINT ">";
+          END IF
+        NEXT ii
+      END IF
+      FOR ii = 1 TO ngoody
+        IF goody(ii, 1) = 6 AND goody(ii, 3) = berord(i) THEN
+          LOCATE row, colm - 1: PRINT "*";
+        END IF
+      NEXT ii
+      row = row + 1
+    END IF
+  NEXT i
+
+  COLOR 14
+  row = row + 3: GOSUB chk
+  IF row > 2 THEN row = row - 2 ELSE row = 1
+  LOCATE row, colm: Printjnk 35, 33, 26: row = row + 1
+  FOR i = 1 TO nssd + ntechwep + nstrash
+    IF ssdknown(i) THEN
+      COLOR 6: GOSUB chk: LOCATE row, colm
+      IF incastle AND (castle = 4) THEN
+        SELECT CASE i
+          CASE 10, 19, 27, nssd + ntechwep + 1, nssd + ntechwep + 6, nssd + ntechwep + 13: PRINT ssdnm$(i);
+          CASE ELSE: st1 = ssdnm$(i): PRINT RIGHT$(st1, LEN(st1) - 6)
+        END SELECT
+      ELSE
+        PRINT ssdnm$(i);
+      END IF
+      COLOR 14
+      IF haspack THEN
+        FOR ii = 1 TO npack
+          IF backpack(ii, 1) = 7 AND backpack(ii, 3) = i THEN
+            LOCATE row, colm - 1: PRINT "+";
+          END IF
+        NEXT ii
+      ELSEIF hassafe THEN
+        FOR ii = 1 TO nsafe
+          IF safe(ii, 1) = 6 AND safe(ii, 3) = i THEN
+            LOCATE row, colm - 1: PRINT ">";
+          END IF
+        NEXT ii
+      END IF
+      FOR ii = 1 TO ngoody
+        IF ABS(goody(ii, 1)) = 7 AND goody(ii, 11) = i THEN
+          LOCATE row, colm - 1: PRINT "*";
+        END IF
+      NEXT ii
+      row = row + 1
+    END IF
+  NEXT i
+
+  COLOR 11
+  row = row + 3: GOSUB chk: IF row > 2 THEN row = row - 2 ELSE row = 1
+  LOCATE row, colm: Printjnk 36, 16, 26: row = row + 1
+  FOR i = 1 TO nlsd + nltrash
+    IF lsdknown(i) THEN
+      COLOR 3
+      GOSUB chk: LOCATE row, colm
+      IF incastle AND (castle = 4) THEN
+        SELECT CASE i
+          CASE 10, nlsd + 12: PRINT lsdnm$(i);
+          CASE ELSE: st1 = lsdnm$(i): PRINT RIGHT$(st1, LEN(st1) - 6);
+        END SELECT
+      ELSE
+        PRINT lsdnm$(i);
+      END IF
+      COLOR 11
+      IF hassafe THEN
+        FOR ii = 1 TO nsafe
+          IF safe(ii, 1) = 8 AND safe(ii, 3) = i THEN
+            LOCATE row, colm - 1: PRINT ">";
+          END IF
+        NEXT ii
+      END IF
+      FOR ii = 1 TO ngoody
+        IF ABS(goody(ii, 1)) = 8 AND goody(ii, 11) = i THEN
+          LOCATE row, colm - 1: PRINT "*";
+        END IF
+      NEXT ii
+      row = row + 1
+    END IF
+  NEXT i
+  LOCATE 25, 10: Printjnk 35, 1, 32
+EXIT SUB
+chk:
+  IF row > 23 AND colm > 5 THEN
+    row = 1: colm = 2: LOCATE 25, 10: Printjnk 35, 1, 32: PauseForKey: ccls 3
+  ELSEIF row > 23 THEN
+    row = 1: colm = 43
+  END IF
+RETURN
+END SUB
+
+SUB MakeSymbolScreen
+  SCREEN , , 3, vpage
+  ccls 3
+  Box 1, 40, 1, 24, 2, 3, 3
+  Box 41, 80, 1, 24, 2, 3, 3
+  RESTORE symbol
+  COLOR 9, 0: LOCATE 2, 16: Printjnk 37, 1, 8: COLOR 1
+  FOR i = 1 TO 7
+    READ sym, clrr, st1: PutSym sym, 9, i + 3, clrr, 0, 3
+    LOCATE i + 3, 16: PRINT st1;
+  NEXT i
+  PutSym 32, 9, 11, 0, 4, 3: LOCATE 11, 16: Printjnk 37, 9, 14
+  FOR i = 1 TO 2: READ sym: PutSym sym, 7 + i * 2, 13, 13, 0, 3: NEXT i
+  READ sym: PutSym sym, 10, 14, 13, 0, 3
+  FOR i = 1 TO 2: READ sym: PutSym sym, 7 + i * 2, 15, 13, 0, 3: NEXT i
+  LOCATE 14, 16: Printjnk 37, 23, 7
+ 
+  COLOR 9
+  SELECT CASE incastle
+    CASE 0
+      LOCATE 2, 55: Printjnk 37, 30, 9: COLOR 1
+      FOR i = 1 TO 2
+        READ sym, clrr, st1: PutSym sym, 48, i + 3, clrr, 0, 3
+        LOCATE i + 3, 55: PRINT st1;
+      NEXT i
+      PutSym 15, 48, 6, 2, 4, 3
+      LOCATE 6, 55: Printjnk 239, 5, 9
+      FOR i = 3 TO 12
+        READ sym, clrr, st1: PutSym sym, 48, i + 4, clrr, 0, 3
+        LOCATE i + 4, 55: PRINT st1;
+      NEXT i
+      FOR i = 1 TO 3: READ sym, sym2, clrr, st1
+        PutSym sym, 48, i + 16, clrr, 0, 3
+        PutSym sym2, 50, i + 16, clrr, 0, 3
+        LOCATE i + 16, 55: PRINT st1;
+      NEXT i
+    CASE -1
+      LOCATE 2, 55: Printjnk 37, 39, 13: COLOR 1
+      FOR i = 1 TO 7: READ sym, clrr, st1: NEXT i
+      FOR i = 1 TO 5: READ sym, clrr, st1
+        PutSym sym, 48, i + 3, clrr, 0, 3
+        LOCATE i + 3, 55: PRINT st1;
+      NEXT i
+      FOR i = 1 TO 3: READ sym, sym2, clrr, st1
+        PutSym sym, 48, 8 + i, clrr, 0, 3
+        PutSym sym2, 50, 8 + i, clrr, 0, 3
+        LOCATE i + 8, 55: PRINT st1;
+      NEXT i
+      COLOR wallcolr
+      LOCATE 12, 48: Printjnk 216, 31, 12
+      FOR i = 1 TO 5: READ sym, clrr, st1
+        PutSym sym, 48, i + 12, clrr, 0, 3
+        LOCATE i + 12, 55: PRINT st1;
+      NEXT i
+    CASE ELSE
+      LOCATE 2, 55: Printjnk 182, 26, 11: COLOR 1
+      FOR i = 1 TO 7: READ sym, clrr, st1: NEXT i
+      FOR i = 1 TO 5: READ sym, clrr, st1
+        PutSym sym, 48, i + 3, clrr, 0, 3
+        LOCATE i + 3, 55: PRINT st1;
+      NEXT i
+      FOR i = 1 TO 3: READ sym, sym2, clrr, st1
+        PutSym sym, 48, 8 + i, clrr, 0, 3
+        PutSym sym2, 50, 8 + i, clrr, 0, 3
+        LOCATE i + 8, 55: PRINT st1;
+      NEXT i
+      COLOR wallcolr
+      LOCATE 12, 48: Printjnk 314, 41, 12
+  END SELECT
+  COLOR 11: LOCATE 25, 10: Printjnk 35, 1, 32
+  SCREEN , , vpage
+END SUB
+
+SUB mphk (ch, atktyp)
+  a = 38
+  SELECT CASE atktyp
+    CASE 2: b = 1: c = 6
+    CASE 3, 4, 5: b = 7: c = 10
+    CASE 6: b = 17: c = 9
+    CASE 7: b = 26: c = 6
+    CASE 8: b = 32: c = 10
+    CASE 9: b = 42: c = 7
+    CASE 10: b = 26: c = 6
+    CASE 11: b = 49: c = 9
+    CASE 13: a = 39: b = 1: c = 12
+    CASE ELSE: a = 39: b = 25: c = 10
+  END SELECT
+  Ljnkbig a, b, c, 0, 0, 0, "You ", 0, 2
+  a = 39
+  SELECT CASE ncre(ch, 2)
+    CASE 8: a = 110: b = 60: c = 8   'hat
+    CASE 7: b = 36: c = 9           'nose
+    CASE 5, 6: b = 45: c = 7       'ear
+    CASE 4, 3: b = 59: c = 7      'arm
+    CASE 2, 1: b = 52: c = 7    'eye
+    CASE ELSE: ljnk 40, 1, 31, 2: b = 0
+  END SELECT
+  IF b > 0 THEN Ljnkbig a, b, c, 0, 0, 0, RTRIM$(l2) + bl, 0, 2
+END SUB
+
+SUB Pitt (fc2)
+  inpit = true: ClearMess
+  IF fc2 = 12 THEN
+    siz = 8: ljnk 379, 32, 29, 2
+  ELSEIF fc2 = 4 THEN
+    siz = 6: ljnk 243, 17, 18, 2
+  ELSE
+    siz = 4
+  END IF
+  dam = RollDice(siz, lvl, lvl): ffEffect dam, ffkill
+  ljnk 90, 1, 18, 1
+  IF ffkill THEN Ljnkbig 83, 1, 5, 207, 1, 19, jnk$(205, 39, 21), 1, 2
+  MessPause 7, 0
+  IF dam > 0 THEN DamSuit 0, dam
+  hits = hits - dam: ShowHits
+  IF hits < 0 THEN st1 = jnk$(90, 19, 16): Dead 0
+END SUB
+
+SUB PutCreat (i)
+  FindMPos i, mmainx, mmainy, mlocx, mlocy
+  IF ((mmainx = mainx) AND (mmainy = mainy)) THEN
+    GetSym sy, mlocx, mlocy, co, bc, 2
+    ncre(i, 8) = sy + 1000 * co
+    sy = ncre(i, 7) MOD 1000: co = ncre(i, 7) \ 1000
+    IF ((pmut = 4 AND berpmut = 0) OR berdet > 0) AND co = 0 THEN co = 8
+    PutSym sy, mlocx, mlocy, co, 0, 2
+    IF co = 0 THEN co = ncre(i, 8) \ 1000: sy = ncre(i, 8) MOD 1000
+    yup = true
+    IF dark AND ((ABS(ncre(i, 4)) > dark) OR (ABS(ncre(i, 5)) > dark)) THEN
+      yup = false
+    ELSEIF incastle THEN
+      yup = SameRoom(ncre(i, 4), ncre(i, 5))
+    END IF
+    IF yup THEN PutSym sy, mlocx, mlocy, co, 0, 1
+  END IF
+END SUB
+
+SUB SetCombatStats
+  armor = 12: shield = 10
+  FOR i = 1 TO ngoody
+    IF goody(i, 1) = -4 THEN armor = goody(i, 3) - goody(i, 5)
+    IF goody(i, 1) = -5 THEN shield = goody(i, 3) - goody(i, 5)
+  NEXT
+  ac = armor - 2
+  d = dex + dexadd
+  IF d > 13 THEN
+    delt = 13 - d
+  ELSEIF d < 10 THEN
+    delt = 10 - d
+  ELSE
+    delt = 0
+  END IF
+  IF (pmut = 5 AND berpmut = 0) AND (ac + ac + delt) > 6 THEN ac = 3: delt = 0
+  delt = delt - 10 + shield
+  ac = ac + delt \ 2
+  ac = ac - skinac - berac + 2 * (bulletsuit <> 0)
+  IF pmut = 5 AND berhpmut > 0 THEN ac = ac - 3
+  
+  dex2hit = 0: str2hit = 0: strdam = 0
+
+  IF d > 12 THEN
+    dex2hit = FIX((d - 11) / 2.5)
+  ELSEIF d < 9 THEN
+    dex2hit = d - 9
+  END IF
+
+  s = str + stradd
+  IF s > 12 THEN
+    str2hit = FIX((s - 12) / 2.5): strdam = FIX((s - 10) / 2.5)
+  ELSEIF s < 9 THEN
+    str2hit = s - 9: strdam = (s - 9) / 2
+  END IF
+  
+  tohitbase = 18 - lvl / 1.2 - 4 * ((berblind > 0) OR mask) + 2 * (invisible <> 0)
+END SUB
+
+SUB SetDark (dark, olddark, changed)
+  olddark = dark
+  keen = 0
+  IF (pmut = 4 AND berpmut = 0) THEN keen = keen + (1 - (berhpmut > 0))
+  IF berdet THEN keen = keen + 1
+  IF flashlight THEN keen = keen + 1
+  IF incastle = 0 THEN
+    tt = gt! MOD 1440
+    SELECT CASE tt
+      CASE 440 TO 1220:  dark = 0
+      CASE 400 TO 440, 1220 TO 1260: dark = 4: IF keen THEN dark = 5
+      CASE 360 TO 400, 1260 TO 1300
+        IF moon > 1 AND moon < 5 THEN dark = 4 ELSE dark = 3
+        IF keen THEN dark = dark + 1
+      CASE ELSE
+        SELECT CASE moon
+          CASE 1, 2, 4, 5: dark = 2
+          CASE 3: dark = 3
+          CASE 7: dark = -1
+          CASE ELSE: dark = 1
+        END SELECT
+        IF keen THEN dark = dark + 1: IF dark = 0 THEN dark = 1
+    END SELECT
+    IF flare THEN dark = 0
+    IF dark <> 0 THEN dark = dark + keen: IF dark = 0 THEN dark = 1
+    IF dark > 4 THEN dark = 0
+  ELSEIF incastle = 1 THEN
+    dark = 1 + keen
+    IF flare THEN dark = dark + 1
+    IF sunglasses THEN dark = dark - 1: IF dark = 0 THEN dark = -1
+  ELSEIF incastle = -1 THEN
+    dark = 0
+'    SELECT CASE castlelevel
+'      CASE IS >= 0: dark = 0
+'      CASE -1: dark = 4
+'      CASE -2, -3: dark = 3
+'      CASE -4, -5: dark = 2
+'      CASE ELSE: dark = 1
+'    END SELECT
+'    IF dark > 0 THEN dark = dark + keen
+'    IF flare THEN dark = 0
+    IF sunglasses AND (keen = 0) THEN dark = -1
+'      IF dark > 0 THEN
+'        dark = dark - 1: IF dark = 0 THEN dark = -1
+'      ELSE
+'        dark = 2
+'      END IF
+'    END IF
+  END IF
+
+  IF mask OR berblind THEN dark = -1
+
+  IF olddark <> dark THEN changed = true ELSE changed = false
+END SUB
+
+SUB ShiftDropped (rm)
+  FOR j = rm TO ndropped - 1
+    drgdy(j) = drgdy(j + 1)
+    FOR k = 1 TO 16: drgoody(j, k) = drgoody(j + 1, k): NEXT k
+  NEXT
+  FOR k = 1 TO 16: drgoody(ndropped, k) = 0: NEXT k
+  ndropped = ndropped - 1
+END SUB
+
+SUB ShowHits
+  IF rside THEN
+    LOCATE 10, 54: COLOR 9, 0: PRINT hits; bl;
+    COLOR 1: Printjnk 5, 34, 11: COLOR 9: PRINT hitmax; SPACE$(4)
+  END IF
+END SUB
+
+SUB SortGoody
+  FOR i = ngoody TO 1 STEP -1
+    FOR j = ngoody TO i + 1 STEP -1
+      IF ABS(goody(i, 1)) = 3 AND ABS(goody(j, 1)) = 3 THEN
+        IF (gdy(i) = gdy(j)) AND (goody(i, 3) > 0) THEN
+          IF goody(i, 9) = goody(j, 9) AND goody(i, 10) = goody(j, 10) THEN
+            goody(i, 3) = goody(i, 3) + goody(j, 3)
+            RemoveGoody j, 0: EXIT FOR
+          END IF
+        END IF
+      ELSEIF ABS(goody(i, 1)) < 3 AND ABS(goody(j, 1)) = ABS(goody(i, 1)) THEN
+        goody(i, 3) = goody(i, 3) + goody(j, 3)
+        RemoveGoody j, 0: EXIT FOR
+      ELSEIF ABS(goody(i, 1)) = 10 AND ABS(goody(j, 1)) = 10 THEN
+        goody(i, 2) = goody(i, 2) + goody(j, 2)
+        goody(i, 3) = goody(i, 3) + goody(j, 3)
+        RemoveGoody j, 0: EXIT FOR
+      END IF
+    NEXT j
+    IF goody(i, 1) = 10 AND goody(i, 2) = 0 AND goody(i, 3) = 0 THEN RemoveGoody i, 0
+  NEXT i
+
+  offset = ngoody \ 2
+  DO WHILE offset > 0
+    limit = ngoody - offset
+    DO
+      switch = false
+      FOR i = 1 TO limit: j = i + offset
+        IF ABS(goody(i, 1)) > ABS(goody(j, 1)) THEN
+          SWAP gdy(i), gdy(j)
+          FOR k = 1 TO 12: SWAP goody(i, k), goody(j, k): NEXT k
+          switch = i
+        ELSEIF ABS(goody(i, 1)) = ABS(goody(j, 1)) AND ABS(goody(i, 1)) = 6 THEN
+          FOR b1 = 0 TO nberry
+            IF berord(b1) = goody(i, 3) THEN bi = b1
+            IF berord(b1) = goody(j, 3) THEN bj = b1
+          NEXT
+          IF bi > bj THEN
+            SWAP gdy(i), gdy(j)
+            FOR k = 1 TO 12: SWAP goody(i, k), goody(j, k): NEXT k
+            switch = i
+          END IF
+        ELSEIF ABS(goody(i, 1)) = ABS(goody(j, 1)) THEN
+          IF gdy(i) > gdy(j) THEN
+            SWAP gdy(i), gdy(j)
+            FOR k = 1 TO 12: SWAP goody(i, k), goody(j, k): NEXT k
+            switch = i
+          END IF
+        END IF
+      NEXT i
+      limit = switch - offset
+    LOOP WHILE switch
+    offset = offset \ 2
+  LOOP
+
+  FOR i = 1 TO npack - 1
+    FOR j = i + 1 TO npack
+      IF backpack(i, 1) = 3 AND backpack(j, 1) = 3 THEN
+        IF (bakpak(i) = bakpak(j)) AND (backpack(i, 3) > 0) THEN
+          backpack(i, 3) = backpack(i, 3) + backpack(j, 3)
+          RemoveGoody j, 1: EXIT FOR
+        END IF
+      ELSEIF backpack(i, 1) < 3 AND backpack(j, 1) = backpack(i, 1) THEN
+        backpack(i, 3) = backpack(i, 3) + backpack(j, 3)
+        RemoveGoody j, 1: EXIT FOR
+      END IF
+    NEXT j
+  NEXT i
+  FOR i = 1 TO npack - 1
+    FOR j = i + 1 TO npack
+      IF backpack(i, 1) > backpack(j, 1) THEN
+        SWAP bakpak(i), bakpak(j)
+        FOR k = 1 TO 12: SWAP backpack(i, k), backpack(j, k): NEXT k
+      ELSEIF backpack(i, 1) = backpack(j, 1) AND backpack(i, 1) = 6 THEN
+        FOR b1 = 1 TO nberry
+          IF berord(b1) = backpack(i, 3) THEN bi = b1
+          IF berord(b1) = backpack(j, 3) THEN bj = b1
+        NEXT
+        IF bi > bj THEN
+          SWAP bakpak(i), bakpak(j)
+          FOR k = 1 TO 12: SWAP backpack(i, k), backpack(j, k): NEXT k
+          switch = i
+        END IF
+      ELSEIF backpack(i, 1) = backpack(j, 1) THEN
+        IF bakpak(i) > bakpak(j) THEN
+          SWAP bakpak(i), bakpak(j)
+          FOR k = 1 TO 12: SWAP backpack(i, k), backpack(j, k): NEXT k
+          switch = i
+        END IF
+      END IF
+    NEXT j
+  NEXT i
+
+  FOR i = 1 TO nsafe - 1
+    FOR j = i + 1 TO nsafe
+      IF safe(i, 1) = 3 AND safe(j, 1) = 3 THEN
+        IF (saf(i) = saf(j)) AND (safe(i, 3) > 0) THEN
+          safe(i, 3) = safe(i, 3) + safe(j, 3)
+          RemoveGoody j, 2: EXIT FOR
+        END IF
+      ELSEIF safe(i, 1) < 3 AND safe(j, 1) = safe(i, 1) THEN
+        safe(i, 3) = safe(i, 3) + safe(j, 3)
+        RemoveGoody j, 2: EXIT FOR
+      END IF
+    NEXT j
+  NEXT i
+  FOR i = 1 TO nsafe - 1
+    FOR j = i + 1 TO nsafe
+      IF safe(i, 1) > safe(j, 1) THEN
+        SWAP saf(i), saf(j)
+        FOR k = 1 TO 12: SWAP safe(i, k), safe(j, k): NEXT k
+      ELSEIF safe(i, 1) = safe(j, 1) AND safe(i, 1) = 6 THEN
+        FOR b1 = 1 TO nberry
+          IF berord(b1) = safe(i, 3) THEN bi = b1
+          IF berord(b1) = safe(j, 3) THEN bj = b1
+        NEXT
+        IF bi > bj THEN
+          SWAP saf(i), saf(j)
+          FOR k = 1 TO 12: SWAP safe(i, k), safe(j, k): NEXT k
+          switch = i
+        END IF
+      ELSEIF safe(i, 1) = safe(j, 1) THEN
+        IF saf(i) > saf(j) THEN
+          SWAP saf(i), saf(j)
+          FOR k = 1 TO 12: SWAP safe(i, k), safe(j, k): NEXT k
+          switch = i
+        END IF
+      END IF
+    NEXT j
+  NEXT i
+
+END SUB
+
+SUB TapeRecorder (i)
+  tapenum = (tapenum + 1) MOD 7
+  SCREEN , , 3, vpage: ccls 3: colr = 13: bakcolr = 0
+  SELECT CASE tapenum
+    CASE 1: offset = 164: numln = 6: sym = 71: colr = 12
+    CASE 2: offset = 170: numln = 4: sym = 127
+    CASE 3: offset = 174: numln = 4: sym = 30
+    CASE 4: offset = 178: numln = 5: sym = 239
+    CASE 5: offset = 183: numln = 4: sym = 234
+    CASE 6: offset = 187: numln = 4: sym = 94
+    CASE 0: offset = 191: numln = 4: sym = 71: bakcolr = 4
+  END SELECT
+  PutSym sym, 40, 3, colr, bakcolr, 3: COLOR 3, 0
+  OPEN "alphaman.6" FOR BINARY AS #2
+  FOR j = 0 TO numln - 1
+    num = j + offset: st1 = SPACE$(74): GET #2, num * 74 - 73, st1
+    FOR k = 1 TO 74
+      MID$(st1, k, 1) = CHR$(ASC(MID$(st1, k, 1)) XOR (ABS(17 * num + 31 * k) MOD 256))
+    NEXT k
+    LOCATE 2 * j + 6, 6: PRINT st1;
+  NEXT j
+  CLOSE #2
+  SELECT CASE tapenum
+    CASE 2, 3: LOCATE 12, 34 + 8 * tapenum: PRINT name$;
+    CASE 0: LOCATE 12, 45: PRINT name$
+  END SELECT
+  IF i > 0 AND i <= ngoody THEN RemoveGoody i, false
+  FOR j = 6 TO 74: PutSym 196, j, 20, 8, 0, 3: NEXT j
+  scratch(1) = 15: scratch(2) = 42: scratch(3) = 35: scratch(4) = 206: scratch(5) = 175: scratch(6) = 174
+  SCREEN , , 3: HitSpace = 1
+  FOR j = 6 TO 74
+    PutSym scratch(z), j, 20, 4 + 8 * INT(RND * 2), 0, 3
+    t1! = TIMER: t2! = TIMER: z = cRoll(6)
+    WHILE ABS(t2! - t1!) < .023 * HitSpace: t2! = TIMER: WEND
+    IF HitSpace THEN HitSpace = 1 + (INKEY$ <> "")  '0 if hit space, else 1
+    PutSym 32, j, 20, 7, 0, 3
+  NEXT j
+  PutSym 32, 70, 20, 7, 0, 3: COLOR 2: LOCATE 25, 24: Printjnk 35, 1, 32
+  PauseForKey
+  ccls 3: SCREEN , , vpage: ClearMess: PrintMessage 7, 0
+END SUB
+
+SUB Timely
+  hrs = gt! \ 60
+  IF hrs >= ripehrs THEN
+    ripehrs = ripehrs + 2 + cRoll(2): showright = false
+    FOR i = 1 TO ngoody
+      IF goody(i, 1) = 6 AND goody(i, 5) = 0 AND cRoll(2) = 1 THEN
+        IF (goody(i, 6) < 2) OR (goody(i, 4) < 6) THEN
+          goody(i, 6) = goody(i, 6) + 1
+          IF goody(i, 6) >= 3 THEN
+            goody(i, 6) = 0: goody(i, 4) = (goody(i, 4) MOD 6) + 1
+            showright = true
+            SELECT CASE goody(i, 4)
+              CASE 1: oldlen = 6
+              CASE 2: oldlen = 3
+              CASE 3: oldlen = 6
+              CASE 4: oldlen = 6
+              CASE 5: oldlen = 5
+              CASE ELSE: oldlen = 4: goody(i, 4) = 6
+            END SELECT
+            gdy(i) = Kolr$(goody(i, 4)) + RIGHT$(gdy(i), LEN(gdy(i)) - oldlen - 1)
+          END IF
+        END IF
+      END IF
+    NEXT i
+    IF showright AND (rdisp <> 1) THEN DisplayGoodies false
+    FOR i = 1 TO npack
+      IF backpack(i, 1) = 6 AND backpack(i, 5) = 0 AND cRoll(2) = 1 THEN
+        backpack(i, 6) = backpack(i, 6) + 1
+        IF backpack(i, 6) >= 3 THEN
+          backpack(i, 6) = 0: backpack(i, 4) = (backpack(i, 4) MOD 6) + 1
+          SELECT CASE backpack(i, 4)
+            CASE 1: oldlen = 6
+            CASE 2: oldlen = 3
+            CASE 3: oldlen = 6
+            CASE 4: oldlen = 6
+            CASE 5: oldlen = 5
+            CASE ELSE: oldlen = 4: backpack(i, 4) = 6
+          END SELECT
+          bakpak(i) = Kolr$(backpack(i, 4)) + RIGHT$(bakpak(i), LEN(bakpak(i)) - oldlen - 1)
+        END IF
+      END IF
+    NEXT i
+    FOR i = 1 TO nsafe
+      IF safe(i, 1) = 6 AND backpack(i, 5) = 0 AND cRoll(2) = 1 THEN
+        safe(i, 6) = safe(i, 6) + 1
+        IF safe(i, 6) >= 3 THEN
+          safe(i, 6) = 0: safe(i, 4) = (safe(i, 4) MOD 6) + 1
+          SELECT CASE safe(i, 4)
+            CASE 1: oldlen = 6
+            CASE 2: oldlen = 3
+            CASE 3: oldlen = 6
+            CASE 4: oldlen = 6
+            CASE 5: oldlen = 5
+            CASE ELSE: oldlen = 4: safe(i, 4) = 6
+          END SELECT
+          saf(i) = Kolr$(safe(i, 4)) + RIGHT$(saf(i), LEN(saf(i)) - oldlen - 1)
+        END IF
+      END IF
+    NEXT i
+    FOR i = 1 TO nmonolith
+      IF cRoll(2) = 1 THEN
+        IF monozone(i, 3) > 0 THEN monozone(i, 3) = monozone(i, 3) - 1
+      END IF
+    NEXT i
+    answer = true
+  END IF
+  hrs = hrs MOD 24
+
+  l3 = ""
+  IF asleep THEN
+    SELECT CASE hrs
+      CASE 8 TO 11: chan = 100 - 100 * tent: a = 252: b = 50: c = 17
+      CASE 12 TO 20: chan = 100 - 100 * tent: a = 277: b = 49: c = 15
+      CASE 6, 7, 21, 22: chan = (24 AND NOT tent): a = 253: b = 1: c = 15
+      CASE ELSE: chan = (3 AND NOT tent): a = 253: b = 16: c = 19
+    END SELECT
+    IF incastle = 0 OR nnear > 0 THEN chan = chan / 3
+    IF cRoll(1000) < chan THEN
+      asleep = false: zippy = -10
+      ljnk 253, 35, 11, 1: ljnk a, b, c, 2: MessPause 7, 0
+      ate = false
+      IF tent THEN   'scavengers
+        SELECT CASE cRoll(5)
+          CASE 1 TO 3
+            num = cRoll(2)
+            IF goody(num, 1) = 1 OR goody(num, 1) = 2 THEN
+              goody(num, 3) = goody(num, 3) - 1: ate = true
+              IF goody(num, 3) < 1 THEN RemoveGoody num, false
+            END IF
+          CASE 4
+            IF goody(1, 1) = 1 OR goody(1, 1) = 2 THEN
+              goody(1, 3) = goody(1, 3) - 1: ate = true
+              IF goody(1, 3) < 1 THEN RemoveGoody num, false
+            END IF
+            IF goody(2, 1) = 1 OR goody(2, 1) = 2 THEN
+              goody(2, 3) = goody(2, 3) - 1: ate = true
+              IF goody(2, 3) < 1 THEN RemoveGoody num, false
+            END IF
+          CASE 5
+            num = cRoll(2)
+            IF goody(num, 1) = 1 OR goody(num, 1) = 2 THEN
+              goody(num, 3) = 0: RemoveGoody num, false: ate = true
+            END IF
+        END SELECT
+        IF ate THEN ClearMess: ljnk 392, 1, 28, 1: MessPause 14, 0
+      END IF
+    END IF
+  ELSE
+    tent = false: l2 = ""
+    SELECT CASE hrs
+      CASE 7 TO 20: chan = 0
+      CASE 21:      chan = 20
+      CASE 6, 22:   chan = 100
+      CASE 5, 23:    chan = 300
+      CASE ELSE:    chan = 1000
+    END SELECT
+    IF brandy > 0 THEN chan = chan * 4
+    IF coffee > 0 THEN chan = chan / 10
+    IF nnear > 0 THEN chan = chan / 2
+    IF berfresh THEN chan = chan / 5
+    IF notoxin = 1 OR terrain = 71 THEN chan = chan / 10
+    IF pmut = 10 AND berpmut = 0 THEN chan = chan / 20
+    IF mmut = 3 AND bermmut = 0 THEN chan = chan / 20
+    IF cRoll(10000) < chan THEN
+      asleep = true: berhic = 0: sick = 0
+      ljnk 253, 46, 15, 1: MessPause 1, 0
+    ELSEIF (chan > 0) AND (cRoll(500) < chan) THEN
+      a = 254: c = 21: IF coffee > 0 THEN a = 289: c = 31
+      ljnk a, 1, c, 1: PrintMessage 9, 0
+    END IF
+  END IF
+
+  IF (NOT asleep) AND (cRoll(10) = 1) THEN
+    yup = 0: ClearMess
+    IF (incastle = 0) AND (hrs = 19 OR hrs = 20) THEN yup = 1: ljnk 254, 22, 26, yup
+    IF hits < hitmax / 8 + 2 THEN yup = yup + 1: ljnk 384, 48, 19, yup
+    IF fatigue! > 90 THEN yup = yup + 1: Ljnkbig 254, 48, 12, 0, 0, 0, "rest", 1, yup
+    IF yup < 3 AND hunger > 3000 THEN yup = yup + 1: ljnk 254, 48, 15, yup
+    IF yup THEN PrintMessage 2, 0
+  END IF
+
+  IF berklutz AND (NOT asleep) AND cRoll(5) = 1 THEN
+    SELECT CASE currsym
+      CASE 250, 249, 32: dropp = true
+      CASE ELSE: dropp = false
+    END SELECT
+    IF dropp THEN
+      dropp = 0
+retim: i = cRoll(ngoody)
+      IF ngoody = 0 THEN
+        dropp = 0
+      ELSEIF goody(i, 1) <= 2 THEN
+        IF cRoll(ngoody) <> ngoody THEN GOTO retim
+      ELSE
+        dropp = i
+      END IF
+      IF dropp THEN
+        AddToDrop dropp: RemoveGoody dropp, false
+        IF rdisp <> 1 THEN DisplayGoodies false
+      END IF
+    END IF
+  END IF
+
+  ix = cRoll(50) + 1: iy = cRoll(20) + 1
+  GetSym sym, ix, iy, fc, bc, 2
+  IF sym = gas THEN
+    GetSym sym, ix, iy, fc, bc, 1
+    IF sym = gas THEN sc = -1 ELSE sc = 2
+    PutSym 250, ix, iy, 8, 0, sc
+  END IF
+END SUB
+
+SUB Trapp (colr)
+  ClearMess
+  IF cRoll(4) = 1 THEN
+    a = 350
+    SELECT CASE colr
+      CASE 1: a = 353: b = 1:  c = 17           'sleep
+      CASE 2:          b = 24: c = 6            'dart
+      CASE 3: a = 351: b = 50: c = 19           'shock
+      CASE 5: a = 369: b = 30: c = 14           'glue
+      CASE 6                                    'acid, QUICKSAND
+        IF incastle THEN b = 30: c = 13 ELSE d = 384: e = 19: F = 9
+      CASE 7                                    'arrow, GOPHER HOLE
+        IF incastle THEN b = 16: c = 8 ELSE d = 386: e = 55: F = 13
+      CASE 8                                    'teleport, TARPIT
+        IF incastle THEN a = 353: b = 18: c = 13 ELSE d = 378: e = 59: F = 8
+      CASE 10: a = 390: b = 46: c = 20          'poison gas, POISON GAS
+      CASE 12                                   'fire, EXPLOSIVE GAS
+        IF incastle THEN b = 43: c = 16 ELSE a = 340: b = 40: c = 24
+      CASE 14:          b = 59: c = 7           'laser
+      CASE ELSE: a = 353: b = 31: c = 16        'rad
+    END SELECT
+    IF d > 0 THEN
+      Ljnkbig 392, 29, 21, d, e, F, bl, 1, 2
+    ELSE
+      Ljnkbig a, b, c, 353, 47, 20, bl, 2, 2
+    END IF
+  ELSE
+    SELECT CASE colr
+      CASE 1   'sleep
+        asleep = true: berhic = 0: sick = 0: a = 253: b = 46: c = 15
+      CASE 2     'dart
+        dam = cRoll(8)
+        SELECT CASE cRoll(10)
+          CASE 5 TO 8: dex = dex - 1: dextox = dextox + 1
+          CASE 9: str = str - 1: strtox = strtox + 1
+          CASE 10: con = con - 1: contox = contox + 1: dam = dam + lvl / 2
+            hittox = hittox + lvl / 2: hitmax = hitmax - lvl / 2
+        END SELECT
+        a = 91: b = 1: c = 15: d = 90: e = 60: F = 6: SetCombatStats
+      CASE 3   'shock
+        dam = RollDice(4, 5 + lvl, lvl): DamSuit 4, dam
+        IF cRoll(12) = 1 THEN KillItem cRoll(3)
+        a = 92: b = 22: c = 19: d = 92: e = 41: F = 11
+      CASE 5      'glue
+        a = 163: b = 38: c = 25: inglue = true
+      CASE 6     'acid,  QUICKSAND
+        IF incastle THEN
+          dam = RollDice(4 + 3 * lvl, 2, 1): DamSuit 5, dam
+          IF cRoll(12) = 1 THEN
+            c = cRoll(4) + 4
+            SELECT CASE c
+              CASE 5: KillItem 0
+              CASE 6 TO 8: KillItem c
+            END SELECT
+          END IF
+          a = 91: b = 16: c = 17: d = 91: e = 33: F = 4
+        ELSE
+          a = 384: b = 1: c = 28: insand = true
+        END IF
+      CASE 7   'arrow, GOPHER HOLE
+        IF incastle THEN
+          dam = cRoll(3 + lvl * 2) + cRoll(3 + lvl * 2): DamSuit 0, dam
+          IF cRoll(12) = 1 THEN KillItem 3 + cRoll(2)
+          a = 90: b = 35: c = 17: d = 90: e = 52: F = 8
+        ELSE
+          dam = cRoll(4 + lvl): zippy = zippy - cRoll(5) - cRoll(5)
+          a = 390: b = 1: c = 29: d = 326: e = 41: F = 25
+        END IF
+      CASE 8     'teleport,  TARPIT
+        IF incastle THEN
+trapptel: FindDot xdot, ydot, incastle
+          IF castle = 2 AND castlelevel = -7 THEN
+            IF localx < 10 OR localx > 17 OR localy < 14 OR localy > 17 THEN
+              IF xdot < 10 OR xdot > 17 OR ydot < 14 OR ydot > 17 GOTO trapptel
+            END IF
+          END IF
+          xdel = xdot - localx: ydel = ydot - localy
+          FOR i = 1 TO nnear
+            ncre(i, 4) = ncre(i, 4) - xdel
+            ncre(i, 5) = ncre(i, 5) - ydel
+            IF SameRoom(ncre(i, 4), ncre(i, 5)) THEN Awaken i
+          NEXT i
+          PutSym currsym, localx, localy, currf, currb, -1
+          localx = xdot: localy = ydot
+          GetSym currsym, localx, localy, currf, currb, 2
+          PutSym 1, localx, localy, 15, 0, -1
+          savecorn = 0
+          FOR i = localx - 1 TO localx + 1
+            FOR j = localy - 1 TO localy + 1: DotIt (i), (j): NEXT j
+          NEXT i
+          DotCorn
+          berconfuse = berconfuse + RollDice(3, 3, 3)
+          a = 241: b = 16: c = 15: colr = -colr  'for move
+        ELSE
+          inbog = true: a = 378: b = 43: c = 25
+        END IF
+      CASE 10   'poison gas, POISON GAS
+        a = 157: b = 34: c = 19: d = 157: e = 53: F = 10
+        dic = (21 - con) \ 3 + lvl \ 2: IF dic < 1 THEN dic = 1
+        dam = RollDice(5, dic, dic)
+        IF (pmut = 7 AND berpmut = 0) THEN dam = (dam + 1) / (2 - 2 * (berhpmut > 0))
+        IF gasmask OR spacesuit THEN dam = 0
+      CASE 12     'fire, EXPLOSIVE GAS
+        dam = RollDice(12 + lvl * 2, 2, 1): DamSuit 2, dam
+        IF cRoll(18) = 1 THEN KillItem 0
+        IF incastle THEN
+          a = 91: b = 37: c = 18: d = 91: e = 55: F = 4
+        ELSE
+          a = 342: b = 1: c = 28: d = 342: e = 15: F = 13
+        END IF
+      CASE 14  'laser
+        dam = cRoll(15 + lvl) + 4: DamSuit 3, dam
+        IF cRoll(12) = 1 THEN KillItem 0
+        a = 92: b = 1: c = 21: d = 91: e = 59: F = 7
+      CASE ELSE   'radiat
+        siz = (26 - rr) \ 2 + lvl: IF siz < 2 THEN siz = 2
+        IF cRoll(12) = 1 THEN KillItem 9
+        dam = RollDice(siz, 5, 2): DamSuit 1, dam
+        a = 92: b = 52: c = 17: d = 0: e = 30: F = 9
+    END SELECT
+    IF dam > 0 THEN ffEffect dam, ffkill: hits = hits - dam
+    ljnk a, b, c, 1
+    IF hits < 0 THEN
+      st1 = jnk$(d, e, F): ShowHits: Dead 0
+    ELSEIF ffkill THEN
+      MessPause ABS(colr), 0: ClearMess
+      Ljnkbig 83, 1, 5, 207, 1, 19, jnk$(205, 39, 21), 1, 2
+    END IF
+  END IF
+  MessPause ABS(colr), 0: ShowHits
+END SUB
+

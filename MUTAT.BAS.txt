@@ -1,0 +1,355 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE SUB loadit ()
+DECLARE SUB saveit ()
+DECLARE SUB changestats ()
+DEFINT A-Z
+
+' $INCLUDE: 'alpha.dec'
+DIM SHARED sss(50, 20, 2), filin$
+RANDOMIZE TIMER
+
+CALL loadit
+CALL changestats
+notoxin = 0
+CALL saveit
+END
+
+SUB changestats
+cstop:
+  COLOR 11, 1: CLS
+  LOCATE 2, 10: PRINT USING "Name: &                     Time:#####"; name$; gt!;
+  LOCATE 3, 10
+  PRINT USING "Str:###   Dex:###   Con:###   RR:###   MR:###   Int:###"; str; dex; con; rr; mr; intl;
+  LOCATE 4, 10
+  PRINT USING "Hitmax:#####        Hits:#####         Experience:########"; hitmax; hits; expr&;
+  LOCATE 5, 10
+  PRINT USING "Pmut: ##            Mmut: ##           Difficulty: #"; pmut; mmut; difficulty;
+
+  COLOR 9
+  LOCATE 12, 1
+  PRINT "1. Electrical Generation"; TAB(28); "14. Heightened Speed";
+  COLOR 2: PRINT TAB(53); "1. Military Genius": COLOR 9
+  PRINT "2. Heightened Dexterity"; TAB(28); "15. Radiation Generation";
+  COLOR 2: PRINT TAB(53); "2. Scientific Genius": COLOR 9
+  PRINT "3. Heightened Strength"; TAB(28); "16. Quills";
+  COLOR 2: PRINT TAB(53); "3. Heightened Willpower": COLOR 9
+  PRINT "4. Heightened Vision"; TAB(28); "17. Tenticles";
+  COLOR 2: PRINT TAB(53); "4. Mental Blast": COLOR 9
+  PRINT "5. Tough Exoskeleton";
+  COLOR 2: PRINT TAB(53); "5. Teleportation": COLOR 9
+  PRINT "6. Sonic Attack";
+  COLOR 2: PRINT TAB(53); "6. Mental Healing": COLOR 9
+  PRINT "7. Blood Structure Change";
+  COLOR 2: PRINT TAB(53); "7. Force Field": COLOR 9
+  PRINT "8. Radiation Reflection";
+  COLOR 2: PRINT TAB(53); "8. Molecular Disruption": COLOR 9
+  PRINT "9. Laser Generation";
+  COLOR 2: PRINT TAB(53); "9. Life Leech": COLOR 9
+  PRINT "10. Heightened Endurance";
+  COLOR 2: PRINT TAB(53); "10. Invisibility": COLOR 9
+  PRINT "11. Foul Musk";
+  COLOR 2: PRINT TAB(53); "11. Cryogenics": COLOR 9
+  PRINT "12. Acidic Saliva";
+  COLOR 2: PRINT TAB(53); "12. Hypnosis": COLOR 9
+  PRINT "13. Poison Claws";
+  COLOR 2: PRINT TAB(53); "13. Psychokinesis";
+
+
+  COLOR 13: LOCATE 7, 10
+  PRINT "Enter stat followed by value (4 characters are sufficient)"
+  LOCATE 8, 10: PRINT "For example, 'pmut 11' or 'dex 25'"
+  LOCATE 9, 10: PRINT "Pressing Enter will end program"
+
+  LOCATE 10, 10: LINE INPUT a$
+  IF a$ <> "" AND a$ <> CHR$(13) THEN
+    b$ = RTRIM$(LTRIM$(MID$(a$, 1, INSTR(a$, " "))))
+    c$ = RTRIM$(LTRIM$(MID$(a$, INSTR(a$, " "))))
+    IF LEN(c$) > 0 THEN c! = VAL(c$) ELSE c! = 0
+    SELECT CASE LEFT$(UCASE$(b$), 4)
+      CASE "NAME": name$ = RTRIM$(LTRIM$(MID$(a$, INSTR(a$, " "))))
+      CASE "STR": str = c!
+      CASE "DEX": dex = c!
+      CASE "CON": con = c!
+      CASE "RR": rr = c!
+      CASE "MR": mr = c!
+      CASE "INT": intl = c!
+      CASE "HITS": hits = c!
+      CASE "HITM": hitmax = c!
+      CASE "EXPE": expr& = c!
+      CASE "PMUT": pmut = c!
+      CASE "MMUT": mmut = c!
+      CASE "TIME": gt! = c!
+      CASE "DIFF": difficulty = c!
+    END SELECT
+    IF pmut < 1 THEN pmut = 1 ELSE IF pmut > nphysmut THEN pmut = nphysmut
+    IF mmut < 1 THEN mmut = 1 ELSE IF mmut > nmentmut THEN mmut = nmentmut
+    IF difficulty < 1 THEN difficulty = 1
+    IF difficulty > 3 THEN difficulty = 3
+    GOTO cstop
+  END IF
+excs:
+END SUB
+
+SUB loadit  '=======================================================
+ 
+  COLOR 14, 1: CLS
+  LOCATE 4, 10: INPUT "Enter filename to alter (.alf assumed):", filin$
+  filin$ = filin$ + ".alf"
+
+  CLOSE #1
+  OPEN filin$ FOR APPEND AS #1: CLOSE #1
+  OPEN filin$ FOR INPUT AS #1
+  IF EOF(1) THEN      'doesn't exist
+    CLOSE #1: KILL filin$: PRINT "Doesn't exist": END
+  END IF
+  CLOSE #1
+  OPEN filin$ FOR BINARY AS #1
+
+  GET #1, , vdate&
+  IF vdate& <> versiondate THEN
+    COLOR 30: LOCATE 8, 10: PRINT "Incorrect version"; : COLOR 14: END
+  END IF
+ 
+  LOCATE 5, 10: PRINT "Loading file "; filin$; " ....."
+
+  GET #1, , lll: name$ = SPACE$(lll): GET #1, , name$
+  'IF UCASE$(LEFT$(name$, 7)) <> "ALTERED" THEN name$ = LEFT$("Altered " + name$, 19)
+  GET #1, , ngoody: GET #1, , npack: GET #1, , ndropped: GET #1, , nsafe
+  FOR i = 1 TO ngoody
+    GET #1, , lll: gdy(i) = SPACE$(lll): GET #1, , gdy(i)
+  NEXT i
+  FOR i = 1 TO npack
+    GET #1, , lll: bakpak(i) = SPACE$(lll): GET #1, , bakpak(i)
+  NEXT i
+  FOR i = 1 TO ndropped
+    GET #1, , lll: drgdy(i) = SPACE$(lll): GET #1, , drgdy(i)
+  NEXT i
+  FOR i = 1 TO nsafe
+    GET #1, , lll: saf(i) = SPACE$(lll): GET #1, , saf(i)
+  NEXT i
+  FOR i = 0 TO 40: berry$(i) = SPACE$(6): GET #1, , berry$(i): NEXT i
+
+  FOR i = 1 TO ngoody
+    FOR j = 1 TO 12: GET #1, , goody(i, j): NEXT j
+  NEXT i
+  FOR i = 1 TO npack
+    FOR j = 1 TO 12: GET #1, , backpack(i, j): NEXT j
+  NEXT i
+  FOR i = 1 TO ndropped
+    FOR j = 1 TO 16: GET #1, , drgoody(i, j): NEXT j
+  NEXT i
+  FOR i = 1 TO nsafe
+    FOR j = 1 TO 12: GET #1, , safe(i, j): NEXT j
+  NEXT i
+  GET #1, , nnear
+  FOR i = 1 TO nnear
+    FOR j = 1 TO 15: GET #1, , ncre(i, j): NEXT j
+  NEXT i
+  FOR i = 0 TO 40: GET #1, , berord(i): GET #1, , knownb(i): NEXT i
+  FOR i = 2 TO 51: FOR j = 2 TO 21: GET #1, , goodythere(i, j): NEXT j, i
+  FOR i = 0 TO 6: FOR j = -10 TO 10: GET #1, , goodycastle(i, j): NEXT j, i
+  FOR i = 1 TO 20: FOR j = 1 TO 3: GET #1, , localgoody(i, j): NEXT j, i
+  FOR i = 1 TO 10: FOR j = 1 TO 3: GET #1, , radzone(i, j): NEXT j, i
+  FOR i = 1 TO 80: GET #1, , ssdknown(i): NEXT i
+  FOR i = 1 TO 40: GET #1, , lsdknown(i): NEXT i
+  FOR i = -10 TO 10: GET #1, , xstairs(i): NEXT i
+  FOR i = -10 TO 10: GET #1, , ystairs(i): NEXT i
+  FOR i = 1 TO 10: FOR j = 1 TO 3: GET #1, , monozone(i, j): NEXT j, i
+  FOR i = 1 TO 10: monozone(i, 3) = 0: NEXT
+  GET #1, , str: GET #1, , stradd: GET #1, , dex: GET #1, , dexadd
+  GET #1, , con: GET #1, , rr: GET #1, , mr: GET #1, , intl
+  GET #1, , hitmax: GET #1, , hits: GET #1, , hunger: GET #1, , fatigue!
+  GET #1, , expr&: GET #1, , lvl: GET #1, , pmut: GET #1, , mmut
+  GET #1, , radsuit: GET #1, , heatsuit: GET #1, , reflecsuit
+  GET #1, , flashlight: GET #1, , gasmask: GET #1, , sunglasses
+  GET #1, , wetsuit: GET #1, , mask: GET #1, , boots
+  GET #1, , pmutturns: GET #1, , mmutturns: GET #1, , inwater
+  GET #1, , waterturns: GET #1, , inpit: GET #1, , zippy
+  GET #1, , wpturns: GET #1, , seed!: GET #1, , vpage
+  GET #1, , mainx: GET #1, , mainy: GET #1, , localx
+  GET #1, , localy: GET #1, , terrain: GET #1, , terrf
+  GET #1, , terrb: GET #1, , currsym: GET #1, , currf
+  GET #1, , currb: GET #1, , ncastle: GET #1, , nruins
+  GET #1, , castle: GET #1, , castlelevel: GET #1, , incastle
+  GET #1, , dum
+  GET #1, , lwall: GET #1, , rwall: GET #1, , twall: GET #1, , bwall
+  GET #1, , lwscr: GET #1, , rwscr: GET #1, , twscr
+  GET #1, , bwscr: GET #1, , dots: GET #1, , xenter
+  GET #1, , yenter: GET #1, , xenterscr: GET #1, , yenterscr
+  GET #1, , enterdir: GET #1, , bitit: GET #1, , berstr
+  GET #1, , berdex: GET #1, , bercon: GET #1, , berrr
+  GET #1, , bermr: GET #1, , berintl
+  GET #1, , berac: GET #1, , berpmut: GET #1, , bermmut
+  GET #1, , berconfuse: GET #1, , berdet: GET #1, , berblind
+  GET #1, , berhic: GET #1, , brandy: GET #1, , berscare
+  GET #1, , strtox: GET #1, , dextox: GET #1, , contox
+  GET #1, , berrambo: GET #1, , weather: GET #1, , wind
+  GET #1, , gt!: GET #1, , rside: GET #1, , roachdef
+  GET #1, , radint: GET #1, , armor: GET #1, , shield
+  GET #1, , dark: GET #1, , grabbed: GET #1, , vehicle: GET #1, , confu
+  GET #1, , hittox: GET #1, , asleep: GET #1, , sunscreen
+  GET #1, , invisible: GET #1, , udder: GET #1, , flare
+  GET #1, , coffee: GET #1, , tapenum: GET #1, , berfresh
+  GET #1, , elvislevel: GET #1, , grinchlevel: GET #1, , grinchzone
+  GET #1, , serum!: GET #1, , map: GET #1, , bsshoes
+  GET #1, , spacesuit: GET #1, , bergreen: GET #1, , berklutz
+  GET #1, , klutzdex: GET #1, , berregen: GET #1, , beryum
+  GET #1, , camosuit: GET #1, , pinsuit: GET #1, , notoxin
+  GET #1, , other2hitc: GET #1, , other2hitr: GET #1, , otherdam
+  GET #1, , tapeworm: GET #1, , turbo!: GET #1, , bulletsuit
+  GET #1, , xmono: GET #1, , ymono: GET #1, , mononum
+  GET #1, , inweb: GET #1, , ffgen: GET #1, , inglue
+  GET #1, , inbog: GET #1, , insand: GET #1, , hail
+  GET #1, , tent: GET #1, , berff: GET #1, , berhpmut: GET #1, , berhmmut
+  GET #1, , tentgrab: GET #1, , metshat: GET #1, , grinchstole
+  GET #1, , mindweb: GET #1, , repulse: GET #1, , ripehrs
+  GET #1, , spore: GET #1, , answer: GET #1, , skinac
+  GET #1, , starting: GET #1, , difficulty: GET #1, , finishedcastles
+  GET #1, , uvhelmet: GET #1, , neutronsuit
+  FOR i = 1 TO 4: GET #1, , dum: NEXT
+  n$ = bl
+  GET #1, , l: ber$ = SPACE$(l): FOR j = 1 TO l: GET #1, , n$: MID$(ber$, j, 1) = n$: NEXT j
+
+  FOR i = 2 TO 51: FOR j = 2 TO 21
+    GET #1, , sss(i - 1, j - 1, 1)
+  NEXT j, i
+  FOR i = 2 TO 51: FOR j = 2 TO 21
+    GET #1, , sss(i - 1, j - 1, 2)
+  NEXT j, i
+
+  CLOSE #1
+END SUB
+
+SUB saveit  '==============================================================
+ 
+  COLOR 10, 1: CLS : LOCATE 5, 10
+  LOCATE 7, 10: PRINT "Saving "; filin$
+
+  CLOSE #1
+  OPEN filin$ FOR BINARY AS #1
+  vdate& = versiondate: PUT #1, , vdate&
+
+  lll = LEN(name$): PUT #1, , lll: PUT #1, , name$
+  PUT #1, , ngoody: PUT #1, , npack: PUT #1, , ndropped: PUT #1, , nsafe
+  FOR i = 1 TO ngoody
+    lll = LEN(gdy(i)): PUT #1, , lll: PUT #1, , gdy(i)
+  NEXT i
+  FOR i = 1 TO npack
+    lll = LEN(bakpak(i)): PUT #1, , lll: PUT #1, , bakpak(i)
+  NEXT i
+  FOR i = 1 TO ndropped
+    lll = LEN(drgdy(i)): PUT #1, , lll: PUT #1, , drgdy(i)
+  NEXT i
+  FOR i = 1 TO nsafe
+    lll = LEN(saf(i)): PUT #1, , lll: PUT #1, , saf(i)
+  NEXT i
+  FOR i = 0 TO nberry: PUT #1, , berry$(i): NEXT i
+  FOR i = 1 + nberry TO 40: PUT #1, , berry$(nberry): NEXT i
+
+  FOR i = 1 TO ngoody
+    FOR j = 1 TO 12: PUT #1, , goody(i, j): NEXT j
+  NEXT i
+  FOR i = 1 TO npack
+    FOR j = 1 TO 12: PUT #1, , backpack(i, j): NEXT j
+  NEXT i
+  FOR i = 1 TO ndropped
+    FOR j = 1 TO 16: PUT #1, , drgoody(i, j): NEXT j
+  NEXT i
+  FOR i = 1 TO nsafe
+    FOR j = 1 TO 12: PUT #1, , safe(i, j): NEXT j
+  NEXT i
+  PUT #1, , nnear
+  FOR i = 1 TO nnear: FOR j = 1 TO 15: PUT #1, , ncre(i, j): NEXT j, i
+  FOR i = 0 TO 40: PUT #1, , berord(i): PUT #1, , knownb(i): NEXT i
+  FOR i = 2 TO 51: FOR j = 2 TO 21: PUT #1, , goodythere(i, j): NEXT j, i
+  FOR i = 0 TO 6: FOR j = -10 TO 10: PUT #1, , goodycastle(i, j): NEXT j, i
+  FOR i = 1 TO 20: FOR j = 1 TO 3: PUT #1, , localgoody(i, j): NEXT j, i
+  FOR i = 1 TO 10: FOR j = 1 TO 3: PUT #1, , radzone(i, j): NEXT j, i
+  FOR i = 1 TO 80: PUT #1, , ssdknown(i): NEXT i
+  FOR i = 1 TO 40: PUT #1, , lsdknown(i): NEXT i
+  FOR i = -10 TO 10: PUT #1, , xstairs(i): NEXT i
+  FOR i = -10 TO 10: PUT #1, , ystairs(i): NEXT i
+  FOR i = 1 TO 10: FOR j = 1 TO 3: PUT #1, , monozone(i, j): NEXT j, i
+  PUT #1, , str: PUT #1, , stradd: PUT #1, , dex: PUT #1, , dexadd
+  PUT #1, , con: PUT #1, , rr: PUT #1, , mr: PUT #1, , intl
+  PUT #1, , hitmax: PUT #1, , hits: PUT #1, , hunger: PUT #1, , fatigue!
+  PUT #1, , expr&: PUT #1, , lvl: PUT #1, , pmut: PUT #1, , mmut
+  PUT #1, , radsuit: PUT #1, , heatsuit: PUT #1, , reflecsuit
+  PUT #1, , flashlight: PUT #1, , gasmask: PUT #1, , sunglasses
+  PUT #1, , wetsuit: PUT #1, , mask: PUT #1, , boots
+  PUT #1, , pmutturns: PUT #1, , mmutturns: PUT #1, , inwater
+  PUT #1, , waterturns: PUT #1, , inpit: PUT #1, , zippy
+  PUT #1, , wpturns: PUT #1, , seed!: PUT #1, , vpage
+  PUT #1, , mainx: PUT #1, , mainy: PUT #1, , localx
+  PUT #1, , localy: PUT #1, , terrain: PUT #1, , terrf
+  PUT #1, , terrb: PUT #1, , currsym: PUT #1, , currf
+  PUT #1, , currb: PUT #1, , ncastle: PUT #1, , nruins
+  PUT #1, , castle: PUT #1, , castlelevel: PUT #1, , incastle
+  PUT #1, , dir
+  PUT #1, , lwall: PUT #1, , rwall: PUT #1, , twall: PUT #1, , bwall
+  PUT #1, , lwscr: PUT #1, , rwscr: PUT #1, , twscr
+  PUT #1, , bwscr: PUT #1, , dots: PUT #1, , xenter
+  PUT #1, , yenter: PUT #1, , xenterscr: PUT #1, , yenterscr
+  PUT #1, , enterdir: PUT #1, , bitit: PUT #1, , berstr
+  PUT #1, , berdex: PUT #1, , bercon: PUT #1, , berrr
+  PUT #1, , bermr: PUT #1, , berintl
+  PUT #1, , berac: PUT #1, , berpmut: PUT #1, , bermmut
+  PUT #1, , berconfuse: PUT #1, , berdet: PUT #1, , berblind
+  PUT #1, , berhic: PUT #1, , brandy: PUT #1, , berscare
+  PUT #1, , strtox: PUT #1, , dextox: PUT #1, , contox
+  PUT #1, , berrambo: PUT #1, , weather: PUT #1, , wind
+  PUT #1, , gt!: PUT #1, , rside: PUT #1, , roachdef
+  PUT #1, , radint: PUT #1, , armor: PUT #1, , shield
+  PUT #1, , dark: PUT #1, , grabbed: PUT #1, , vehicle: PUT #1, , confu
+  PUT #1, , hittox: PUT #1, , asleep: PUT #1, , sunscreen
+  PUT #1, , invisible: PUT #1, , udder: PUT #1, , flare
+  PUT #1, , coffee: PUT #1, , tapenum: PUT #1, , berfresh
+  PUT #1, , elvislevel: PUT #1, , grinchlevel: PUT #1, , grinchzone
+  PUT #1, , serum!: PUT #1, , map: PUT #1, , bsshoes
+  PUT #1, , spacesuit: PUT #1, , bergreen: PUT #1, , berklutz
+  PUT #1, , klutzdex: PUT #1, , berregen: PUT #1, , beryum
+  PUT #1, , camosuit: PUT #1, , pinsuit: PUT #1, , notoxin
+  PUT #1, , other2hitc: PUT #1, , other2hitr: PUT #1, , otherdam
+  PUT #1, , tapeworm: PUT #1, , turbo!: PUT #1, , bulletsuit
+  PUT #1, , xmono: PUT #1, , ymono: PUT #1, , mononum
+  PUT #1, , inweb: PUT #1, , ffgen: PUT #1, , inglue
+  PUT #1, , inbog: PUT #1, , insand: PUT #1, , hail
+  PUT #1, , tent: PUT #1, , berff: PUT #1, , berhpmut: PUT #1, , berhmmut
+  PUT #1, , tentgrab: PUT #1, , metshat: PUT #1, , grinchstole
+  PUT #1, , mindweb: PUT #1, , repulse: PUT #1, , ripehrs
+  PUT #1, , spore: PUT #1, , answer: PUT #1, , skinac
+  PUT #1, , starting: PUT #1, , difficulty: PUT #1, , finishedcastles
+  PUT #1, , uvhelmet: PUT #1, , neutronsuit
+  FOR i = 1 TO 4: PUT #1, , dum: NEXT
+  lll = LEN(ber$): PUT #1, , lll: PUT #1, , ber$
+
+  FOR i = 2 TO 51: FOR j = 2 TO 21
+    PUT #1, , sss(i - 1, j - 1, 1)
+  NEXT j, i
+  FOR i = 2 TO 51: FOR j = 2 TO 21
+    PUT #1, , sss(i - 1, j - 1, 2)
+  NEXT j, i
+ 
+  CLOSE #1
+
+END SUB
+

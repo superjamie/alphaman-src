@@ -1,0 +1,264 @@
+AlphaMan FAQ                                        updated:  August 1995
+Most recent version: 1.1
+
+Please direct all questions and suggestions to Jeff Olson:  
+Jeffrey Olson
+214 E. Sherwin Dr.
+Urbana, IL  61801  USA
+76473.225@compuserve.com.
+
+
+RELEASE INFORMATION  ------------------------------------------------------
+February 1995   AlphaMan 1.0 released.  Shareware by Jeff Olson.
+March 1995      AlphaMan 1.01 released.
+  Improvements:  Made food somewhat more plentiful.  Added a "fast fight" 
+  mode to bypass spacebar presses during combat.  Added an Easy and a 
+  Moderately Easy level of difficulty to assist beginners.  Fixed an 
+  annoying quirk of superglue traps.
+April 1995      AlphaMan 1.02 released.
+  Improvements:  Fixed bug that could crash game when character's hunger
+  went from "Very Hungry" to "Famished".  Made Invisibility, Quills and
+  Heightened Endurance somewhat more powerful to balance them out.
+May 1995        AlphaMan 1.03 released.
+  Improvements:  Fixed saved filename convention to properly handle odd
+  characters such as ? and + in character's name.
+June 1995       AlphaMan 1.1 released.
+  Improvements:  Game now remembers recent castle and lair levels, so
+  remapping is no longer necessary.  For example, most dropped items will
+  still be there when character returns to a place already visited.
+  Now separate "Halls of the Dead" for the different difficulty level. 
+  Now an experience bonus at the end of the game for each "subquest"
+  successfully completed, an additional bonus if the game was won, and a
+  further bonus if it was won in a short amount of time.
+  The Main Map key (F5) now shows regions where you've visited (useful for
+  looking for Monoliths).
+  Several new devices have been added.
+  ** There is a known bug with version 1.1:  if you teleport out of a castle
+     and then re-enter it without first entering a different castle, peculiar
+     things may happen when you go up/down stairs.  This is related to the
+     castle level saving.  It should never crash your computer, however.
+
+
+WHAT IS ALPHAMAN?  --------------------------------------------------------
+   AlphaMan (Copyright (c) 1995 Jeffrey R. Olson) is an adventure game set
+on Earth in the future, following a nuclear disaster.  You will take the role
+of a mutated human who is struggling to save the planet from annihilation.
+You will be pitted against hideously mutated plants and animals, traps and
+snares of all sorts, and several varied adversaries whom you will have to
+defeat in order to complete your mission.  At your disposal are a broad
+variety of technological relics and mutated substances which you will acquire
+along the way, as well as your own powers and guile.  AlphaMan has occasional
+humorous twists, and uses colorful text-based graphics in the spirit of Rogue
+or NetHack.  Requires 640K, color.  AlphaMan is loosely based on Gamma World
+by James Ward of TSR Hobbies.
+
+
+WHERE CAN ALPHAMAN BE FOUND?  ---------------------------------------------
+   The current release of AlphaMan (currently 1.1) can be found via FTP at 
+ftp.win.tue.nl         in  /pub/games/alphaman.  
+   The most recent major update (currently 1.1) can likely be found at
+ftp.dungeon.com        in  /pub/msdos/games/Misc,
+ftp.indirect.com       in  /pub/software/games,
+ftp.inf.tu-dresden.de  in  /.4.1/vol4/ms-dos/games/roleplay,
+ftp.funet.fi           in  /pub/msdos/games/rpg.
+
+
+WHAT DO THE CHARACTER STATS MEAN?  ----------------------------------------
+   Your character will have six basic personal attributes:  Strength
+(physical power), Dexterity (agility and quickness), Constitution (fortitude
+and health), Radiation Resistance (susceptibility to radiation), Mental
+Resistance (susceptibility to mental attacks) and Intelligence (learning
+ability).  These characteristics generally are in the range 3-18 (higher is
+"better"), but some mutations, devices, etc. can raise or lower these.  Your
+characteristics may increase with time as you gain experience as well.
+   There is no limit to how high your stats can go.  I have had characters
+finish the game with a Strength of 38, a Dexterity of 36, and no stat below
+18.  I've also finished the game (and won) with a Dexterity of -1.
+   Your character also has Hit Points.  These reveal to how much damage you
+can sustain before dying.  You lose hit points as you are damaged by attacks
+from creatures, falling into pits, etc.  You heal hit points back over time,
+and some devices and substances will heal you faster.  In addition, you will
+gain more hit points as you become a more experienced adventurer.
+
+
+HOW DO THE MUTATIONS WORK?  -----------------------------------------------
+   A character has a physical and a mental mutation.  The following is a
+list of all mutations currently implemented, and a brief overview of their
+usefulness.  A more detailed description is given in the spoiler file
+alphaman.spl
+
+Physical mutations:
+Electrical Generation:  usable every few rounds, this attack causes
+   electrical damage to any creature touching you during the round used.
+   The damage done is significant, but not all creatures need to touch you
+   to hurt you!
+Heightened Dexterity:  this mutation raises your dexterity to 19-23,
+   subject to reduction by encumbrance in the usual way.
+Heightened Strength:  this mutation raises your strength to 19-23,
+  subject to reduction by fatigue in the usual way.
+Heightened Vision:  allows you to see long distances, to see invisible
+   creatures, to search more effectively, and to hit more often in combat.
+Tough Exoskeleton:  lowers your armor class, making you harder to hit in
+   combat and reducing your damage sustained.  It encumbers you slightly.
+Sonic Attack:  usable every 12 rounds, this does burning damage to
+   all nearby creatures not protected from heat.
+Blood Structure Change:  raises your constitution to 19-23, making you
+   more robust and giving you more hit points and poison resistance.
+Reflective Skin:  raises your radiation resistance to 19-23, and makes you
+   more resistant to lasers and heat.  You take only 1/2 damage from laser
+   attacks, and 2/3 damage from heat attacks.
+Laser Generation:  usable every 13 rounds, this attack does laser damage
+   to a selected target if it successfully hits.  It does substantial damage.
+Heightened Endurance:  you tire much less easily and regain lost hit points
+   more rapidly, and you can sustain a much longer duration underwater.  You
+   cas also carry twice the weight before becoming encumbered.
+Foul Musk:  usable every 14 rounds, you cause nearby creatures to
+   get sick and flee for a variable duration of time.
+Acidic Saliva:  usable every 8 rounds, this attack causes acid damage to a
+   selected target if you successfully hit.  It is easier to hit at close
+   range.  This does appreciable damage.
+Poison Claws:  you cause poison damage to a selected target if a successful
+   hit is scored.  You can inject poison every 5 rounds.
+Heightened Speed:  usable about every 30 rounds, you can double your speed
+   for 10-20 rounds, allowing you extra attacks or movement.  This mutation
+   may be too powerful in its present form!
+Radiation Generation:  usable every 15 rounds, you can generate a beam of
+   radiation capable of damaging creatures in line with a selected target.
+Quills:  these provide protection by causing damage to any creature touching
+   you.  You can also shoot them at an opponent every few rounds.
+Tenticles:  you can entwine a selected target and cause constriction damage
+  every round.  While constricting, you are able to do other things.  If you
+  move, you will release your tenticles.
+
+Mental mutations:
+Military Genius:  you are a natural soldier, hitting more often and
+   doing more damage than normal mutants.
+Scientific Genius:  your intelligence is raised to 19-23, and you can
+   construct new tech devices with parts and energy salvaged by dismanteling
+   old ones.  You can only make devices which you have seen before and figured
+   out, and often must try several times before you figure out how to make the 
+   desired device.
+Heightened Willpower:  your mental resistance is raised to 19-23, and you
+   are able to temporarily raise all your stats and your hit points.
+Mental Blast:  usable every 12 rounds, you can attempt to overload the
+   mental synapses of a selected opponent to do damage.  This attack does
+   substantial damage, but some of the more dangerous critters (for example, 
+   most of the molds and funguses) resist mental attacks.
+Teleportation:  you can mentally transport yourself short or long distances.
+   You must be rested to teleport, and it can only be used infrequently.
+Mental Healing:  you can heal yourself at a rate of 3 hit points / round.
+   You must sit motionless to do this, however, and it is tiring.  It is
+   nice to be able to enter unfamiliar situations with maximum hits, though.
+Force Field:  while activated, you take reduced damage (typically
+   2/3 normal) from all attacks.  It is tiring to use, however.
+Molecular Disruption:  usable every 12 rounds, this mental assault can
+   totally destroy creatures or other objects at which it is targeted.
+   Useful for going through walls.
+Life Leech:  you can steal hit points from nearby monsters and add
+   them to your own.  This is usable every 4 rounds.
+Invisibility:  you can mentally bend light rays around you, which makes you
+   difficult to see and less susceptible to lasers.  Lasts about 12 rounds.
+   You are also less susceptible to blindness attacks.
+Cryogenics:  you can mentally freeze an opponent, doing progressively
+   more damage as the opponent freezes. It is usable every 3 rounds.
+   Damage increases exponentially, doing 1d6, 2d6, 4d6, 8d6 etc. on
+   progressive "hits", so it is extremely useful against powerful opponents.
+Hypnosis:  you can put opponents to sleep by a sheer force of will.  This
+   ability is usable every 3 rounds.
+Psychokinesis:  you are able to disrupt matter to create grenade-like
+   explosions.  This ability is tiring, and can only be used every 15 rounds.
+
+
+WHAT USE ARE TECH DEVICES?  -----------------------------------------------
+  As a character progress, (s)he will accumulate technological relics which
+can be extremely useful.  AlphaMan includes over 125 different devices,
+including tech weapons like the Laser Pistol, Flamethrower, etc., various
+grenades, vehicles like the Hovercraft or Golf Cart, protective suits like
+the Radiation Suit or the Bulletproof Vest, and a myriad of miscellaneous
+gadgets.
+   Many devices one can find are truly useless, such as the Toaster or
+Leafblower.  Some have more subtle uses.  A Microwave Oven, for example,
+can prematurely ripen berries (see below).  A Home Movie Projector will
+put critters to sleep.  Some devices can be dangerous to use, like the
+Porta-Potty or the Kevorkian Machine.  Some devices are of obvious use, such
+as the Medkit, which will restore lost hit points and remove the detrimental
+effects of poison.  One particularly useful device is the Microcomputer (or
+the Computer Workstation) which can be used to reveal a variety of
+information about weapons, berries, devices, creatures, etc.
+  A section describing the usefulness of each tech device is included in the
+spoiler file alphaman.spl
+
+
+WHAT USE ARE BERRIES?  ----------------------------------------------------
+  Mutated berries provide a variety of effects, and can be eaten or thrown
+depending on the type of berry.  AlphaMan includes over 30 different types of
+berries which do things like turn you invisible if eaten, heal lost hit
+points, explode, etc.  What a particular berry will do is generally not known
+until that particular type of berry has been eaten (or a Chemical Analyzer
+has been used on it), so some dangerous eating experimentation must generally
+be done.  Some berries, if thrown at other creatures, will reveal their
+nature that way (you may, for example, toughen the skin of the creature or
+turn it invisible).
+  You can occasionally find nectar or extract as well (or make it from a
+berry using a Still);  these are more potent versions of berries.  The
+usefulness of each berry is described in the spoiler file alphaman.spl.
+
+
+WHICH WEAPONS/ARMOR ARE BEST?  --------------------------------------------
+See the spoiler file alphaman.spl for the complete details of the base damage
+and to hit bonus for each weapon, armor and shield.  The following is a list,
+in increasing order of quality, of all weapons, armor and shields.
+
+Dagger               Shuriken           Heavy Fur              Small Wooden
+Club                 Dart               Cured Hides            Large Wooden
+Pitchfork            Throwing Axe       Ringmail               Small Metal
+Hand Axe             Arrow              Chainmail              Large Metal
+Mace                 Javelin            Fiberglass             Small Titanium
+Short Sword          Wab Boomerang      Plastic                Large Titanium
+Flail                Lawn Dart          Titanium Chainmail     Small Duralloy
+Long Sword           Spear              Platemail              Large Duralloy
+Halberd              Titanium Dart      Titanium Platemail
+Titanium Dagger      Titanium Javelin   Duralloy Chainmail
+Titanium Sword       Duralloy Arrow     Duralloy Platemail
+Titanium Axe         Duralloy Spear
+Duralloy Pitchfork
+Duralloy Sword    
+
+
+ELVIS, GILLIGAN, ETC  -----------------------------------------------------
+  Your overall mission is to save the world from the Grinch and his nerve
+toxin.  You must complete a series of missions in order to accomplish this
+goal.  You will usually need to visit 5 different castles in order to
+properly equip yourself.  Note that you DO NOT need to visit these castles
+in any particular order, despite the suggestions of the Tape Recorders you'll
+find along the way.  
+You'll need the following items: 
+1.  A map from the Munsters in order to locate the Grinch's hidden castle.
+2.  Buzz Aldrin's Space Suit to protect yourself from the radiation which
+    protects the Grinch's castle.
+3.  Elvis' Blue Suede Shoes so you can cross the bottomless chasm that 
+    surrounds the Grinch's castle.
+4.  Donald Trump's Presidential ID card to get through the locked door into
+    the castle.
+5.  Gilligan's Keptibora serum to protect yourself from the nerve toxin which
+    permeates the Grinch's castle.
+Each castle has its own traps and tricks.  See the spoiler file for more
+information about the castles.
+
+
+WHY ELVIS, GILLIGAN, ETC?  ------------------------------------------------
+  AlphaMan has a deliberate lighthearted feel to it.  The bizarre and
+peculiar cast of special characters was chosen, in part, to poke fun at
+the more banal aspects of Americana.  Elvis is a (living?) icon, a national
+treasure.  No one in my generation could have missed the appeal of Gilligan
+and the castaways, or the Munsters, save for those few with progressive,
+left-wing, hand-wringing parents who forbade the watching of TV.  And who
+hasn't asked him/herself the question "Whatever became of Buzz Aldrin, second
+man on the moon"?
+
+
+WHAT NEXT?  ---------------------------------------------------------------
+  I am working on a SuperVGA game in the same genre as AlphaMan, but which
+will have a more serious and long-term mission.  I hope to have it available
+within 6-9 months, and will send the shareware version to everyone who has
+registered AlphaMan.

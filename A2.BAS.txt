@@ -1,0 +1,2159 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE SUB MaybeMessPause (fc%, bc%)
+DECLARE FUNCTION LoadMaps% (mode%)
+DECLARE SUB clpage2 ()
+DECLARE SUB CrDamAlter (ch%, dam%, damtyp%)
+DECLARE FUNCTION CaveCreat% ()
+DECLARE SUB DrawCaves ()
+DECLARE FUNCTION LairCreat% (strength%)
+DECLARE SUB RemoveLocalGoody (mlocx%, mlocy%, dropped%)
+DECLARE SUB Scatter (num%)
+DECLARE SUB Mousify ()
+DECLARE SUB Awaken (i%)
+DECLARE SUB RemoveWall (sym%, x%, y%, removed%)
+DECLARE SUB DrawSpecial (special%)
+DECLARE FUNCTION RoomIt% CDECL (BYVAL xr%, BYVAL xl%, BYVAL yb%, BYVAL yt%)
+DECLARE SUB SplitCre (ch%)
+DECLARE SUB CreatSort CDECL (BYVAL nnear%, tentgrab%, SEG nn%)
+DECLARE SUB PrintJnk (a%, b%, c%)
+DECLARE SUB ErasePut ()
+DECLARE SUB LjnkBig (a%, b%, c%, d%, e%, f%, a$, n%, i%)
+DECLARE SUB ljnk (a%, b%, c%, i%)
+DECLARE SUB Cave (numrms%, rms%())
+DECLARE SUB Lair CDECL (xr%, xl%, yb%, yt%, xs%, ys%)
+DECLARE SUB CrDef (ch%, atktyp%, roll%, missspec%, r%)
+DECLARE SUB TeleCreat (x%, y%)
+DECLARE SUB AddToDrop (num%)
+DECLARE SUB ccls CDECL (BYVAL pag%)
+DECLARE SUB cRandomize CDECL (BYVAL seed!)
+DECLARE SUB ffEffect (damage%, ffkill%)
+DECLARE SUB SetDark (dark%, old%, chang%)
+DECLARE SUB Level (newlev%, a$)
+DECLARE SUB DumpBuffer ()
+DECLARE SUB DamSuit (i%, dam%)
+DECLARE SUB ChangeDark ()
+DECLARE SUB KillCreat (i%)
+DECLARE SUB RemoveGoody (i%, pak%)
+DECLARE SUB RemoveCreat (i%)
+DECLARE SUB MakeCreature (x%, y%, border%, fake%)
+DECLARE SUB MakeStuff (i%)
+DECLARE SUB FindDot CDECL (x%, y%, BYVAL i%)
+DECLARE SUB DrawRoom (xdoor%, ydoor%, dir%, doorsym%, sm%)
+DECLARE SUB AddRoom (x%, y%, didit%, sm%)
+DECLARE SUB DotCorn ()
+DECLARE SUB DotIt (x%, y%)
+DECLARE SUB RemoveWall (sym%, x%, y%, removed%)
+DECLARE SUB DisplayGoodies (pak%)
+DECLARE SUB DisplayCharacter ()
+DECLARE SUB Dead (spec%)
+DECLARE SUB PutCreat (i%)
+DECLARE SUB ShowHits ()
+DECLARE SUB EraseCreat (i%)
+DECLARE SUB PauseForKey ()
+DECLARE SUB SetCombatStats ()
+DECLARE SUB FindMPos (i%, mx%, my%, mlocx%, mlocy%)
+DECLARE SUB FindDxDy (x%, y%, dx%, dy%, n%)
+DECLARE SUB MessPause (fc%, bc%)
+DECLARE SUB ClearMess ()
+DECLARE SUB putsym (sym%, col%, row%, fcolr%, bcolr%, pag%)
+DECLARE SUB GetSym (sym%, col%, row%, fcolr%, bcolr%, pag%)
+DECLARE SUB PrintMessage (fcolr%, bcolr%)
+DECLARE SUB box CDECL (BYVAL lc%, BYVAL rc%, BYVAL tc%, BYVAL bc%, BYVAL nl%, BYVAL fclr%, BYVAL pag%)
+DECLARE SUB Wrong ()
+DECLARE SUB CreatMove (i%, moved%)
+DECLARE SUB CreatAttack (i%, damage%)
+DECLARE FUNCTION RollDice% CDECL (BYVAL dsize%, BYVAL nroll%, BYVAL nuse%)
+DECLARE FUNCTION BadMoveCreat% CDECL (BYVAL dx%, BYVAL dy%, BYVAL nn%, BYVAL cre%, SEG n%)
+DECLARE FUNCTION cFindDxDy% CDECL (BYVAL x%, BYVAL y%, BYVAL n%)
+DECLARE FUNCTION creatnam$ (typ%, num%)
+DECLARE FUNCTION Creature% (typ%, stat%)
+DECLARE FUNCTION jnk$ (num%, strt%, leng%)
+DECLARE FUNCTION Nc% ()
+DECLARE FUNCTION Nf% ()
+DECLARE FUNCTION cRd% CDECL (BYVAL x%, BYVAL y%)
+DECLARE FUNCTION cRoll% CDECL (BYVAL max%)
+DECLARE FUNCTION Terr$ (i%)
+DECLARE FUNCTION SmartCre% (n%)
+DECLARE FUNCTION Insect% (n%)
+DECLARE FUNCTION Yuck% (n%)
+DECLARE FUNCTION Plant% (n%)
+DECLARE FUNCTION SameRoom% (x%, y%)
+DECLARE FUNCTION Der$ (kil%, n%, i%)
+DECLARE FUNCTION BerEff$ (i%)
+DECLARE FUNCTION ssdnm$ (i%)
+DECLARE FUNCTION lsdnm$ (i%)
+DECLARE FUNCTION WepNm$ (i%)
+DECLARE FUNCTION ShNm$ (i%)
+DECLARE FUNCTION ArmNm$ (i%)
+DECLARE FUNCTION kolr$ (i%)
+
+DEFINT A-Z
+REM $INCLUDE: 'alpha.dc2'
+REM $INCLUDE: 'alpha.dec'
+
+END
+
+SUB AttackCreat (dx, dy)
+  okfester = true: DumpBuffer: SetCombatStats
+  ch = BadMoveCreat%(dx, dy, nnear, 0, ncre(0, 0))
+  IF ch = 0 THEN
+    putsym 250, localx + dx, localy + dy, 8, 0, -1
+    ljnk 50, 1, 12, 1: PrintMessage 4, 0: GOTO eac
+  END IF
+  typ = ncre(ch, 1): Awaken ch
+  wepnum = 0
+  FOR i = 1 TO ngoody
+    IF goody(i, 1) = -3 THEN wepnum = i: EXIT FOR
+  NEXT i
+  ClearMess
+  rol = cRoll(20)
+
+  IF wepnum > 0 THEN
+    hitbon = goody(wepnum, 6) + goody(wepnum, 9)
+    siz = goody(wepnum, 5): dic = goody(wepnum, 4)
+    wepadddam = goody(wepnum, 10)
+  ELSE
+    hitbon = -3: siz = 3: dic = 1
+  END IF
+
+  IF ncre(ch, 7) \ 1000 = 0 THEN
+    IF NOT ((pmut = 4 AND berpmut = 0) OR (berdet > 0)) THEN hitbon = hitbon - 3
+  END IF
+
+  IF ((ncre(ch, 11) AND 1) = 0) THEN  'asleep
+    hitbon = hitbon + 4
+  ELSEIF (ncre(ch, 11) AND 2) THEN    'blind
+    hitbon = hitbon + 3
+  ELSEIF (ncre(ch, 11) AND 28) THEN   'confused, sick or burping
+    hitbon = hitbon + 2
+  END IF
+
+  IF inglue THEN hitbon = hitbon - 2
+  IF inpit THEN hitbon = hitbon - 2
+  IF inbog THEN hitbon = hitbon - 3
+  IF insand THEN hitbon = hitbon - 4
+  IF inweb THEN hitbon = hitbon - 4
+
+  needed = tohitbase - str2hit - other2hitc - hitbon - ncre(ch, 9)
+  IF incastle = 0 THEN needed = needed + weather - 2
+  needed = needed - difficulty
+  IF needed > 18 THEN needed = 18 ELSE IF needed < 5 THEN needed = 5
+
+  CrDef ch, 1, rol, misspec, 0
+
+  IF rol >= needed THEN
+    dam = RollDice(siz, dic, dic) + strdam + otherdam + wepadddam
+    IF dam < dic THEN dam = dic
+    zz = SQR(lvl) * 100
+    dam = dam * (4.5 + RND * zz / 100) / 5
+    IF rol = 20 THEN ljnk 50, 13, 13, 2: dam = dam * 2
+    CrDamAlter ch, dam, 1
+    IF typ = gworm THEN SplitCre ch ELSE ncre(ch, 2) = ncre(ch, 2) - dam
+    LjnkBig 238, 31, 8, 0, 0, 0, Der$(false, ch, 1), 1, 1
+    dam1 = 0: dam2 = 0
+    IF ncre(ch, 10) AND 4096 THEN dam1 = cRoll(4)
+    IF ncre(ch, 10) AND 8192 THEN dam2 = cRoll(10)
+    dam = dam1 + dam2: ffEffect dam, ffkill
+    IF ffkill THEN
+      MessPause 4, 0: ClearMess
+      LjnkBig 83, 1, 5, 207, 1, 19, jnk$(205, 39, 21), 1, 2
+    END IF
+    IF dam > 0 THEN
+      ljnk 86, 53, 16, 2: hits = hits - dam: ShowHits
+      IF hits < 0 THEN st1 = jnk$(296, 61, 8) + bl + Der$(true, ch, 3): Dead 0
+    END IF
+    IF ncre(ch, 2) < 0 THEN KillCreat ch: okfester = false
+  ELSEIF misspec = 0 THEN
+    LjnkBig 50, 33, 10, 0, 0, 0, bl + Der$(false, ch, 1), 1, 1
+    IF typ = bush THEN l2 = l1: ljnk 50, 43, 14, 1
+    IF rol = 1 THEN
+      ljnk 51, 1, 42, 1: ljnk 52, 1, 41, 2
+    END IF
+  END IF
+  IF okfester AND (ncre(ch, 1) = fester) THEN ljnk 382, 1, 31, 2: RemoveCreat ch  'NOT typ!
+  MaybeMessPause 5, 0
+  fatadd! = fatig! + 4
+eac:
+END SUB
+
+SUB Cave (numrms, rms())
+  param1 = cRoll(cRoll(1000)): clpage2
+  numrms = -1     '0 to 7
+  FOR i = 3 TO 50: FOR j = 3 TO 20: putsym 219, i, j, wallcolr, 0, 2: NEXT j, i
+  box 2, 51, 2, 21, 1, wallcolr, 2
+
+  x = cRoll(30) + 10: y = cRoll(10) + 5: tries = 0
+DO
+  bad = false: tries = tries + 1
+  FOR j = 0 TO numrms
+    dx = x - rms(j, 0): dy = y - rms(j, 1)
+    differ = cRd(dx, 1.3 * dy)
+    IF differ < 10 THEN bad = true
+  NEXT
+  IF bad THEN
+    GOSUB cavefdot
+  ELSE
+    rx = cRoll(3): ry = cRoll(2): GOSUB caverm
+  END IF
+  GOSUB meander
+LOOP UNTIL numrms = 7 OR tries > 200
+
+FOR iextra = 1 TO param1: GOSUB cavefdot: GOSUB meander: NEXT iextra
+
+FOR i = 3 TO 50: FOR j = 3 TO 20
+  GetSym sym, i, j, fc, bc, 2
+  IF sym = 32 THEN putsym 250, i, j, 8, 0, 2
+NEXT j, i
+FOR i = 2 TO 51: putsym 219, i, 2, wallcolr, 0, 2: putsym 219, i, 21, wallcolr, 0, 2: NEXT i
+FOR j = 3 TO 20: putsym 219, 2, j, wallcolr, 0, 2: putsym 219, 51, j, wallcolr, 0, 2: NEXT j
+EXIT SUB
+
+meander:
+  putsym 250, x, y, 8, 0, 2
+  goon = true: numdots = 0
+  WHILE goon
+    FOR i = 1 TO 10
+      bad = false: dx = 0: dy = 0
+      SELECT CASE cRoll(3)
+        CASE 1 TO 2: dx = 2 * cRoll(2) - 3
+        CASE ELSE:   dy = 2 * cRoll(2) - 3
+      END SELECT
+      xnew = x + dx: ynew = y + dy
+      IF xnew < 3 OR xnew > 50 OR ynew < 3 OR ynew > 20 THEN bad = true
+      IF dx THEN
+        FOR j = 0 TO dx STEP dx: FOR k = -1 TO 1
+          GetSym sym, xnew + j, ynew + k, fc, bc, 2
+          IF (sym <> 219 AND sym <> 32) THEN bad = true
+        NEXT k, j
+      ELSE
+        FOR j = -1 TO 1: FOR k = 0 TO dy STEP dy
+          GetSym sym, xnew + j, ynew + k, fc, bc, 2
+          IF (sym <> 219 AND sym <> 32) THEN bad = true
+        NEXT k, j
+      END IF
+      IF NOT bad THEN
+        x = xnew: y = ynew: putsym 250, x, y, 8, 0, 2: numdots = numdots + 1
+        EXIT FOR
+      END IF
+    NEXT i
+    IF bad THEN goon = false
+  WEND
+RETURN
+
+caverm:
+  FOR i = -rx TO rx: FOR j = -ry TO ry
+    GetSym sym, x + i, y + j, fc, bc, 2
+    IF sym = 219 OR sym = 250 THEN putsym 32, x + i, y + j, 8, 0, 2
+  NEXT j, i
+  numrms = numrms + 1
+  rms(numrms, 0) = x: rms(numrms, 1) = y
+RETURN
+
+cavefdot:
+  found = false
+  WHILE NOT found
+    x = cRoll(50) + 1: y = cRoll(20) + 1
+    GetSym sym, x, y, fc, bc, 2
+    IF sym = 32 OR ((sym = 250) AND (cRoll(10) = 1)) THEN found = true
+  WEND
+RETURN
+END SUB
+
+FUNCTION CaveCreat
+SELECT CASE cRoll(100)
+  CASE 1 TO 60               'Anywhere critters
+    maxcre = 3 + 3.49 * lvl + ncastle
+redocc1:
+    l = cRoll(maxcre)
+    SELECT CASE l
+      CASE 3, 4, 8, 10, 13, 15, 20, 22, 24, 30     '15 is chamel, 30 is kbee
+      CASE 31, 33, 40, 43, 45, 48, 53, 57, 60, 61  '48 is grizz,  61 is Tricer
+      CASE ELSE: GOTO redocc1
+    END SELECT
+  CASE 61 TO 97              'terrain critters
+    maxcre = lvl: IF maxcre > 17 THEN maxcre = 17
+    l = cRoll(maxcre)
+    SELECT CASE cRoll(4)
+      CASE 1: l = ncreat + l
+      CASE 2: l = ncreat + crecas + l
+      CASE 3: l = ncreat + crecas + crefor + l
+      CASE 4: l = ncreat + crecas + crefor + creswa + l
+    END SELECT
+  CASE ELSE                   'water
+    maxcre = 1 + 1.5 * lvl: IF maxcre > creh2o THEN maxcre = creh2o
+    l = ncreat + crecas + crefor + creswa + crepla + cRoll(maxcre)
+END SELECT
+CaveCreat = l
+END FUNCTION
+
+SUB CrDef (ch, atktyp, rol, missspec, r)
+  typ = ncre(ch, 1)
+  missspec = 0
+  IF r < 1 THEN
+    pp = cRoll(20)
+    SELECT CASE typ
+      CASE gill
+        IF (pp < 18) AND (atktyp <> 26) THEN
+          rol = 1: missspec = 1: a = 299: b = 46: c = 23: d = 300
+          SELECT CASE cRoll(5)
+            CASE 1, 2: e = 1: f = 26  'coconuts
+              hits = hits - RollDice(lvl / 2, 3, 3): ShowHits
+              IF hits < 0 THEN
+                ljnk a, b, c, 1: ljnk d, e, f, 2: MessPause 12, 0
+                st1 = jnk$(380, 47, 16): Dead 0: EXIT SUB
+              END IF
+            CASE 3: e = 27: f = 21   'glue
+              inglue = true: fatadd! = fatadd! + 3
+            CASE 4: d = 116: e = 35: f = 30   'hair tonic
+              berhic = berhic + cRoll(4): ber$ = "aaaChoo!"
+            CASE ELSE: e = 48: f = 21     'glasses
+          END SELECT
+        END IF
+      CASE mara, mary, ging, mrshow, ivana, bunny
+        IF pp < 12 + 6 * (typ = bunny OR typ = ivana) THEN
+          rol = 1: missspec = 2
+          a = 301: b = 1: c = 29: dd = 301: ee = 31: ff = 10
+          fatadd! = 0
+        END IF
+      CASE cubs
+        IF pp < 6 THEN
+          rol = 1: missspec = 3
+          a = 299: b = 46: c = 23: d = 301: e = 44: f = 24
+        END IF
+    END SELECT
+    IF c > 0 THEN ljnk a, b, c, 1
+    IF f > 0 THEN ljnk d, e, f, 2
+    IF ff > 0 THEN LjnkBig dd, ee, ff, 0, 0, 0, Der$(false, ch, 1), 1, 2
+  END IF
+END SUB
+
+SUB CreatAttack (inew, damage)
+  i = inew: ClearMess
+  damage = 0: showchan = 40: touch = false
+  typ = ncre(i, 1): cx = ncre(i, 4): cy = ncre(i, 5)
+  FOR j = 6 TO 14 STEP 2
+    ppp = Creature(typ, j): ppp1 = Creature(typ, j + 1)
+    atype = ppp1 \ 100: attackrange = ppp1 MOD 100
+    astr = ppp \ 100: tohit = ppp MOD 100
+    IF atype = 0 THEN EXIT FOR
+    SELECT CASE typ
+      CASE robot, rdro, sdro, ddro
+        astr = ncre(i, 14) MOD 10: tohit = ncre(i, 14) \ 100
+        attackrange = (ncre(i, 14) \ 10) MOD 10
+      CASE webspid
+        astr = ncre(i, 14) MOD 100: tohit = (ncre(i, 14) \ 100)
+    END SELECT
+    range! = cRd%(cx, cy): IF range! > attackrange THEN EXIT FOR
+
+    SELECT CASE atype
+      CASE 2: tohit = tohit - ac * .7                         'radiation
+      CASE 8, 13: tohit = mr - tohit - 4 * (berscience > 0)   'mentals
+      CASE 9: tohit = tohit - ac + (armor - 2 - shield \ 2)   'electric
+        SELECT CASE armor
+          CASE 1, 2, 3, 4, 5, 8, 9: tohit = tohit - 4
+          CASE 6, 7, 10, 11: tohit = tohit + 6
+        END SELECT
+        SELECT CASE shield
+          CASE 1 TO 6: tohit = tohit - 2
+          CASE 7, 8: tohit = tohit + 3
+        END SELECT
+      CASE 14, 16, 22, 23, 27: tohit = tohit - 4              'no AC depend
+      CASE 18: tohit = tohit - ac * .5                        'spores
+      CASE 20, 21: tohit = tohit + mr \ 2 - 6                 'attrac,deevol
+      CASE ELSE: tohit = tohit - ac
+    END SELECT
+    IF ncre(i, 7) \ 1000 = 0 THEN
+      IF NOT ((pmut = 4 AND berpmut = 0) OR (berdet > 0)) THEN tohit = tohit - 3
+    END IF
+    IF beryum > 0 THEN tohit = tohit - 4
+    IF asleep THEN
+      tohit = tohit - 4
+    ELSEIF berblind THEN
+      tohit = tohit - 3
+    ELSEIF berhic OR berconfuse THEN
+      tohit = tohit - 2
+    END IF
+    IF zippy < 0 THEN tohit = tohit - 3 ELSE IF zippy > 0 THEN tohit = tohit + 3
+    IF (bergreen > 0) AND (typ = herm) THEN tohit = tohit - 5
+    tohit = tohit + difficulty
+    IF tohit > 17 THEN tohit = 17 ELSE IF tohit < 5 THEN tohit = 5
+    IF (ncre(i, 13) AND (2 ^ (j \ 2 - 2))) AND (atype = 12) THEN tohit = 0: showchan = 1
+
+    rol = cRoll(20): dam = 0
+    IF rol >= tohit THEN
+      c = 0: f = 0: cc = 0
+      SELECT CASE atype
+        CASE 8, 13, 20, 21, 27
+          IF mindweb AND (cRoll(10) = 1) THEN
+            mindweb = 0: ljnk 111, 14, 23, 1: MessPause 10, 0
+          END IF
+          IF mindweb THEN
+            LjnkBig 114, 21, 23, 0, 0, 0, Der$(false, i, 1), 1, 1
+            ljnk 114, 44, 15, 2: damage = -1: GOTO nxcreatk
+          END IF
+        CASE 17
+          IF berfresh GOTO nxcreatk
+      END SELECT
+      SELECT CASE atype
+        CASE 1  'kinetic
+          siz = 6: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr): DamSuit 0, dam
+          IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+          IF damage <> 0 THEN a = 53: b = 11: c = 20 ELSE a = 53: b = 1: c = 10
+          damage = damage + dam
+          IF attackrange > 1 THEN a = 53: b = 31: c = 20
+          IF attackrange = 1 THEN touch = true
+        CASE 2  'radiation
+          siz = 5: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr)
+          IF rr > 1 THEN dam = dam * 12 / (rr + 1) ELSE dam = dam * 5
+          DamSuit 1, dam
+          IF (pmut = 8 AND berpmut = 0) THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+          IF dam < 1 THEN dam = 1
+          damage = damage + dam: a = 54: b = 1: c = 15
+        CASE 3  'poison type 1
+          siz = 4: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr)
+          IF con > 2 THEN dam = dam * 12 / (con + 1) ELSE dam = dam * 4
+          IF (pmut = 7 AND berpmut = 0) THEN dam = (dam + 1) / (2 - 2 * (berhpmut > 0))
+          damage = damage + dam:  a = 54: b = 28: c = 13
+          IF cRoll(50) <= astr THEN
+            IF NOT (pmut = 7 AND berpmut = 0 AND cRoll(5) > 1) THEN
+              dex = dex - 1: IF RND < .9 THEN dextox = dextox + 1
+              IF rdisp = 1 THEN DisplayCharacter
+            END IF
+          END IF
+          IF attackrange = 1 THEN touch = true
+        CASE 4  'type 2
+          siz = 4: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr)
+          IF con > 1 THEN dam = dam * 7 / (con + 1) ELSE dam = dam * 4
+          IF (pmut = 7 AND berpmut = 0) THEN dam = (dam + 1) / (2 - 2 * (berhpmut > 0))
+          damage = damage + dam
+          IF cRoll(10) <= astr THEN
+            IF NOT (pmut = 7 AND berpmut = 0 AND cRoll(5) > 1) THEN
+              str = str - 1: IF RND < .9 THEN strtox = strtox + 1
+              IF rdisp = 1 THEN DisplayCharacter
+            END IF
+          END IF
+          SetCombatStats
+          IF attackrange = 1 THEN touch = true
+          a = 54: b = 28: c = 13
+        CASE 5  'type 3
+          IF cRoll(10) <= astr THEN
+            IF NOT (pmut = 7 AND berpmut = 0 AND cRoll(5) > 1) THEN
+              damg = cRoll((lvl + astr) \ 2): hitmax = hitmax - damg
+              IF cRoll(10) <> 1 THEN hittox = hittox + damg
+              con = con - 1: IF RND < .9 THEN contox = contox + 1
+              IF rdisp = 1 THEN DisplayCharacter
+            END IF
+          ELSEIF cRoll(3) = 1 AND NOT (pmut = 7 AND berpmut = 0 AND cRoll(5) > 1) THEN
+            damg = astr \ 3 + 1: hitmax = hitmax - damg: hittox = hittox + damg
+          END IF
+          dam = RollDice(2, astr, astr)
+          IF con > 3 THEN dam = dam * 12 / (con + 1) ELSE dam = dam * 3
+          IF (pmut = 7 AND berpmut = 0) THEN dam = (dam + 1) / (2 - 2 * (berhpmut > 0))
+          damage = damage + dam + damg:  a = 256: b = 52: c = 10
+          IF attackrange = 1 THEN touch = true
+        CASE 6  'acid
+          siz = 6: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr): DamSuit 5, dam
+          damage = damage + dam: a = 54: b = 41: c = 28
+          IF attackrange = 1 AND pmut = 1 THEN touch = true
+        CASE 7  'laser
+          siz = 4: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr)
+          IF (pmut = 8 AND berpmut = 0) THEN dam = dam * (.5 + .3 * (berhpmut > 0))
+          IF (mmut = 10 AND bermmut = 0) THEN dam = dam * (.75 + .25 * (berhmmut > 0))
+          a = 55: b = 1: c = 22
+          IF (mirror > 0) AND (cRoll(100) < 30 + 3 * (dex + dexadd)) THEN
+            IF (cRoll(100) < 30 + 3 * (dex + dexadd)) THEN
+              a = 257: b = 1: c = 31
+              LjnkBig 257, 32, 17, 0, 0, 0, Der$(false, i, 1), 0, 2
+              ncre(i, 2) = ncre(i, 2) - dam
+            ELSE
+              LjnkBig 257, 1, 24, 285, 1, 15, bl, 2, 1: c = 0: l2 = bl
+            END IF
+            damage = -1
+          ELSE
+            DamSuit 3, dam: damage = damage + dam
+          END IF
+        CASE 8  'mental
+          siz = 3: IF astr = 0 THEN astr = 1: siz = 2
+          dic = RollDice(siz, astr, astr)
+          dam = RollDice(siz, dic, dic)
+          IF mr >= 0 THEN dam = dam * 17 / (mr + 6) ELSE dam = dam * 3
+          IF (mmut = 3 AND bermmut = 0) THEN dam = (dam + 1) / (2 - 2 * (berhmmut > 0))
+          IF berscience > 0 THEN dam = dam / 3: IF dam = 0 THEN dam = 1
+          damage = damage + dam: a = 55: b = 23: c = 21
+        CASE 9  'electrical
+          siz = 8: IF astr = 0 THEN astr = 1: siz = 4
+          IF attackrange = 1 OR pmut = 1 THEN touch = true
+          dam = RollDice(siz, astr, astr)
+          IF pmut = 1 AND berpmut = 0 THEN dam = dam * (.5 + .5 * (berhpmut > 0))
+          DamSuit 4, dam: damage = damage + dam
+          a = 55: b = 44: c = 12
+        CASE 10  'heat
+          siz = 5: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr)
+          IF (pmut = 8 AND berpmut = 0) THEN dam = dam * (.67 + .33 * (berhpmut > 0))
+          DamSuit 2, dam: damage = damage + dam
+          a = 55: b = 56: c = 10
+          IF attackrange = 1 AND pmut = 1 THEN touch = true
+        CASE 11  'cold
+          siz = 7: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr)
+          IF brandy > 0 AND dam > 1 THEN dam = dam - 1
+          DamSuit 2, dam: damage = damage + dam
+          a = 56: b = 1: c = 12
+          IF attackrange = 1 AND pmut = 1 THEN touch = true
+        CASE 12  'tenticles
+          IF (ncre(i, 13) AND (2 ^ (j \ 2 - 2))) OR (vehicle <> 0) THEN 'leave
+            dam = RollDice(3, astr, astr): a = 56: b = 13: c = 16
+          ELSE
+            dam = cRoll(astr): a = 52: b = 42: c = 13
+            IF ncre(i, 13) = 0 THEN grabbed = grabbed + 1
+            ncre(i, 13) = (ncre(i, 13) OR (2 ^ (j \ 2 - 2)))
+          END IF
+          damage = damage + dam: touch = true
+        CASE 13  'life leech
+          dam = cRoll(astr / 2) + cRoll(astr / 2)
+          IF mr >= 0 THEN dam = dam * 17 / (mr + 6) ELSE dam = dam * 3
+          IF berscience > 0 THEN dam = dam / 3: IF dam = 0 THEN dam = 1
+          damage = damage + dam: a = 56: b = 29: c = 26
+          ncre(i, 2) = ncre(i, 2) + dam: ncre(i, 3) = ncre(i, 3) + dam \ 3
+        CASE 14  'steal
+          IF astr = 0 THEN astr = cRoll(8)
+          stol = 0
+          FOR k = 1 TO ngoody
+            l = cRoll(ngoody)
+            IF ABS(goody(l, 1)) = astr THEN stol = l: EXIT FOR
+            IF (astr = 1 OR astr = 2) AND (cRoll(2) = 1) THEN astr = 3 - astr
+            IF (astr = 7 OR astr = 8) AND (cRoll(2) = 1) THEN astr = 15 - astr
+          NEXT
+          IF stol > 0 THEN    'no steal Pres ID
+            IF ABS(goody(stol, 1)) = 7 AND goody(stol, 11) = 19 AND goody(stol, 5) > 3 THEN stol = 0
+          END IF
+          IF stol > 0 THEN
+            IF typ = japb THEN
+              st1 = jnk$(56, 55, 7) + RTRIM$(gdy(stol))
+            ELSEIF typ = gill THEN
+              st1 = jnk$(117, 17, 12) + RTRIM$(gdy(stol))
+            ELSEIF ABS(goody(stol, 1)) < 3 THEN
+              st1 = jnk$(330, 48, 18) + RTRIM$(gdy(stol))
+            ELSE
+              st1 = jnk$(332, 55, 10) + RTRIM$(gdy(stol))
+              IF ABS(goody(stol, 1)) = 3 AND goody(stol, 3) > 1 THEN st1 = st1 + "s"
+            END IF
+            l1 = Der$(false, i, 2) + st1
+            IF ABS(goody(stol, 1)) = 7 AND goody(stol, 11) = 2 THEN 'backpack
+              IF cRoll(2) = 1 THEN Scatter 1
+            ELSEIF ABS(goody(stol, 1)) = 8 AND goody(stol, 11) = 8 THEN 'safe
+              IF cRoll(2) = 1 THEN Scatter 2
+            END IF
+            IF ABS(goody(stol, 1)) < 3 THEN  'food
+              remchance = 0: goody(stol, 3) = goody(stol, 3) - 1
+              IF goody(stol, 3) <= 0 THEN RemoveGoody stol, false
+            ELSE
+              RemoveGoody stol, false: SetCombatStats: remchance = 95
+            END IF
+            damage = -1
+            IF typ = gill THEN remchance = 0
+            IF cRoll(100) < remchance AND i <> tentgrab THEN ncre(i, 2) = -2000' removecreat
+            DisplayCharacter
+            IF fastfight THEN MessPause 12, 0
+          ELSE
+            a = 53: b = 1: c = 10: siz = lvl: numd = 1
+            IF typ = gill THEN siz = lvl / 3 + 1: numd = 4
+            dam = RollDice(siz, numd, numd): damage = damage + dam
+          END IF
+        CASE 15  'tickle
+          siz = 4: IF astr = 0 THEN astr = 1: siz = 2
+          dam = RollDice(siz, astr, astr)
+          IF pmut = 5 AND berpmut = 0 THEN dam = dam * 3 / (4 - 4 * (berhpmut > 0))
+          damage = damage + dam: a = 57: b = 1: c = 24: touch = true
+        CASE 16  'damage armor
+          IF j <> 6 GOTO nxcreatk
+          damage = -1: hits = hits - RollDice(astr + 1, astr + 1, astr + 1)
+          touch = true: zzz = 100
+          FOR k = 1 TO astr + 1
+            zz = cRoll(105 - 5 * k): IF zzz > zz THEN zzz = zz
+          NEXT
+          aa = 55: bb = 2: cc = 7
+          SELECT CASE zzz
+            CASE IS < 13: GOSUB damarmor
+            CASE IS < 40: GOSUB damshield
+          END SELECT
+        CASE 17   'pooped
+          aa = 55: bb = 2: cc = 7: d = 219: e = 22: f = 18: damage = -1
+          IF fatigue! < 130 THEN fatigue! = 130 ELSE fatigue! = fatigue! + 9
+          IF attackrange = 1 THEN touch = true
+        CASE 18   'spores
+          IF astr > 0 THEN dam = RollDice(5, astr, astr) ELSE dam = -1
+          damage = damage + dam: a = 226: b = 49: c = 20
+          SELECT CASE ncre(i, 1)
+            CASE lotus: aa = 226: bb = 50: cc = 19: c = 0
+              d = 227: e = 1: f = 12: berconfuse = berconfuse + 1
+            CASE rweed: aa = 226: bb = 50: cc = 19: c = 0
+              berhic = berhic + cRoll(4): ber$ = "aaaChoo!"
+              IF cRoll(4) = 1 AND i <> tentgrab THEN ncre(i, 2) = -2000   'sign to removecreat
+            CASE gmold: damage = damage + spore: spore = spore + 1: d = 137
+              SELECT CASE spore
+                CASE 1 TO 3: e = 1: f = 12  'odd
+                CASE 4 TO 6: e = 13: f = 15 'sweat
+                CASE 7 TO 9: e = 28: f = 20 'lightheaded
+                CASE ELSE: e = 48: f = 20 'heart racing
+              END SELECT
+            CASE ELSE: l2 = "for" + STR$(dam) + jnk$(227, 16, 17)
+          END SELECT
+        CASE 19   'trample
+          touch = true: siz = 6: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr)
+          IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+          damage = damage + dam: ljnk 226, 37, 12, 1: l1 = bl + l1
+        CASE 20   'attract
+          IF ncre(i, 13) = 0 THEN
+            damage = -1: aa = 236: bb = 57: cc = 11
+            attractx = SGN(ncre(i, 4)): attracty = SGN(ncre(i, 5))
+          ELSE
+            dam = 0: a = 56: b = 61: c = 7
+          END IF
+        CASE 21    'drain
+          damage = -1: IF attackrange = 1 THEN touch = true
+          aa = 239: bb = 15: cc = 10: d = 239: e = 25: f = 16
+          rnds = RollDice(12, astr, astr): lostexp = false
+          IF (cRoll(2) = 1) THEN
+            IF pmutturns = 0 THEN
+              pmutturns = rnds: berpmut = pmutturns
+              SELECT CASE pmut
+                CASE 2: dex = dex - 10
+                CASE 3: str = str - 10
+                CASE 4: other2hitc = other2hitc - 1: other2hitr = other2hitr - 2
+                CASE 5: skinac = skinac - 5: SetCombatStats
+                CASE 7: con = con - 10: hits = hits - 2 * lvl: hitmax = hitmax - 2 * lvl
+                  IF hits < 0 THEN st1 = jnk$(17, 15, 12): Dead 0: GOTO nxcreatk
+                CASE 8: rr = rr - 10
+                CASE 14: zippy = 0
+              END SELECT
+            ELSE
+              lostexp = true
+            END IF
+          ELSE
+            IF mmutturns = 0 THEN
+              mmutturns = mmutturns + rnds: bermmut = mmutturns
+              SELECT CASE mmut
+                CASE 1: other2hitc = other2hitc - 2: other2hitr = other2hitr - 2
+                  otherdam = otherdam - 4
+                CASE 2: intl = intl - 10
+                CASE 3: mr = mr - 10
+                CASE 7: forcefield = false
+              END SELECT
+            ELSE
+              lostexp = true
+            END IF
+          END IF
+          IF lostexp THEN
+            lose& = (expr& * RND * .05 + 2) * astr
+            expr& = expr& - lose&
+            IF typ = grinch THEN grinchstole = grinchstole + lose&
+            Level newlev, b$: DisplayCharacter
+            IF newlev THEN
+              LjnkBig aa, bb, cc, 0, 0, 0, Der$(false, i, 2) + bl, 0, 1
+              l2 = b$: MaybeMessPause 13, 0: cc = 0: f = 0
+              LjnkBig 14, 26, 17, 0, 0, 0, STR$(lvl), 1, 1: l2 = b$
+            END IF
+          END IF
+          SetCombatStats
+          DisplayCharacter
+        CASE 22   'blind
+          damage = -1: aa = 249: bb = 34: cc = 11
+          IF attackrange = 1 THEN touch = true
+          rnds = RollDice(4, astr, astr)
+          IF (pmut = 8 AND berpmut = 0) THEN rnds = rnds * (.67 + .33 * (berhpmut > 0))
+          IF (pmut = 4 AND berpmut = 0) THEN rnds = rnds * (.4 + .2 * (berhpmut > 0))
+          IF (mmut = 10 AND bermmut = 0) THEN rnds = rnds * (.3 + .15 * (berhmmut > 0))
+          IF sunglasses THEN
+            damage = 0
+          ELSE
+            berblind = berblind + rnds
+            SetDark dark, olddark, changed: IF changed THEN ChangeDark
+          END IF
+        CASE 23   'sick
+          IF NOT (gasmask OR spacesuit) THEN
+            damage = -1: aa = 249: bb = 45: cc = 13
+            rnds = RollDice(3, astr, astr): sick = sick + rnds
+          END IF
+        CASE 24   'help
+        CASE 25   'gore
+          siz = 6: IF astr = 0 THEN astr = 1: siz = 3
+          dam = RollDice(siz, astr, astr)
+          IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+          touch = true: damage = damage + dam: a = 298: b = 58: c = 11
+        CASE 26   'special
+          damage = -1: l1 = "Special attack - not yet implemented"
+          SELECT CASE typ
+            CASE tworm: tapeworm = true
+              aa = 311: bb = 38: cc = 24: d = 285: e = 65: f = 4
+              ncre(i, 2) = -2000   'sign to removecreat
+            CASE skip
+              dam = RollDice(lvl / 2, 6, 4)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              touch = true: damage = damage + dam: a = 412: b = 1: c = 21
+            CASE prof
+              dam = RollDice(lvl / 2, 3, 3)
+              SELECT CASE cRoll(5)
+                CASE 1, 2    'acid
+                  DamSuit 5, dam: a = 112: b = 39: c = 27
+                CASE 3, 4    'electrical
+                  DamSuit 4, dam: a = 113: b = 17: c = 35
+                CASE ELSE    'flashpowder
+                  IF (pmut = 8 AND berpmut = 0) THEN dam = dam * (.67 + .33 * (berhpmut > 0))
+                  DamSuit 2, dam: a = 115: b = 7: c = 36
+                  berblind = berblind + 5
+                  SetDark dark, olddark, changed: IF changed THEN ChangeDark
+              END SELECT
+              damage = damage + dam
+            CASE ging, mary
+              dam = RollDice(lvl, 1, 1)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              touch = true: damage = damage + dam: a = 389: b = 1: c = 26
+            CASE mrhow
+              dam = RollDice(lvl / 2, 3, 2)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              touch = true: damage = damage + dam: a = 412: b = 22: c = 28
+            CASE mrshow
+              dam = RollDice(lvl, 1, 1)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              touch = true: damage = damage + dam: a = 413: b = 1: c = 27
+            CASE herm
+              dam = RollDice(lvl / 2, 6, 4)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              touch = true: damage = damage + dam: a = 151: b = 41: c = 12
+            CASE gramp
+              a = 382: b = 32: c = 32: d = 383: e = 1: f = 48: Mousify
+            CASE elvis, elvimp
+              dam = RollDice(lvl, 2, 2)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              touch = true: damage = damage + dam: a = 381: b = 1: c = 38
+            CASE buzz
+              touch = true: dam = RollDice(lvl, 5, 2)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              damage = damage + dam
+              ljnk 226, 37, 12, 1: l1 = bl + l1: d = 389: e = 27: f = 27
+              inew = -ABS(inew)   'so creatdo won't change l2
+            CASE cubs
+              dam = RollDice(lvl, 4, 4)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              IF metshat THEN dam = dam \ 3
+              damage = damage + dam: touch = true
+              a = 405: b = 29: c = 26: d = 406: e = 1: f = 24
+              inew = -ABS(inew)   'so creatdo won't change l2
+            CASE saddam
+              dam = RollDice(lvl, 6, 4)
+              IF pmut = 5 AND berpmut = 0 THEN dam = dam * (.75 + .25 * (berhpmut > 0))
+              damage = damage + dam: a = 405: b = 1: c = 28
+          END SELECT
+        CASE 27   'snooze
+          damage = -1: aa = 237: bb = 21: cc = 20
+          asleep = true: berhic = 0: sick = 0: zippy = -2
+          ncre(i, 2) = -2000   'sign to removecreat
+      END SELECT
+      IF c > 0 THEN ljnk a, b, c, 1
+      IF cc > 0 THEN LjnkBig aa, bb, cc, 0, 0, 0, Der$(false, i, 2) + bl, 0, 1
+      IF f > 0 THEN ljnk d, e, f, 2
+      showchan = 10
+    ELSE    'missed
+      SELECT CASE atype
+        CASE 1, 2, 6, 7, 9, 10, 11, 12, 15, 19, 25
+          zzz = cRoll(75)
+          IF zzz = 1 AND j = 6 THEN
+            ClearMess
+            GOSUB damarmor: IF num = 0 GOTO nxcreatk
+          ELSEIF zzz = 2 AND j = 6 THEN
+            ClearMess
+            GOSUB damshield: IF num = 0 GOTO nxcreatk
+          END IF
+      END SELECT
+    END IF
+nxcreatk:  NEXT j
+   
+    IF ncre(i, 7) \ 1000 = 0 THEN   'fc=0: sometimes show critter
+      IF cRoll(showchan) = 1 THEN
+        putsym ncre(i, 7) MOD 1000, localx + ncre(i, 4), localy + ncre(i, 5), 8, 0, -1
+      END IF
+    END IF
+
+    IF damage > 0 THEN damage = damage * (13 - difficulty) / 13
+
+EXIT SUB
+
+damarmor:
+  num = 0
+  FOR k = 1 TO ngoody
+    IF goody(k, 1) = -4 THEN num = k
+  NEXT
+  IF num = 0 THEN RETURN
+  goody(num, 4) = goody(num, 4) - 1
+  inew = -ABS(inew)   'so creatdo won't change l2
+  IF goody(num, 4) < 1 THEN
+    FOR mmm = 1 TO ngoody
+      IF ABS(goody(mmm, 1)) = 7 AND goody(mmm, 11) = 16 AND goody(mmm, 3) > 0 THEN
+        IF cRoll(10) < 9 THEN nobrk = true
+      END IF
+    NEXT
+    l2 = "****** " + UCASE$(jnk$(93, 13, 23)) + " ******"
+    IF nobrk THEN
+      goody(num, 4) = cRoll(2): goody(num, 5) = goody(num, 5) - 1
+      l1 = l2: ljnk 123, 13, 33, 2: c = 0: cc = 0
+      inew = 0   'so creatdo won't change l2 or l1
+    ELSE
+      armor = narm: RemoveGoody num, false: SetCombatStats: DisplayCharacter
+    END IF
+  ELSE
+    LjnkBig 93, 13, 14, 93, 36, 7, bl, 2, 2
+  END IF
+  f = 0
+RETURN
+
+damshield:
+  num = 0
+  FOR k = 1 TO ngoody
+    IF goody(k, 1) = -5 THEN num = k
+  NEXT
+  IF num = 0 THEN RETURN
+  goody(num, 4) = goody(num, 4) - 1
+  inew = -ABS(inew)   'so creatdo won't change l2
+  IF goody(num, 4) < 1 THEN
+    FOR mmm = 1 TO ngoody
+      IF ABS(goody(mmm, 1)) = 7 AND goody(mmm, 11) = 16 AND goody(mmm, 3) > 0 THEN
+        IF cRoll(10) < 9 THEN nobrk = true
+      END IF
+    NEXT
+    l2 = "****** " + UCASE$(jnk$(93, 13, 5) + jnk$(93, 43, 6) + jnk$(93, 23, 13)) + " ******"
+    IF nobrk THEN
+      goody(num, 4) = cRoll(2): goody(num, 5) = goody(num, 5) - 1
+      l1 = l2: ljnk 123, 13, 33, 2: c = 0: cc = 0
+      inew = 0   'so creatdo won't change l2 or l1
+    ELSE
+      shield = nsh: RemoveGoody num, false: SetCombatStats: DisplayCharacter
+    END IF
+  ELSE
+    ljnk 315, 1, 22, 2
+  END IF
+  f = 0
+RETURN
+END SUB
+
+SUB CreatDo
+  IF incastle = -1 THEN
+    chan = (4 - 6 * (beryum <> 0)) * (1 + (nnear = 0)) * (1 + tent)
+    SELECT CASE castle
+      CASE 1: IF castlelevel = elvislevel THEN chan = 0
+      CASE 2: IF castlelevel = -7 THEN chan = 0
+      CASE 3: IF castlelevel = 5 THEN chan = 0
+      CASE 4: IF castlelevel = 7 THEN chan = 0
+      CASE 5: IF castlelevel = -5 THEN chan = 0
+      CASE 6: IF castlelevel = grinchlevel THEN chan = 0
+    END SELECT
+  ELSEIF incastle = 0 THEN
+    chan = (8 - 16 * (beryum <> 0) - 4 * (terrain = 15) - 4 * (terrain = 177)) * (1 + tent)
+  END IF
+
+  IF incastle <> 1 AND cRoll(15) = 1 THEN CreatSort nnear, tentgrab, ncre(0, 0)
+
+  IF cRoll(1000) < chan THEN MakeCreature 0, 0, true, false: Awaken nnear
+
+  ErasePut
+
+  FOR i = 1 TO nnear
+    typ = ncre(i, 1): kild = false: touch = false: ClearMess
+    xx = ncre(i, 4): yy = ncre(i, 5): wake = false
+    srxxyy = SameRoom(xx, yy)
+    IF (ncre(i, 11) AND 1) = 0 THEN
+      chan = 3 - 3 * asleep - 30 * srxxyy
+      IF beryum AND NOT (typ = elvis OR typ = elvimp) THEN
+        wake = true
+      ELSEIF ncre(i, 11) AND 56 THEN  'sneeze, burp, sick
+        wake = true
+      ELSEIF incastle = 1 THEN
+        ccc = cRd(xx, yy)
+        IF (ccc <= 2) OR (srxxyy AND (ccc <= 12)) OR (cRoll(1000) < chan) THEN wake = true
+      ELSEIF i = tentgrab THEN
+        wake = true
+      ELSEIF cRoll(1000) < chan AND typ <= ncreat + creextra + 1 THEN
+        wake = true
+      END IF
+      IF wake THEN Awaken i ELSE ncre(i, 11) = 0  'if asleep, no sneeze etc
+    END IF
+    IF i = tentgrab THEN touch = true
+    SELECT CASE typ
+      CASE elvis, trump
+        IF (NOT srxxyy) AND cRoll(10) = 1 AND ((ncre(i, 11) AND 56) = 0) THEN ncre(i, 11) = ncre(i, 11) AND (NOT 1)
+      CASE mph: ncre(i, 2) = ncre(i, 2) - (cRoll(20) = 1)
+      CASE grinch, max: ncre(i, 6) = ABS(ncre(i, 6))
+    END SELECT
+    IF (ncre(i, 10) AND 256) THEN ncre(i, 2) = ncre(i, 2) + 1
+    IF (ncre(i, 10) AND 2048) THEN ncre(i, 2) = ncre(i, 2) + 3
+    IF ncre(i, 2) > ncre(i, 3) THEN ncre(i, 2) = ncre(i, 3)
+   
+    IF ((ncre(i, 11) AND 1) = 0) OR bitit GOTO ncd
+
+    creconfu = false
+    IF (ncre(i, 11) AND 8) THEN      'sick
+      IF cRoll(9) = 1 THEN ncre(i, 11) = ncre(i, 11) AND (NOT 8)
+      IF srxxyy THEN
+        LjnkBig 343, 61, 8, 0, 0, 0, Der$(false, i, 2), 0, 1
+        MaybeMessPause 2, 0
+      END IF
+      GOTO ncd
+    ELSEIF (ncre(i, 11) AND 16) THEN      'burping
+      IF cRoll(12) = 1 THEN ncre(i, 11) = ncre(i, 11) AND (NOT 16)
+      IF srxxyy THEN
+        LjnkBig 162, 61, 8, 0, 0, 0, Der$(false, i, 2), 0, 1
+        MaybeMessPause 2, 0
+      END IF
+      GOTO ncd
+    ELSEIF (ncre(i, 11) AND 32) THEN      'sneezing
+      IF cRoll(18) = 1 THEN ncre(i, 11) = ncre(i, 11) AND (NOT 32)
+      IF srxxyy THEN
+        LjnkBig 385, 60, 9, 0, 0, 0, Der$(false, i, 2), 0, 1
+        MaybeMessPause 2, 0
+      END IF
+      GOTO ncd
+    ELSEIF (ncre(i, 11) AND 6) THEN  'blind or confused
+      IF cRoll(30) = 1 THEN ncre(i, 11) = ncre(i, 11) AND (NOT 2)
+      IF cRoll(15) = 1 THEN ncre(i, 11) = ncre(i, 11) AND (NOT 4)
+      creconfu = NOT (tentgrab = i)
+    END IF
+
+    range = cRd(xx, yy): IF range < 1 THEN range = 1
+    SELECT CASE typ
+      CASE robot, rdro, ddro, sdro
+        attackrange = (ncre(i, 14) \ 10) MOD 10
+      CASE ELSE
+        attackrange = Creature(typ, 7) MOD 100
+    END SELECT
+    IF ncre(i, 13) THEN ncre(i, 6) = ABS(ncre(i, 6))  'no flee if constrict
+
+    IF srxxyy OR (typ = brain) THEN
+      SELECT CASE typ
+        CASE grinch, max, elvis: sensed = true
+        CASE gramp: sensed = (bergreen = 0)
+        CASE lily, eddie, mara
+          sensed = ((invisible = 0) OR (cRoll(range * 4) = 1))
+          sensed = (sensed OR (beryum <> 0)) AND (bergreen = 0)
+        CASE skip: sensed = ((invisible = 0) OR (cRoll(range * 4) = 1))
+          sensed = sensed OR (beryum <> 0) OR (cRoll(2) = 1)
+        CASE brain: sensed = (mindweb = false)
+        CASE ELSE: sensed = ((invisible = 0) OR (cRoll(range * 4) = 1))
+          sensed = sensed AND ((camosuit = 0) OR (cRoll(6) <> 1))
+          sensed = sensed OR (beryum <> 0)
+      END SELECT
+      sensed = sensed AND ((NOT creconfu) OR (cRoll(3) = 1))
+      sensed = sensed OR (tentgrab = i)
+      FOR j = 6 TO 14 STEP 2
+        atype = Creature(typ, j + 1) \ 100
+        IF (ncre(i, 13) AND (2 ^ (j \ 2 - 2))) AND (atype = 12) THEN sensed = true
+      NEXT j
+    ELSE
+      sensed = false
+    END IF
+   
+    IF (range <= attackrange) AND (ncre(i, 6) >= 0) AND sensed THEN
+      IF (typ = elvis) THEN
+        noimpersonators = true
+        FOR zn = 1 TO nnear
+          IF ncre(zn, 1) = elvimp THEN noimpersonators = false: zn = nnear
+        NEXT zn
+        IF noimpersonators THEN
+          finishedcastles = finishedcastles OR 1
+          xdro = xx + localx: ydro = yy + localy: candrop = false
+          WHILE NOT candrop
+            xdro = xdro + cRoll(3) - 2: ydro = ydro + cRoll(3) - 2
+            IF xdro < 2 OR xdro > 50 THEN xdro = xx + localx
+            IF ydro < 2 OR ydro > 20 THEN ydro = yy + localy
+            GetSym ss, xdro, ydro, fc, bc, 2: IF ss = 250 THEN candrop = true
+          WEND
+          AddToDrop -nberry - 5: putsym 145, xdro, ydro, 1, 0, -1   'drop BSS
+          drgoody(1, 15) = xdro: drgoody(1, 16) = ydro
+          st1 = RTRIM$(LTRIM$(name$)): blpos = INSTR(st1, bl)
+          IF blpos = 0 THEN blpos = LEN(st1) + 1
+          IF blpos > 13 THEN blpos = 13
+          st1 = LEFT$(st1, blpos - 1): ClearMess
+          LjnkBig 378, 1, 8, 378, 9, 34, st1, 1, 1: ljnk 379, 1, 31, 2
+          FOR ispam = 1 TO 3
+            xdro = xx + localx: ydro = yy + localy: candrop = false
+            WHILE NOT candrop
+              xdro = xdro + cRoll(3) - 2: ydro = ydro + cRoll(3) - 2
+              IF xdro < 2 OR xdro > 50 THEN xdro = xx + localx
+              IF ydro < 2 OR ydro > 20 THEN ydro = yy + localy
+              GetSym ss, xdro, ydro, fc, bc, 1: IF ss = 250 THEN candrop = true
+            WEND
+            AddToDrop -nberry - 11: putsym 22, xdro, ydro, 5, 0, -1
+            drgoody(1, 15) = xdro: drgoody(1, 16) = ydro
+          NEXT ispam
+          MessPause 9, 0: ncre(i, 2) = -2000   'sign to removecreat
+          AddToDrop -nberry - 17          'tape recorder
+inccd:    x = cRoll(8) + 22: y = cRoll(4) + 9
+          GetSym sym, x, y, f, b, 2
+          IF sym <> 250 GOTO inccd
+          putsym 10 + cRoll(2), x, y, 14, 0, -1
+          drgoody(1, 15) = x: drgoody(1, 16) = y
+          GOTO ncd
+        END IF
+      END IF
+
+      atk = true
+      IF sousa THEN
+        ncre(i, 6) = -ABS(ncre(i, 6)): CreatMove i, moved: atk = false
+        ncre(i, 6) = ABS(ncre(i, 6))
+      ELSEIF SmartCre(typ) THEN
+        ratio = 100 * ncre(i, 2) / ncre(i, 3)
+        IF (ratio < 33 AND (range = 1 AND attackrange > 1)) OR (ratio < 15) THEN
+          IF ((ncre(i, 8) MOD 1000) <> cen) OR (ratio < 15) THEN
+            ncre(i, 6) = -ABS(ncre(i, 6)): CreatMove i, moved: atk = NOT moved
+            ncre(i, 6) = ABS(ncre(i, 6))
+          END IF
+        END IF
+      END IF
+      IF atk THEN
+        inew = i: CreatAttack inew, damage
+            'will set inew=-inew if shouldn't change l2, inew = 0 if l1&l2
+        IF berscare AND cRoll(4) = 1 THEN ncre(i, 6) = -ABS(ncre(i, 6))
+        olddamage = damage
+        IF damage > 0 THEN
+          l1 = Der$(false, i, 2) + l1
+          ffEffect damage, ffkill
+          IF (damage < olddamage) OR ffgen OR forcefield OR berff THEN
+            fract = 100! * (olddamage - damage) / olddamage
+            LjnkBig 83, 1, 23, 83, 24, 15, STR$(fract), 1, 2: l3 = ""
+            IF ffkill THEN
+              MessPause 4, 0: ClearMess
+              LjnkBig 83, 1, 5, 207, 1, 19, jnk$(205, 39, 21), 1, 2
+            END IF
+          END IF
+        ELSEIF damage = 0 THEN
+          IF typ = cubs THEN a = 164: b = 54: c = 8 ELSE a = 56: b = 61: c = 7
+          IF inew <> 0 THEN LjnkBig a, b, c, 0, 0, 0, Der$(false, i, 2), 0, 1
+        END IF
+        IF damage < 1 THEN
+          GOTO ei
+        ELSEIF damage = olddamage AND inew > 0 THEN
+          IF damage = 1 THEN st1 = "" ELSE st1 = "s"
+          l2 = "for" + STR$(damage) + jnk$(80, 58, 6) + st1 + jnk$(57, 54, 10)
+        END IF
+        hits = hits - damage
+ei:     ShowHits
+        IF hits < 0 THEN
+          st1 = Der$(true, i, 3): IF typ = elvimp THEN st1 = jnk$(369, 45, 21)
+          Dead 0: EXIT SUB
+        END IF
+        MaybeMessPause 12, 0
+        IF asleep AND zippy = 0 THEN
+          asleep = false: zippy = -6: ClearMess
+          ljnk 255, 1, 23, 1: MaybeMessPause 12, 0
+        END IF
+        IF touch THEN
+          IF shock THEN
+            IF pmutturns = 0 THEN pmutturns = 1
+            pmutturns = pmutturns + 3 + 2 * (berhpmut > 0)
+            fatadd! = fatadd! + 5
+            IF (ncre(i, 10) AND 4) = 0 THEN
+              dam = RollDice(lvl + 4, 2, 2) + otherdam
+              IF berhpmut > 0 THEN dam = dam * 1.5
+              IF cRoll(20) = 1 THEN dam = dam * 2
+              CrDamAlter i, dam, 9: ncre(i, 2) = ncre(i, 2) - dam
+              IF ncre(i, 2) < 0 THEN kild = true
+              LjnkBig 83, 39, 18, 0, 0, 0, bl + Der$(false, i, 1), 1, 1
+              l2 = ""
+              MaybeMessPause 11, 0
+            ELSE
+              LjnkBig 205, 1, 27, 0, 0, 0, Der$(false, i, 2) + bl, 0, 1
+              l2 = ""
+              MaybeMessPause 2, 0
+            END IF
+          END IF
+          IF pmut = 16 AND pmutturns = 0 THEN
+            siz = 2 + lvl \ 2: IF berhpmut > 0 THEN siz = siz * 2
+            IF cRoll(20) = 1 THEN siz = siz * 2
+            dam = siz + 1 - RollDice(siz, 2, 1): CrDamAlter i, dam, 1
+            IF dam > 0 THEN
+              ncre(i, 2) = ncre(i, 2) - dam
+              IF ncre(i, 2) < 0 THEN kild = true
+              LjnkBig 102, 20, 19, 0, 0, 0, bl + Der$(false, i, 1), 1, 1
+              IF NOT kild THEN MaybeMessPause 6, 0
+            END IF
+          END IF
+        END IF
+        IF typ = pryor AND cRoll(8) = 1 THEN
+          ljnk 87, 30, 22, 1: ncre(i, 2) = -1000  'remove him
+          dam = RollDice(lvl, 4, 4): DamSuit 2, dam
+          ffEffect dam, ffkill
+          IF ffkill THEN
+            MessPause 4, 0: ClearMess
+            LjnkBig 83, 1, 5, 207, 1, 19, jnk$(205, 39, 21), 1, 2
+          END IF
+          hits = hits - dam: ShowHits
+          ljnk 87, 30, 22, 1: MaybeMessPause 4, 0
+          IF hits < 0 THEN st1 = "a burning " + creatnam$(typ, i): Dead 0: EXIT SUB
+        END IF
+      END IF
+    ELSE
+      IF sousa THEN
+        ncre(i, 6) = -ABS(ncre(i, 6)): CreatMove i, moved
+        ncre(i, 6) = ABS(ncre(i, 6))
+      ELSEIF SmartCre(typ) THEN
+        IF ncre(i, 2) / ncre(i, 3) < .15 THEN
+          ncre(i, 6) = -ABS(ncre(i, 6)): CreatMove i, moved
+          ncre(i, 6) = ABS(ncre(i, 6))
+        ELSE
+          CreatMove i, moved
+        END IF
+      ELSE
+        CreatMove i, moved
+      END IF
+    END IF
+
+    IF typ = bunny THEN
+      IF (ncre(i, 11) = 1) AND (NOT kild) AND range <= 8 THEN
+        age = ncre(i, 14) + 1: chan! = (.3 + lvl * .025) * (2 ^ (-age))
+        IF (SameRoom(ncre(i, 4), ncre(i, 5))) AND (RND < chan!) AND (age <= lvl) THEN
+          crtyp = bunny
+          MakeCreature (ncre(i, 4) + localx), (ncre(i, 5) + localy), false, false
+          ncre(i, 14) = age: ncre(nnear, 14) = age: Awaken nnear
+        END IF
+      END IF
+    ELSEIF typ = magg THEN
+      IF (NOT ncre(i, 14)) AND (cRoll(10) = 1) AND srxxyy AND (NOT kild) THEN
+        ncre(i, 2) = (ncre(i, 2) + ncre(i, 3)) / 2 + 12
+        ncre(i, 3) = ncre(i, 3) + 12
+        ncre(i, 6) = 2: ncre(i, 7) = 7102
+        ncre(i, 9) = ncre(i, 9) - 8: ncre(i, 10) = ncre(i, 10) OR 328
+        Awaken i: ncre(i, 14) = true: ClearMess: EraseCreat i: PutCreat i
+        ljnk 258, 1, 24, 1: MaybeMessPause 7, 0
+      END IF
+    ELSEIF typ = algore THEN
+      IF (ncre(i, 11) = 1) AND (NOT kild) THEN
+        FOR jj = 1 TO cRoll(2) + cRoll(2)
+          xx = ncre(i, 4) + localx + cRoll(5) - 3
+          yy = ncre(i, 5) + localy + cRoll(5) - 3
+          GetSym sym, xx, yy, fc, bc, 2
+          IF incastle = 0 AND castle <> 0 THEN
+            IF xx < rwscr AND xx > lwscr AND yy < bwscr AND yy > twscr THEN sym = -1
+          END IF
+          SELECT CASE sym
+            CASE 32, 250, 249, 176: newsym = 42: newf = 2
+            CASE 42: IF fc = 10 THEN newsym = 15: newf = 2 ELSE newsym = 42: newf = 10
+            CASE 15: newsym = 15: newf = 10
+            CASE ELSE: newsym = 0
+          END SELECT
+          IF newsym THEN
+            IF xx > 1 AND xx < 52 AND yy > 1 AND yy < 22 THEN
+              putsym newsym, xx, yy, newf, bc, -1
+            END IF
+          END IF
+        NEXT jj
+      END IF
+    END IF
+   
+    IF ncre(i, 6) < 0 THEN
+      IF ((range <= attackrange AND cRoll(5) = 1) OR (cRoll(15) = 1)) AND (NOT didmusk) THEN ncre(i, 6) = ABS(ncre(i, 6))
+    END IF
+
+ncd: NEXT i
+ 
+  FOR i = nnear TO 1 STEP -1
+    IF (ncre(i, 8) MOD 1000) = gas THEN
+      IF (ncre(i, 10) AND 1024) = 0 THEN
+        dam = RollDice(4, 3, 3)
+        IF (ncre(i, 12) AND 1024) THEN dam = dam * 2
+        ncre(i, 2) = ncre(i, 2) - dam
+      END IF
+    END IF
+    IF ncre(i, 2) < 0 AND ncre(i, 2) > -1000 THEN
+      ClearMess
+      IF ncre(i, 1) = elvimp THEN
+        ljnk 295, 1, 38, 2
+      ELSE
+        LjnkBig 238, 52, 14, 0, 0, 0, Der$(false, i, 1), 1, 2
+      END IF
+      KillCreat i
+    ELSEIF cRd%(ncre(i, 4), ncre(i, 5)) > 60 OR ncre(i, 2) < -999 THEN
+      RemoveCreat i
+    END IF
+  NEXT i
+END SUB
+
+SUB CreatMove (i, moved)
+ 
+  IF i = tentgrab THEN moved = false: EXIT SUB
+
+  IF incastle AND asleep THEN
+    IF NOT (castle = 6 AND castlelevel = grinchlevel) THEN
+      IF NOT SameRoom(ncre(i, 4), ncre(i, 5)) THEN
+        IF ABS(ncre(i, 6)) > 0 AND ncre(i, 1) < ncreat + creextra + 1 THEN
+          IF (cRoll(5) = 1) THEN TeleCreat ncre(i, 4), ncre(i, 5): EXIT SUB
+        END IF
+      END IF
+    END IF
+  END IF
+                     
+  typ = ncre(i, 1): moved = false
+  FOR movespeed = 1 TO ABS(ncre(i, 6))
+    IF (ncre(i, 12) AND -32768) AND (cRoll(2) = 1) GOTO nxi
+    badcount = -1 + (incastle = 0)    'leave as is!
+fdxy: x = ncre(i, 4): y = ncre(i, 5): badcount = badcount + 1 - (incastle = 0)
+    IF badcount >= 3 - (incastle = 0) THEN
+      dx = 0: dy = 0
+    ELSE
+      aaa = cFindDxDy%(x, y, badcount)
+      dy = (aaa MOD 10) - 1: dx = INT(aaa / 10) - 1
+      IF ncre(i, 6) < 0 THEN dx = -dx: dy = -dy
+      IF (ncre(i, 11) AND 6) THEN dx = cRoll(3) - 2: dy = cRoll(3) - 2
+      IF (invisible AND (RND < .9)) OR (camosuit AND (cRoll(5) = 1)) AND (beryum = 0) THEN
+        dx = cRoll(3) - 2: dy = cRoll(3) - 2
+        IF NOT (dx OR dy) THEN dx = cRoll(3) - 2: dy = cRoll(3) - 2
+      END IF
+    END IF
+    bad = false: newx = x + dx: newy = y + dy
+    IF (dx <> 0 OR dy <> 0) THEN
+      bad = BadMoveCreat%(newx, newy, nnear, i, ncre(0, 0))
+    ELSE
+      GOTO nxi
+    END IF
+    IF repulse THEN
+      IF (ABS(x) > 1 OR ABS(y) > 1) THEN
+        IF (ABS(newx) <= 1 AND ABS(newy) <= 1) THEN bad = true
+      END IF
+    END IF
+    IF bad GOTO fdxy
+    EraseCreat i
+    ncre(i, 4) = newx: ncre(i, 5) = newy: FindMPos i, mx, my, mlocx, mlocy
+    IF (mx <> mainx OR my <> mainy) THEN moved = true: GOTO nxii
+    GetSym sym, mlocx, mlocy, fcolr, bcolr, 1
+    GetSym sym2, mlocx, mlocy, fc2, bc2, 2
+    IF incastle THEN
+      srep = 250: frep = 8
+      IF sym = 32 OR sym = 250 THEN sym = sym2: fcolr = fc2: bcolr = bc2
+    ELSE
+      srep = 32: frep = 7
+      IF sym = 32 OR sym = 250 THEN sym = sym2: fcolr = fc2: bcolr = bc2
+      IF sym2 = 215 OR sym2 = 216 THEN sym = sym2
+    END IF
+ 
+    IF bc2 = 4 THEN ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+    IF (sym2 = 247 OR sym2 = 126) THEN
+      IF typ <= ncreat + creextra - creh2o THEN
+        ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+      END IF
+    ELSEIF (typ > ncreat + creextra - creh2o) AND (typ <= ncreat + creextra) THEN
+      SELECT CASE sym2
+        CASE 179, 196, 217, 218, 191, 192  'borders
+        CASE ELSE: ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+      END SELECT
+    END IF
+
+    steal = -1
+    IF Creature(typ, 7) \ 100 = 14 THEN steal = Creature(typ, 6) \ 100
+    SELECT CASE sym
+      CASE 32
+        IF incastle THEN ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+      CASE 176, 249, 0, 126, 247, 250
+      CASE 240, 179, 196
+      CASE 8, 9, 24  'wep, shield and armor
+        IF steal = 0 THEN
+          putsym srep, mlocx, mlocy, frep, 0, -1
+          RemoveLocalGoody mlocx, mlocy, dropped
+        END IF
+      CASE 5, 236    'ber
+        IF steal = 6 OR steal = 0 THEN
+          putsym srep, mlocx, mlocy, frep, 0, -1
+          RemoveLocalGoody mlocx, mlocy, dropped
+        END IF
+      CASE 11, 12, 21, 157  'ssd,lsd
+        IF steal = 7 OR steal = 0 THEN
+          putsym srep, mlocx, mlocy, frep, 0, -1
+          RemoveLocalGoody mlocx, mlocy, dropped
+        END IF
+      CASE 22        'spam
+        IF (typ = rat) OR Yuck(i) OR (typ = elvis) OR steal = 1 THEN
+          putsym srep, mlocx, mlocy, frep, 0, -1
+          RemoveLocalGoody mlocx, mlocy, dropped
+          IF cRoll(3) = 1 AND (ncre(i, 12) AND 2048) = 0 THEN
+            ncre(i, 11) = ncre(i, 11) OR 16
+          END IF
+        ELSEIF (cRoll(10) - 1) THEN
+          ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+        END IF
+      CASE 254       'beef
+        IF (typ = roach) OR Yuck(i) OR (typ = elvisimp) OR steal = 1 THEN
+          putsym srep, mlocx, mlocy, frep, 0, -1
+          RemoveLocalGoody mlocx, mlocy, dropped
+          IF cRoll(3) = 1 AND (ncre(i, 12) AND 2048) = 0 THEN
+            ncre(i, 11) = ncre(i, 11) OR 16
+          END IF
+        ELSEIF (cRoll(10) - 1) THEN
+          ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+        END IF
+      CASE gas
+        IF (cRoll(4) <> 1) OR SmartCre(typ) THEN ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+      CASE cen, lockeddoor, secretdoor
+        IF sym = lockeddoor THEN
+          IF (cRoll(10) > 1) AND typ <> robot AND typ <> sdro AND typ <> ddro AND typ <> rdro THEN
+            ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+          END IF
+        ELSEIF sym = secretdoor THEN
+          IF typ <> volte AND cRoll(10) > 4 THEN
+            ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+          END IF
+        END IF
+        IF incastle = 0 THEN
+          ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+        ELSE
+          GetSym sy1, mlocx + 1, mlocy, f1, b, 2
+          GetSym sy2, mlocx - 1, mlocy, f2, b, 2
+          GetSym sy3, mlocx, mlocy + 1, f3, b, 2
+          GetSym sy4, mlocx, mlocy - 1, f4, b, 2
+          IF sy1 = 32 OR sy2 = 32 OR sy3 = 32 OR sy4 = 32 THEN
+            ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+          END IF
+          IF (f1 = wallcolr AND f3 = wallcolr) OR (f2 = wallcolr AND f4 = wallcolr) THEN
+            ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+          END IF
+        END IF
+      CASE 15, 42
+        IF typ = tfrog OR typ = bfoot OR typ = algore THEN
+          movespeed = movespeed - 1
+        ELSEIF typ = term THEN
+          putsym srep, mlocx, mlocy, frep, 0, -1
+        ELSEIF (cRoll(16) - 1) THEN
+          ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+        END IF
+      CASE ELSE: ncre(i, 4) = x: ncre(i, 5) = y: PutCreat i: GOTO fdxy
+         'this covers trap, pit, web, monolith, chasm
+    END SELECT
+    PutCreat i: moved = true
+nxii: IF ncre(i, 13) <> 0 THEN
+        grabbed = grabbed - 1: ncre(i, 13) = 0  'stop constricting if move
+      END IF
+nxi: NEXT movespeed
+
+END SUB
+
+SUB DrawCaves
+  DIM rms(0 TO 7, 0 TO 1)
+  Cave numrms, rms()
+
+  t$ = Terr$(terrain): DisplayCharacter: PrintMessage 15, 0
+
+  FindDot xstair, ystair, incastle: localx = xstair: localy = ystair
+  currsym = 240: currf = 13: currb = 0
+  IF invisible THEN ffc = 8 ELSE ffc = 15
+  putsym 1, localx, localy, ffc, 0, 2
+ 
+  goodycastle(0, 0) = (2 ^ (numrms + 1)) - 1
+  FOR itemnum = 0 TO numrms
+    SELECT CASE cRoll(12)
+      CASE 1, 2   'ber
+        psym = 5 + 231 * INT(RND * 2): pf = 4 + 8 * INT(RND * 2): GOSUB cputit
+      CASE 3      'ssd
+        psym = 11 + INT(RND * 2): pf = 14: GOSUB cputit
+      CASE 4      'lsd
+        psym = 21 + 136 * INT(RND * 2): pf = 11: GOSUB cputit
+      CASE 5, 6   'wep
+        psym = 24: pf = 1: GOSUB cputit
+      CASE 7, 8   'sh
+        psym = 9: pf = 3: GOSUB cputit
+      CASE 9, 10 'armor
+        psym = 8: pf = 7: GOSUB cputit
+      CASE 11     'beef
+        psym = 254: pf = 6: GOSUB cputit
+      CASE 12     'spam
+        psym = 22: pf = 5: GOSUB cputit
+    END SELECT
+  NEXT
+  crtyp = CaveCreat: psym = -1
+  IF crtyp <= ncreat THEN
+    maxcritter = (numrms + 1) * 5 - crtyp + 2 * lvl
+  ELSE
+    maxcritter = (numrms + 1) * 4 + lvl
+  END IF
+  IF crtyp = ant OR crtyp = bee THEN maxcritter = maxcritter * 2
+  IF maxcritter > 45 THEN maxcritter = 45
+  maxinrms = (numrms + 1) * (2 - (crtyp < 2 * lvl))
+  FOR itemnum = 1 TO maxinrms: GOSUB cputit: NEXT
+  maxcritter = maxcritter - maxinrms
+  FOR i = 1 TO maxcritter
+    FindDot x, y, incastle: MakeCreature x, y, false, false  'puts other critters
+  NEXT i
+ 
+  IF crtyp > ncreat + crecas + crefor + creswa + crepla THEN
+    FOR i = 2 TO 51: FOR j = 2 TO 21
+      GetSym sym, i, j, fc, bc, 2
+      IF sym = 250 THEN putsym 247, i, j, 1, 0, 2
+    NEXT j, i
+    FOR i = 1 TO nnear: ncre(i, 8) = 1247: NEXT i
+  END IF
+ 
+  SCREEN , , 1: vpage = 1: ChangeDark
+  PrintMessage 5, 0: DisplayCharacter
+EXIT SUB
+
+cputit: ci = ABS(itemnum) MOD (numrms + 1): x = rms(ci, 0): y = rms(ci, 1)
+cputitxy: GetSym sym, x, y, fc, bc, 2
+  IF sym = 250 THEN
+    IF psym > 0 THEN
+      putsym psym, x, y, pf, 0, 2
+      localgoody(itemnum + 1, 1) = psym + 256 * pf
+      localgoody(itemnum + 1, 2) = x
+      localgoody(itemnum + 1, 3) = y
+    ELSE
+      MakeCreature x, y, false, false
+    END IF
+  ELSE
+    x = rms(ci, 0) + cRoll(3) - 2: y = rms(ci, 1) + cRoll(3) - 2
+    GOTO cputitxy
+  END IF
+RETURN
+END SUB
+
+SUB DrawDungeon
+  DIM place(5)
+  cRandomize seed! + mainx + mainy * 50 + castlelevel
+  x = RND(-seed! - mainx - mainy * 50 - castlelevel)
+  FOR i = 1 TO castlelevel: dum = RND * cRoll(2): NEXT
+
+  IF sunglasses THEN dark = -1
+
+  IF (LoadMaps(-1) = 0) THEN
+  '----------------------------------------------
+
+    IF lwall > rwall THEN SWAP lwall, rwall
+    IF twall > bwall THEN SWAP twall, bwall
+
+    cl = castlelevel: dots = 0: nnear = 0
+    IF cl <> 0 THEN ClearMess
+    IF castle = 6 THEN
+      IF cl = grinchlevel THEN bwall = 19 ELSE bwall = 20
+    END IF
+    
+   
+    ndro = 0
+    FOR i = 1 TO ndropped
+      IF ABS(drgoody(i, 1)) = 8 AND drgoody(i, 11) = 8 THEN 'safe
+        FOR j = 1 TO 16: drgoody(1, j) = drgoody(i, j): NEXT
+        drgoody(1, 13) = -ABS(drgoody(1, 13))   'negate mainx so won't display
+        drgdy(1) = drgdy(i): ndro = 1: EXIT FOR
+      END IF
+    NEXT i
+    ndropped = ndro
+
+    SCREEN , , 1: vpage = 1: ccls 1: PrintMessage 7, 0: DisplayCharacter
+    box lwall, rwall, twall, bwall, 2, wallcolr, 1
+    SCREEN , , 2, 1: clpage2
+    box lwall, rwall, twall, bwall, 2, wallcolr, 2
+    SELECT CASE cl
+      CASE 0: lw = lwall: rw = rwall: tw = twall: bw = bwall
+      CASE IS < 0: xs = xstairs(cl): ys = ystairs(cl)
+      CASE IS > 0: xs = xstairs(cl - 1): ys = ystairs(cl - 1)
+    END SELECT
+    IF cl <> 0 THEN
+      lw = xs - cRoll(5): rw = xs + cRoll(5)
+      tw = ys - cRoll(4): bw = ys + cRoll(4)
+      SELECT CASE castle
+        CASE 1
+          IF cl = elvislevel THEN special = 1
+          IF cl = elvislevel - SGN(elvislevel) THEN
+            IF elvislevel < 0 THEN special = -11 ELSE special = -1
+          END IF
+        CASE 2
+          IF cl = -7 THEN special = 2
+          IF cl = -6 THEN special = -12
+        CASE 3
+          IF cl = 5 THEN special = 3
+          IF cl = 4 THEN special = -3
+        CASE 4
+          IF cl = 7 THEN special = 4
+          IF cl = 6 THEN special = -4
+        CASE 5
+          IF cl = -5 THEN special = 5
+          IF cl = -4 THEN special = -15
+        CASE 6
+          IF cl = grinchlevel THEN special = 6
+          IF cl = grinchlevel - SGN(grinchlevel) THEN
+            IF grinchlevel < 0 THEN special = -16 ELSE special = -6
+          END IF
+      END SELECT
+      IF special > 0 THEN lw = 22: rw = 31: tw = 9: bw = 14: IF special > 3 THEN bw = 13
+      IF lw < lwall + 2 THEN lw = lwall + 2
+      IF rw > rwall - 2 THEN rw = rwall - 2
+      IF tw < twall + 2 THEN tw = twall + 2
+      IF bw > bwall - 2 THEN bw = bwall - 2
+
+      dots = RoomIt(rw, lw, bw, tw)   'draw first room
+    END IF
+     
+    IF special > 0 THEN DrawSpecial special: GOTO enddraw
+
+    entr = cRoll(4)
+    xdoor = cRoll(rw - lw - 1) + lw: ydoor = cRoll(bw - tw - 1) + tw
+    SELECT CASE entr
+      CASE 1: xdoor = rw
+      CASE 2: xdoor = lw
+      CASE 3: ydoor = tw
+      CASE 4: ydoor = bw
+    END SELECT
+    bclr = 0
+    IF cl = 0 THEN entr = enterdir: xdoor = xenter: ydoor = yenter: bclr = 2
+    putsym cen, xdoor, ydoor, wallcolr, bclr, 2
+    DrawRoom xdoor, ydoor, entr, cen, false   'recursion, draw dungeon
+    IF cl = 0 THEN putsym cen, xenter, yenter, wallcolr, 2, -1
+    removed = false: maxadd = 4 + cRoll(5)
+    FOR addsmall = 0 TO maxadd: FOR i = 1 TO 50
+      xx = cRoll(rwall - lwall - 1) + lwall
+      yy = cRoll(bwall - twall - 1) + twall
+      GetSym sym, xx, yy, fc, bc, 2
+      SELECT CASE sym
+        CASE hor, ver  'remove wall
+          IF (NOT removed) AND (addsmall = maxadd) THEN RemoveWall sym, xx, yy, removed
+        CASE 32        'add new room
+          AddRoom xx, yy, didit, (addsmall > 6)
+      END SELECT
+    NEXT i, addsmall
+enddraw:
+   
+    IF cl <= 0 AND xstairs(cl) > 0 THEN   'for stairs going up from level cl
+      GetSym sym, xstairs(cl), ystairs(cl), fc, bc, 2
+      IF sym <> 250 THEN
+fd1:  FindDot x, y, incastle
+        IF x < lwall + 3 OR x > rwall - 3 OR y < twall + 3 OR y > bwall - 3 GOTO fd1
+        xstairs(cl) = x: ystairs(cl) = y
+      END IF
+      putsym 240, xstairs(cl), ystairs(cl), 13, 0, 2: dots = dots - 1
+    END IF
+   
+    IF xstairs(cl - 1) > 0 THEN  'stairs going down from level cl
+      GetSym sym, xstairs(cl - 1), ystairs(cl - 1), fc, bc, 2
+      IF special < -10 THEN sym = -1
+      IF sym <> 250 THEN
+fd2:  FindDot x, y, incastle
+        IF x < lwall + 3 OR x > rwall - 3 OR y < twall + 3 OR y > bwall - 3 GOTO fd2
+        IF special < -10 THEN
+          IF x < 23 OR x > 30 OR y < 10 OR y > 12 GOTO fd2
+        END IF
+        xstairs(cl - 1) = x: ystairs(cl - 1) = y
+      END IF
+      putsym 240, xstairs(cl - 1), ystairs(cl - 1), 5, 0, 2: dots = dots - 1
+    END IF
+   
+    IF cl > 0 AND xstairs(cl) > 0 THEN   'stairs going up from level cl
+      GetSym sym, xstairs(cl), ystairs(cl), fc, bc, 2
+      IF special < 0 AND special > -10 THEN sym = -1
+      IF sym <> 250 THEN
+fd3:  FindDot x, y, incastle
+        IF x < lwall + 3 OR x > rwall - 3 OR y < twall + 3 OR y > bwall - 3 GOTO fd3
+        IF special < 0 AND special > -10 THEN
+          IF x < 23 OR x > 30 OR y < 10 OR y > 12 GOTO fd3
+        END IF
+        xstairs(cl) = x: ystairs(cl) = y
+      END IF
+      putsym 240, xstairs(cl), ystairs(cl), 13, 0, 2: dots = dots - 1
+    END IF
+
+    GetSym currsym, localx, localy, currf, currb, 2
+    IF invisible THEN ffc = 8 ELSE ffc = 15
+    putsym 1, localx, localy, ffc, 0, 2
+    dots = dots - 1: t$ = Terr$(terrain)
+    PrintMessage 7, 0: DisplayCharacter
+   
+    nadd = dots * (RND + .5) * (RND + .5) / 70! + ABS(cl)
+    g = goodycastle(castle, cl)
+    IF cl = 0 AND castle = 0 THEN g = 512
+    lobyte = g MOD 256
+    hibyte = (g - lobyte) \ 256
+    IF nadd > 8 THEN nadd = 8
+    IF nadd < 2 THEN nadd = 2
+    IF nadd > dots THEN nadd = dots
+    SELECT CASE special
+      CASE 4: nadd = nadd / 2 + 1
+      CASE 3, 6: nadd = 0
+    END SELECT
+    FOR i = 1 TO nadd: MakeStuff i: NEXT i
+    IF g = 0 THEN
+      lobyte = lobyte + (2 ^ nadd) - 1: hibyte = 31
+      goodycastle(castle, cl) = lobyte + 256 * hibyte
+    END IF
+    nthings = nadd
+    FOR i = 1 TO nadd
+      IF (goodycastle(castle, cl) AND 2 ^ (i - 1)) THEN
+        symg = localgoody(i, 1) MOD 256: fcg = localgoody(i, 1) \ 256
+        putsym symg, localgoody(i, 2), localgoody(i, 3), fcg, 0, 2
+        dots = dots - 1
+      END IF
+    NEXT i
+
+    nadd = dots / 200! * (RND + .3) + ABS(cl)
+    IF nadd > dots / 15 THEN nadd = dots / 15
+    SELECT CASE special
+      CASE 2, 6: nadd = 0
+    END SELECT
+    FOR i = 1 TO nadd
+      FindDot x, y, incastle
+      dots = dots - 1: sym = trap
+      SELECT CASE cRoll(14)
+        CASE 1, 2, 3: sym = pit: fc = 4 * cRoll(2)  'pit
+          IF cRoll(20) = 1 THEN fc = 12
+        CASE 4: fc = 1        'sleep
+        CASE 5: fc = 2        'dart
+        CASE 6: fc = 3        'shock
+        CASE 7: fc = 4        'radiation
+        CASE 8: fc = 5        'glue
+        CASE 9: fc = 6        'acid
+        CASE 10: fc = 7       'arrow
+        CASE 11: fc = 8       'teleport
+        CASE 12: fc = 10      'gas
+        CASE 13: fc = 12      'fire
+        CASE 14: fc = 14      'laser
+      END SELECT
+      putsym sym, x, y, fc, 0, 2
+    NEXT
+   
+    nadd = dots * (RND + 1.5) / 70! + 3 + ABS(cl)
+    IF nadd < nthings * 2 THEN nadd = nthings * 2
+    IF nadd > dots / 4 THEN nadd = dots / 4
+    SELECT CASE castle
+      CASE 1  'elvii
+        IF castlelevel = elvislevel THEN
+          FOR i = 1 TO 16
+            crtyp = elvimp - (i = 16): FindDot x, y, incastle: GOSUB mkcr
+          NEXT i
+        END IF
+      CASE 2  'munsters
+        IF castlelevel = -7 THEN
+          crtyp = herm: x = 40: y = 11: GOSUB mkcr
+          crtyp = lily: x = 34: y = 11: GOSUB mkcr
+          crtyp = gramp: x = 27: y = 17: GOSUB mkcr
+          crtyp = eddie: x = 21: y = 11: GOSUB mkcr
+          crtyp = mara: x = 40: y = 5: GOSUB mkcr
+          crtyp = spot: x = 27: y = 5: GOSUB mkcr
+          crtyp = igor: x = 13: y = 5: GOSUB mkcr
+          crtyp = fester: x = 11: y = 11: GOSUB mkcr
+          AddToDrop -nberry - 17  'tape recorder
+incdd: x = cRoll(7) + 10: y = cRoll(4) + 13
+          GetSym sym, x, y, f, b, 2
+          IF sym <> 250 GOTO incdd
+          putsym 11, x, y, 14, 0, 2
+          drgoody(1, 15) = x: drgoody(1, 16) = y
+        ELSEIF castlelevel = -6 THEN
+          AddToDrop 0  'Gregre berry
+          FindDot x, y, incastle: drgoody(1, 15) = x: drgoody(1, 16) = y
+          putsym 5, x, y, 12, 0, 2: dots = dots - 1
+        END IF
+      CASE 3  'gilligan
+        IF castlelevel = 5 THEN
+          crtyp = gill: x = 8: y = 15: GOSUB mkcr
+          crtyp = skip: FindDot x, y, incastle: GOSUB mkcr
+          crtyp = prof: x = 25: y = 17: GOSUB mkcr
+          crtyp = ging: x = 43: y = 8: GOSUB mkcr
+          crtyp = mary: x = 37: y = 5: GOSUB mkcr
+          crtyp = mrhow: x = 17: y = 5: GOSUB mkcr
+          crtyp = mrshow: x = 17: y = 6: GOSUB mkcr
+        END IF
+      CASE 4  'trump
+        IF castlelevel = 7 THEN
+          nadd = nadd + 4
+          FOR i = trump TO marla
+            crtyp = i
+            DO
+              bad = false: place(i - trump + 1) = cRoll(4)
+              FOR j = trump TO i - 1
+                IF place(i - trump + 1) = place(j - trump + 1) THEN bad = true
+              NEXT
+            LOOP UNTIL NOT bad
+            bad = true
+putrumps: FindDot x, y, incastle
+            SELECT CASE place(i - trump + 1)
+              CASE 1: IF x > 5 AND x < 12 AND y > 7 AND y < 15 THEN bad = false
+              CASE 2: IF x > 5 AND x < 15 AND y > 15 AND y < 20 THEN bad = false
+              CASE 3: IF x > 41 AND x < 48 AND y > 7 AND y < 13 THEN bad = false
+              CASE 4: IF x > 42 AND x < 48 AND y > 13 AND y < 20 THEN bad = false
+            END SELECT
+            IF bad GOTO putrumps
+            GOSUB mkcr
+          NEXT i
+        END IF
+      CASE 5  '2nd placers
+        IF castlelevel = -5 THEN
+          SELECT CASE cRoll(3)
+            CASE 1: x = 13: y = 4
+            CASE 2: x = 13: y = 8
+            CASE 3: x = 19: y = 4
+          END SELECT
+          AddToDrop -nberry - 16   'Mets hat
+          drgoody(1, 15) = x: drgoody(1, 16) = y
+          putsym 147, x, y, 1, 0, 2: dots = dots - 1
+          crtyp = buzz: x = 11: y = 17: GOSUB mkcr
+          FOR i = mdeck TO saddam
+            crtyp = i: FindDot x, y, incastle: GOSUB mkcr
+          NEXT i
+          crtyp = cubs
+          FOR i = 1 TO 9: x = 0
+            WHILE x > 11 OR x < 6 OR y > 13 OR y < 4
+              FindDot x, y, incastle
+            WEND
+            GOSUB mkcr
+          NEXT i
+          nadd = nadd + 6
+        END IF
+      CASE 6  'grinch
+        IF castlelevel = grinchlevel THEN
+          nadd = 0
+          IF notoxin = 0 THEN
+            crtyp = grinch: x = 8: y = 10: GOSUB mkcr
+            crtyp = gdog: x = 8: y = 12: GOSUB mkcr
+          END IF
+          crtyp = sdro: x = 17: y = 11: GOSUB mkcr
+          ncre(nnear, 11) = 1
+          ncre(nnear, 14) = ncre(nnear, 14) + 1 + 10 - 200
+          crtyp = ddro: x = 19: y = 11: GOSUB mkcr
+          ncre(nnear, 11) = 1
+          ncre(nnear, 14) = ncre(nnear, 14) + 1 + 10 - 400
+          crtyp = ddro: x = 21: y = 11: GOSUB mkcr
+          ncre(nnear, 14) = ncre(nnear, 14) + 1 + 10 - 400
+          crtyp = rdro: x = 21: y = 9: GOSUB mkcr
+          ncre(nnear, 14) = ncre(nnear, 14) + 2 + 10 - 600
+          crtyp = rdro: x = 21: y = 13: GOSUB mkcr
+          ncre(nnear, 14) = ncre(nnear, 14) + 2 + 10 - 600
+          crtyp = robot: x = 24 + cRoll(3): y = 3 + cRoll(3)
+          GOSUB mkcr: ncre(nnear, 7) = ncre(nnear, 7) MOD 1000
+          crtyp = robot: x = 15 + cRoll(4): y = 6 + cRoll(3)
+          GOSUB mkcr: ncre(nnear, 7) = ncre(nnear, 7) MOD 1000
+          crtyp = robot: x = 15 + cRoll(4): y = 12 + cRoll(3)
+          GOSUB mkcr: ncre(nnear, 7) = ncre(nnear, 7) MOD 1000
+          crtyp = robot: x = 24 + cRoll(3): y = 15 + cRoll(3)
+          GOSUB mkcr: ncre(nnear, 7) = ncre(nnear, 7) MOD 1000
+          crtyp = slug: x = 21: y = 15: GOSUB mkcr
+          crtyp = lotus: x = 11: y = 11: GOSUB mkcr
+          crtyp = rose: x = 6: y = 11: GOSUB mkcr
+          FOR gs = 1 TO 4: crtyp = gspore: x = 9: y = 11: GOSUB mkcr: NEXT gs
+          crtyp = cact: x = 6: y = 9: GOSUB mkcr
+          crtyp = cact: x = 6: y = 13: GOSUB mkcr
+          crtyp = gwasp: FOR i = 1 TO 5: x = 47: y = 11: GOSUB mkcr: NEXT i
+          crtyp = scor: FOR i = 1 TO 5: x = 47: y = 11: GOSUB mkcr: NEXT i
+          crtyp = puff: FOR i = 1 TO 10: FindDot x, y, incastle: GOSUB mkcr: NEXT i
+          flashlight = false: gasmask = false: mask = false: boots = false
+          ffgen = false: sunglasses = false: mindweb = false: vehicle = 0
+          FOR i = 1 TO ngoody
+            IF goody(i, 1) = -7 AND goody(i, 11) <> 2 THEN goody(i, 1) = 7
+            IF goody(i, 1) = -8 AND goody(i, 11) <> 8 THEN goody(i, 1) = 8
+          NEXT i
+        ELSEIF castlelevel = -grinchlevel THEN
+          dots = dots - 1
+          FindDot x, y, incastle: putsym 225, x, y, 6, 0, 2
+          AddToDrop -nberry - 9: drgoody(1, 15) = x: drgoody(1, 16) = y
+        END IF
+    END SELECT
+    FOR i = 1 TO nadd
+      MakeCreature 0, 0, false, false: dots = dots - 1
+    NEXT
+    FOR i = 1 TO nnear
+      putsym 32, localx + ncre(i, 4), localy + ncre(i, 5), 7, 0, 1
+      IF SameRoom(ncre(i, 4), ncre(i, 5)) AND (ncre(i, 1) <= ncreat + creextra + 1) THEN Awaken i
+    NEXT
+
+    IF xstairs(cl) > 0 THEN putsym 240, xstairs(cl), ystairs(cl), 13, 0, 2
+    IF xstairs(cl - 1) > 0 THEN putsym 240, xstairs(cl - 1), ystairs(cl - 1), 5, 0, 2
+    putsym 250, localx, localy, 8, 0, 2
+    putsym 32, localx, localy, 7, 0, 1
+    SetDark dark, olddark, changed
+    IF dark THEN ChangeDark ELSE savecorn = 0: DotIt (localx), (localy): DotCorn
+    IF xstairs(cl) > 0 THEN
+      putsym 240, xstairs(cl), ystairs(cl), 13, 0, 2
+      IF cl < 0 THEN putsym 240, xstairs(cl), ystairs(cl), 13, 0, 1
+    END IF
+    IF xstairs(cl - 1) > 0 THEN
+      putsym 240, xstairs(cl - 1), ystairs(cl - 1), 5, 0, 2
+      IF cl > 0 THEN putsym 240, xstairs(cl - 1), ystairs(cl - 1), 5, 0, 1
+    END IF
+  '-------------------------------------------------------
+  END IF
+
+  IF invisible THEN ffc = 8 ELSE ffc = 15
+  putsym 1, localx, localy, ffc, 0, -1
+
+  SCREEN , , 1: vpage = 1: PrintMessage 5, 0
+  FOR i = 1 TO ncastle + nruins: x = RND * cRoll(2): NEXT i
+EXIT SUB
+
+mkcr:
+  MakeCreature (x), (y), false, false: ncre(nnear, 11) = 0
+  dots = dots - 1: nadd = nadd - 1
+RETURN
+
+END SUB
+
+SUB DrawLair
+  cRandomize seed! + mainx + mainy * 50
+  xr = RND(-seed! - mainx - mainy * 50)
+  FOR i = 1 TO mainx + mainy * 50: xr = RND * cRoll(2): NEXT i: ClearMess
+ 
+  IF sunglasses THEN dark = -1
+  incastle = 1
+
+  IF LoadMaps(1) = 0 THEN
+  '----------------------------------------------
+    nnear = 0: castle = 0: castlelevel = 0: dark = 1
+    lwall = 2: rwall = 51: twall = 2: bwall = 21
+    ndro = 0
+    FOR i = 1 TO ndropped
+      IF ABS(drgoody(i, 1)) = 8 AND drgoody(i, 11) = 8 THEN 'safe
+        FOR j = 1 TO 16: drgoody(1, j) = drgoody(i, j): NEXT
+        drgoody(1, 13) = -ABS(drgoody(1, 13))   'negate mainx so won't display
+        drgdy(1) = drgdy(i): ndro = 1: EXIT FOR
+      END IF
+    NEXT i
+    ndropped = ndro
+    
+    goodycastle(0, 0) = 0
+    ljnk 309, 23, 23, 1: SCREEN , , 1: vpage = 1: ccls 1: PrintMessage 7, 0
+    SCREEN , , 2, 1
+   
+    IF cRoll(2) = 1 THEN DrawCaves: EXIT SUB
+   
+    Lair xr, xl, yb, yt, xstair, ystair
+    t$ = Terr$(terrain): DisplayCharacter: PrintMessage 15, 0
+
+    localx = xstair: localy = ystair
+    currsym = 240: currf = 13: currb = 0
+    IF invisible THEN ffc = 8 ELSE ffc = 15
+    putsym 1, localx, localy, ffc, 0, 2
+   
+    strength = 0: crtyp = LairCreat(strength)   'leave here
+    putlsd = cRoll(cRoll(3)): putssd = cRoll(2) + 1
+    putber = 7 - putssd - putlsd: putbeef = 1
+    nnn = 8
+    IF strength < 60 THEN putlsd = putlsd - 1: nnn = nnn - 1
+    IF strength < 30 THEN putssd = putssd - 1: nnn = nnn - 1
+    goodycastle(0, 0) = (2 ^ nnn) - 1
+    itemnum = 1
+    FOR i = 1 TO putber
+      psym = 5 + 231 * INT(RND * 2): pf = 4 + 8 * INT(RND * 2): GOSUB putit
+    NEXT
+    FOR i = 1 TO putssd
+      psym = 11 + INT(RND * 2): pf = 14: GOSUB putit
+    NEXT
+    FOR i = 1 TO putlsd
+      psym = 21 + 136 * INT(RND * 2): pf = 11: GOSUB putit
+    NEXT
+    IF putbeef THEN psym = 254: pf = 6: GOSUB putit
+   
+    IF crtyp <= ncreat THEN
+      maxcritter = 25 + RollDice(lvl, 2, 2) - 2 * SQR(crtyp)
+    ELSE
+      maxcritter = 25 + RollDice(SQR(lvl), 3, 3)
+    END IF
+
+    IF maxcritter > 45 THEN maxcritter = 45
+    putcritter = maxcritter \ 3
+    FOR i = 1 TO putcritter: psym = -1: GOSUB putit: NEXT
+    FOR i = 1 TO maxcritter - putcritter
+      FindDot x, y, incastle: MakeCreature x, y, false, false
+    NEXT i
+
+    IF crtyp > ncreat + crecas + crefor + creswa + crepla THEN
+      FOR i = 2 TO 51: FOR j = 2 TO 21
+        GetSym sym, i, j, fc, bc, 2
+        IF sym = 250 THEN putsym 247, i, j, 1, 0, 2
+      NEXT j, i
+      FOR i = 1 TO nnear: ncre(i, 8) = 1247: NEXT i
+    END IF
+
+  '----------------------------------------------
+  END IF
+
+  SCREEN , , 1: vpage = 1: ChangeDark: PrintMessage 5, 0: DisplayCharacter
+EXIT SUB
+
+putit:
+  x = xl + cRoll(xr - xl + 1) - 1
+  y = yt + cRoll(yb - yt + 1) - 1
+  GetSym sym, x, y, fc, bc, 2
+  IF sym = 250 THEN
+    IF psym > 0 THEN
+      putsym psym, x, y, pf, 0, 2
+      localgoody(itemnum, 1) = psym + 256 * pf
+      localgoody(itemnum, 2) = x
+      localgoody(itemnum, 3) = y
+      itemnum = itemnum + 1
+    ELSE
+      MakeCreature x, y, false, false
+    END IF
+  ELSE
+    GOTO putit
+  END IF
+RETURN
+
+END SUB
+
+SUB DrawSpecial (special)
+  OPEN "alphaman.4" FOR BINARY AS #2
+  GET #2, special * 2 - 1, filepos
+  GET #2, filepos, numrooms
+  FOR i = 1 TO numrooms
+    GET #2, , xr: GET #2, , xl: GET #2, , yb: GET #2, , yt
+    dots = dots + RoomIt(xr, xl, yb, yt)
+  NEXT
+ 
+  GET #2, , numremove
+  FOR i = 1 TO numremove
+    GET #2, , sym: GET #2, , xr: GET #2, , yb
+    RemoveWall sym, xr, yb, removed
+  NEXT i
+
+  GET #2, , numdoors
+  FOR i = 1 TO numdoors
+    GET #2, , xd: GET #2, , yd
+    putsym cen, xd, yd, wallcolr, 0, 2
+  NEXT i
+ 
+  GET #2, , numlocked
+  FOR i = 1 TO numlocked
+    GET #2, , xd: GET #2, , yd
+    putsym lockeddoor, xd, yd, wallcolr, 0, 2
+  NEXT i
+ 
+  GET #2, , numsecret
+  FOR i = 1 TO numsecret
+    GET #2, , xd: GET #2, , yd
+    IF castle = 6 AND xd = 15 THEN yd = 7 + (cRoll(2) - 1) * 8
+    putsym secretdoor, xd, yd, wallcolr, 0, 2
+  NEXT i
+
+  GET #2, , numitems
+  FOR i = 1 TO numitems
+    GET #2, , sym: GET #2, , xd: GET #2, , yd: GET #2, , fc: GET #2, , iop
+    IF sym = 7 THEN sym = sym + 11 * cRoll(2)  'map
+    putsym sym, xd, yd, fc, 0, 2
+    IF iop = -1 THEN iop = -cRoll(nberry) ELSE iop = -nberry - iop
+    AddToDrop iop: drgoody(1, 15) = xd: drgoody(1, 16) = yd
+  NEXT i
+
+  GET #2, , numtraps   'can be any non-dropped symbol, actually
+  FOR i = 1 TO numtraps
+    GET #2, , sym: GET #2, , xd: GET #2, , yd: GET #2, , fc
+    IF sym = trap AND fc = -1 THEN
+      SELECT CASE cRoll(11)
+        CASE 1: fc = 1       'arrow
+        CASE 2: fc = 2       'dart
+        CASE 3: fc = 3       'shock
+        CASE 4: fc = 4       'radiation
+        CASE 5: fc = 5       'glue
+        CASE 6: fc = 6       'acid
+        CASE 7: fc = 7       'arrow
+        CASE 8: fc = 8       'teleport
+          IF castle = 2 THEN fc = 7
+        CASE 9: fc = 10      'gas
+        CASE 10: fc = 12     'fire
+        CASE 11: fc = 14     'laser
+      END SELECT
+    END IF
+    IF special = 6 AND i > 11 THEN yd = yd + cRoll(2) - 1
+    putsym sym, xd, yd, fc, 0, 2
+  NEXT
+ 
+  dots = dots + numremove - numitems - numtraps
+
+  CLOSE #2
+END SUB
+
+FUNCTION LairCreat (strength)
+SELECT CASE cRoll(100)
+  CASE 1 TO 60               'Anywhere critters
+    maxcre = 3 + 3.49 * lvl + ncastle
+redolc:
+    l = cRoll(maxcre)
+    SELECT CASE l
+      CASE 1, 2, 3, 5, 6, 10, 11, 16, 17, 25, 30  '11 is wdpckr,30 kbee
+      CASE 33, 36, 38, 44, 47, 52, 54, 58, 62, 63 '52 is taran, 63 is Tyran
+      CASE ELSE: GOTO redolc
+    END SELECT
+    strength = 100 * l / maxcre
+  CASE 61 TO 97              'terrain critters
+    maxcre = lvl: IF maxcre > 17 THEN maxcre = 17
+    l = cRoll(maxcre)
+    strength = 100 * l / maxcre
+    SELECT CASE cRoll(4)
+      CASE 1: l = ncreat + l
+      CASE 2: l = ncreat + crecas + l
+      CASE 3: l = ncreat + crecas + crefor + l
+      CASE 4: l = ncreat + crecas + crefor + creswa + l
+    END SELECT
+  CASE ELSE                   'water
+    maxcre = 1 + 1.5 * lvl: IF maxcre > creh2o THEN maxcre = creh2o
+    l = cRoll(maxcre): strength = 100 * l / maxcre
+    l = ncreat + crecas + crefor + creswa + crepla + l
+END SELECT
+LairCreat = l
+END FUNCTION
+
+SUB Mousify
+  putsym currsym, localx, localy, currf, currb, -1   'erase old sym
+
+  FOR j = 1 TO nnear: ncre(j, 11) = ncre(j, 11) AND (NOT 1): EraseCreat j: NEXT j
+
+  numbr = 30 - ndropped: nitems = 0
+  FOR j = 1 TO ngoody
+    IF ABS(goody(j, 1)) < 3 THEN   'foodstuffs
+      nitems = nitems + goody(j, 3)
+    ELSE
+      nitems = nitems + 1
+    END IF
+  NEXT
+  IF numbr > nitems THEN numbr = nitems
+  putsym currsym, localx, localy, currf, currb, 2   'don't put on page 1
+
+  FOR i = 1 TO numbr
+mousfdot:
+    FindDot x, y, incastle
+    IF x > 9 AND x < 18 AND y > 13 AND y < 18 GOTO mousfdot 'not in secret rm
+    FOR j = 1 TO nnear
+      ncre(j, 4) = ncre(j, 4) + localx - x
+      ncre(j, 5) = ncre(j, 5) + localy - y
+    NEXT j
+    localx = x: localy = y
+    j = cRoll(ngoody)
+    IF ABS(goody(j, 1)) < 3 THEN
+      AddToDrop -nberry - 11 + (goody(j, 1) = 2): currb = 0
+      IF goody(j, 1) = 1 THEN currsym = 22: currf = 5 ELSE currsym = 254: currf = 6
+      goody(j, 3) = goody(j, 3) - 1
+      IF goody(j, 3) = 0 THEN RemoveGoody j, false
+    ELSE
+      AddToDrop j: RemoveGoody j, false
+    END IF
+    drgoody(1, 15) = localx: drgoody(1, 16) = localy
+    putsym currsym, localx, localy, currf, currb, 2   'set by addtodrop
+    IF ngoody = 0 THEN i = numbr + 1
+  NEXT i
+  FOR i = 2 TO 51: FOR j = 2 TO 21
+    GetSym sym, i, j, fc, bc, 1
+    IF sym = 250 THEN sym = 32: fc = 7: putsym sym, i, j, fc, bc, 1
+  NEXT j, i
+
+  SetCombatStats
+  DisplayCharacter
+  IF dark THEN dark = oldar
+  ChangeDark
+  IF invisible THEN ffc = 8 ELSE ffc = 15
+  putsym 1, localx, localy, ffc, 0, -1
+
+END SUB
+
+SUB Scatter (pak)
+  'IF pak <> 0 THEN EXIT SUB
+  numbr = 30 - ndropped: nitems = 0
+  putsym currsym, localx, localy, currf, currb, -1
+  SELECT CASE pak
+    CASE 0   'stuff
+      FOR j = 1 TO ngoody
+        IF ABS(goody(j, 1)) < 3 THEN   'foodstuffs
+          nitems = nitems + goody(j, 3)
+        ELSE
+          nitems = nitems + 1
+        END IF
+      NEXT
+      addl = 0
+    CASE 1   'backpack
+      FOR j = 1 TO npack
+        IF ABS(backpack(j, 1)) < 3 THEN   'foodstuffs
+          nitems = nitems + backpack(j, 3)
+        ELSE
+          nitems = nitems + 1
+        END IF
+      NEXT
+      addl = ngoody
+    CASE 2   'safe
+      FOR j = 1 TO nsafe
+        IF ABS(safe(j, 1)) < 3 THEN   'foodstuffs
+          nitems = nitems + safe(j, 3)
+        ELSE
+          nitems = nitems + 1
+        END IF
+      NEXT
+      addl = ngoody + npack
+  END SELECT
+  IF numbr > nitems THEN numbr = nitems
+
+  FOR i = 1 TO numbr
+    lx = localx: ly = localy: GOSUB getdot
+    SELECT CASE pak
+      CASE 0: j = cRoll(ngoody): gtyp = ABS(goody(j, 1)): gnum = goody(j, 3)
+        IF ngoody = 0 THEN i = numbr + 1
+      CASE 1: j = cRoll(npack): gtyp = backpack(j, 1): gnum = backpack(j, 3)
+        IF npack = 0 THEN i = numbr + 1
+      CASE 2: j = cRoll(nsafe): gtyp = safe(j, 1): gnum = safe(j, 3)
+        IF nsafe = 0 THEN i = numbr + 1
+    END SELECT
+
+    IF gtyp < 3 THEN
+      AddToDrop -nberry - 11 + (gtyp = 2): currb = 0
+      IF gtyp = 1 THEN currsym = 22: currf = 5 ELSE currsym = 254: currf = 6
+      gnum = gnum - 1
+      IF gnum = 0 THEN
+        RemoveGoody j, pak
+      ELSE
+        SELECT CASE pak
+          CASE 0: goody(j, 3) = gnum
+          CASE 1: backpack(j, 3) = gnum
+          CASE 2: safe(j, 3) = gnum
+        END SELECT
+      END IF
+    ELSE
+      AddToDrop (j + addl): RemoveGoody j, pak
+    END IF
+    drgoody(1, 15) = localx: drgoody(1, 16) = localy
+    sc = -1
+    IF incastle THEN
+      GetSym sym, localx, localy, fc, bc, 1
+      IF sym <> 250 THEN sc = 2
+    END IF
+    putsym currsym, localx, localy, currf, currb, sc   'set by addtodrop
+    localx = lx: localy = ly
+  NEXT i
+  GetSym currsym, localx, localy, currf, currb, 2
+  IF invisible THEN ffc = 8 ELSE ffc = 15
+  putsym 1, localx, localy, ffc, 0, 1
+
+EXIT SUB
+
+getdot:
+  gotdot = false
+  WHILE NOT gotdot
+    localx = localx + cRoll(3) - 2: localy = localy + cRoll(3) - 2
+    IF localx < 2 THEN localx = lx ELSE IF localx > 51 THEN localx = lx
+    IF localy < 2 THEN localy = ly ELSE IF localy > 21 THEN localy = ly
+    GetSym sym, localx, localy, fc, bc, 2
+    IF incastle AND sym = 250 THEN gotdot = true
+    IF incastle = 0 AND (sym = 250 OR sym = 249 OR sym = 32) THEN gotdot = true
+  WEND
+RETURN
+END SUB
+

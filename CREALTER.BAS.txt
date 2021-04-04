@@ -1,0 +1,85 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DECLARE SUB randum ()
+DECLARE SUB modcreat (c$, cn$)
+DEFINT A-Z
+
+DIM SHARED att(5), btt(5), typ(5), str(5), tohit(5), rng(5)
+DIM SHARED hd, mov, ac, sym, fc, defense, expr, creat$
+
+OPEN "alpha.cre" FOR INPUT AS #1
+OPEN "alphaman.2" FOR RANDOM AS #2 LEN = 50
+OPEN "crelist" FOR OUTPUT AS #3
+FIELD #2, 20 AS nam$, 2 AS a$, 2 AS b$, 2 AS c$, 2 AS d$, 2 AS e$, 2 AS a1$, 2 AS b1$, 2 AS a2$, 2 AS b2$, 2 AS a3$, 2 AS b3$, 2 AS a4$, 2 AS b4$, 2 AS a5$, 2 AS b5$
+numcre = 0: CLS
+crecount = 1
+WHILE NOT EOF(1)
+  INPUT #1, creat$
+  PRINT #3, creat$; : crecount = crecount + 1
+  IF crecount = 5 THEN
+    crecount = 1: PRINT #3,
+  ELSE
+    PRINT #3, TAB(20 * (crecount - 1));
+  END IF
+  IF LEFT$(LTRIM$(creat$), 1) = CHR$(39) THEN GOTO fin
+  CALL modcreat(creat$, creatnew$)
+  LSET nam$ = creatnew$
+  numcre = numcre + 1: PRINT creat$; "   ";
+  INPUT #1, a, defense, c, susc, expr
+  IF defense AND susc AND (1 + 2 + 4 + 8 + 16 + 32 + 64 + 512 + 1024) THEN
+    COLOR 12: PRINT "error?": COLOR 7
+  END IF
+  LSET a$ = MKI$(a): LSET b$ = MKI$(defense): LSET c$ = MKI$(c)
+  LSET d$ = MKI$(susc): LSET e$ = MKI$(expr)
+  FOR i = 1 TO 5: INPUT #1, att(i), btt(i): NEXT i
+  LSET a1$ = MKI$(att(1)): LSET b1$ = MKI$(btt(1))
+  LSET a2$ = MKI$(att(2)): LSET b2$ = MKI$(btt(2))
+  LSET a3$ = MKI$(att(3)): LSET b3$ = MKI$(btt(3))
+  LSET a4$ = MKI$(att(4)): LSET b4$ = MKI$(btt(4))
+  LSET a5$ = MKI$(att(5)): LSET b5$ = MKI$(btt(5))
+  PUT #2, numcre
+  hd = INT(a / 10) MOD 1000: mov = INT(a / 10000)
+  ac = a MOD 10
+  sym = c MOD 1000: fc = INT(c / 1000)
+  IF fc = 0 THEN bc = 1 ELSE bc = 0
+  FOR i = 1 TO 5
+    tohit(i) = att(i) MOD 100: str(i) = INT(att(i) / 100)
+    rng(i) = btt(i) MOD 100: typ(i) = INT(btt(i) / 100)
+  NEXT i
+WEND
+CLOSE
+
+fin:
+
+END
+
+SUB modcreat (c$, cn$)
+  cn$ = SPACE$(20)
+  FOR k = 1 TO LEN(c$)
+    aa = ASC(MID$(c$, k, 1)): aa = aa XOR k * 6
+    MID$(cn$, k, 1) = CHR$(aa MOD 256)
+  NEXT
+  MID$(cn$, LEN(c$) + 1, 1) = CHR$(242)
+  FOR k = LEN(c$) + 2 TO 20
+    MID$(cn$, k, 1) = CHR$(INT(RND * 256))
+  NEXT
+END SUB
+

@@ -1,0 +1,347 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+  ' $INCLUDE: 'alpha.dec'
+
+CLS
+PRINT USING "nssd:##  ngrenade:##  techwep:##  nstrash:##"; nssd; ngrenade; ntechwep - ngrenade; nstrash
+PRINT USING "nlsd:##  nltrash:##"; nlsd; nltrash
+
+wepnames:
+  DATA 4,58,6,    1,64,4,   5,58,9,   38,58,8
+  DATA 4,64,4,    15,58,11, 12,63,5,  83,57,10
+  DATA 47,62,7,   19,52,15, 40,54,14, 89,57,12
+  DATA 181,40,18, 182,1,14
+'range
+  DATA 174,61,8,  18,62,4,   181,1,12,  23,62,5
+  DATA 171,59,7,  302,55,13, 64,59,9,   30,62,5
+  DATA 181,13,13, 268,35,16, 268,51,14, 181,26,14
+shnames:
+  DATA 419,46,14, 151,27,14, 151,1,14, 415,54,14
+  DATA 182,15,11, 181,58,11, 151,15,12, 415,42,12, 173,67,2
+armnames:
+  DATA 312,1 ,18, 236,1 ,18, 228,50,18
+  DATA 183,1 ,9 , 236,19,18, 184,1 ,13
+  DATA 183,19,16, 183,10,9 , 183,43,8
+  DATA 182,53,16, 183,51,15, 183,35,8
+
+technames:
+  DATA 184,14,9,  184,24,8,  184,32,8,  184,40,6
+  DATA 184,46,13, 184,59,9,  185,1,17,  185,18,9
+  DATA 185,27,22, 185,49,16, 200,1,18,  146,1,17
+  DATA 205,39,21, 224,42,22, 225,39,21, 119,36,17
+  DATA 235,35,20, 236,37,19, 241,31,7,  255,24,13
+  DATA 255,37,6,  255,43,8,  287,40,9,  285,48,12
+  DATA 287,49,17, 311,1,16,  317,49,16, 191,52,13
+  DATA 146,50,12, 290,26,18, 110,43,17, 119,17,19
+  DATA 125,51,13, 142,1,16,  131,49,15, 136,1,18
+  DATA 276,59,9,  365,1,14
+' grenades
+  DATA 131,9,21, 186,28,16, 186,44,18, 187,1,17
+  DATA 187,18,11, 206,27,14, 228,23,15, 250,18,12
+  DATA 314,29,12, 317,1,22,  159,51,17, 420,57,12
+  DATA 119,53,14, 395,56,13
+  
+  DATA 187,29,9, 187,42,10, 187,52,9,  187,61,7
+  DATA 188,1,12,  186,62,6,  188,13,12, 188,25,18
+  DATA 188,43,9,  188,52,16, 189,1,11,  228,38,12
+  DATA 173,56,11, 241,38,10, 250,30,11, 262,29,19
+  DATA 132,50,17, 310,43,8,  310,51,7,  131,30,19
+  DATA 99,59,8,   204,38,11, 151,53,13
+              
+  DATA 189,12,22, 189,34,18, 189,59,7, 190,1,13
+  DATA 190,14,21, 190,35,13, 190,48,6, 190,54,11
+  DATA 204,49,11, 206,1,12,  218,1,17, 250,41,7
+  DATA 310,58,11, 315,56,12, 159,43,8, 138,53,11
+  DATA 216,45,9,  146,18,14
+
+'lsd
+  DATA 191,1,14,  191,15,12, 191,27,15, 191,42,10
+  DATA 237,1,20,  192,1,14,  192,15,7,  191,65,4
+  DATA 192,22,14, 218,48,17, 232,41,7,  235,1,9
+  DATA 237,59,10, 241,1,15,  243,1,5,   243,6,11
+  DATA 293,47,20, 309,46,15, 310,29,14, 314,53,16
+  DATA 120,16,19, 141,39,9,  141,48,10, 382,64,4
+  DATA 362,43,12
+
+  DATA 192,36,17, 192,53,7, 193,1,18,  193,19,5
+  DATA 192,60,9, 193,24,12, 206,13,14, 218,18,14
+  DATA 218,32,16, 54,16,11, 232,48,10, 387,52,17
+  DATA 168,51,10
+
+syms:
+  DATA 22,5,0, 254,6,0, 24,1,0,  8,7,0
+  DATA 9,3,0,  5,4,0,   12,14,0, 157,11,0
+  DATA 4,1,0,  135,14,0
+
+  'fatig, uses, dice,dam, 2hitbonus,range
+wep:
+  DATA 2,  -1, 1,4, -2,1
+  DATA 6,  -1, 1,5, -2,1
+  DATA 10, -1, 1,6, -1,1
+  DATA 7,  -1, 1,7, -1,1
+  DATA 12, -1, 1,8,  0,1
+  DATA 8,  -1, 1,9,  0,1
+  DATA 15, -1, 1,10, 1,1
+  DATA 15, -1, 1,11, 1,1
+  DATA 20, -1, 1,12, 1,1
+  DATA 2,  -1, 2,5,  2,1
+  DATA 7,  -1, 2,6,  2,1
+  DATA 12, -1, 2,7,  2,1
+  DATA 2,  -1, 3,5,  3,1
+  DATA 2,  -1, 3,6,  3,1
+
+  'Range
+  DATA 1, 20, 1,3, -3,10
+  DATA 1, 16, 1,4, -2,9
+  DATA 3, 10, 1,5,  0,5
+  DATA 1, 14, 1,6, -1,8
+  DATA 3, 9,  1,7,  0,8
+  DATA 2, 9,  1,8, -1,7
+  DATA 2, 8,  1,9,  0,5
+  DATA 4, 6,  1,10, 1,6
+  DATA 1, 10, 2,4,  2,10
+  DATA 2, 8,  2,6,  2,9
+  DATA 1, 8,  3,4,  3,11
+  DATA 2, 6,  3,6,  3,9
+
+sh: DATA 8,5, 4,4, 20,5, 10,4, 20,4, 10,3, 10,3, 5,2, 0,0
+arm: DATA 25,10, 15,8, 60,9, 100,8, 40,7, 25,7, 35,6, 60,5
+     DATA 40,4, 20,3, 15,2, 0,0
+'fatig, hits2kill
+
+     'typ (energy-mass), fatig,uses,complex, recharge
+ssd: DATA 92, 1,-1,20,  0
+     DATA 1,  3,-1,25,  0
+     DATA 2, 6,-1,10,  0
+     DATA 98, 2,5,6,    -1
+     DATA 96, 3,1,30,   0
+     DATA 90, 1,1,18,   -1
+     DATA 99, 5,8,7,    -1
+     DATA 94, 2,12,16,  -1
+     DATA 1,  0,30,25,  0
+     DATA 2,  0,10,25,  0
+     DATA 97, 10,-1,10, 0
+     DATA 96, 9,25,10,  -1
+     DATA 99, 10,70,5,  -1
+     DATA 99, 2,1,2,    0
+     DATA 99, 6,1,3,    0
+     DATA 1,  2,10,45,  0
+     DATA 1,  1,25,8,   0
+     DATA 1,  1,8,12,   0
+     DATA 1,  0,-1,40,  0
+     DATA 14,  15,10,17, 0
+     DATA 3,  2,-1,19,  0
+     DATA 0,  3,1,28,   0
+     DATA 99, 3,6,9,    -1
+     DATA 97, 3,50,18,  -1
+     DATA 1,  4,10,25,  0
+     DATA 33,  10,3,5,  0
+     DATA 1,  5,20,30,  0
+     DATA 96, 20,4,1,   -1
+     DATA 97, 9,20,8,   -1
+     DATA 1,  1,20,20,  0
+     DATA 95, 13,5,4,   -1
+     DATA 0,  3,12,40,  0
+     DATA 98, 8,20,10,  -1
+     DATA 95, 3,12,20,  -1
+     DATA 95, 4,8,15,   -1
+     DATA 0,  4,8,20,   0
+     DATA 95, 10,15,12, -1
+     DATA 99, 5,50,8,   -1
+                       
+     'Tech Wep
+     'typ(energy-mass), fatg,use,cmplx, dic,dam,2hitbon,rnge,damtyp, recharg
+     DATA 11, 1,1,12, 7,7,6,1,1,     0
+     DATA 14, 1,1,10, 8,8,12,1,15,   0
+     DATA 11, 1,1,12, 9,9,6,1,10,    0
+     DATA 13, 1,1,7,  2,30,10,1,8,   0
+     DATA 13, 1,1,10, 2,15,6,1,5,    0
+     DATA 15, 1,1,6,  15,15,8,1,7,   0
+     DATA 15, 1,1,7,  12,12,10,1,2,  0
+     DATA 1,  1,1,18, 4,10,6,1,6,    0
+     DATA 13, 1,1,13, 1,4,12,2,27,   0
+     DATA 25, 1,1,8,  15,30,20,1,15, 0
+     DATA 48, 1,1,9,  5,5,12,2,9,    0
+     DATA 12, 1,1,11, 1,6,8,2,12,    0
+     DATA 44, 1,1,5,  15,15,10,2,2,  0
+     DATA 13, 1,1,10, 1,4,10,2,22,   0
+
+     DATA 55, 5,20,7,  3,9,3,1,10,  -1
+     DATA 13,  1,60,15, 1,8,2,7,1,    0
+     DATA 98, 3,20,5,  4,8,6,1,9,   -1
+     DATA 33, 10,8,15, 8,7,9,3,1,   0
+     DATA 99, 5,10,4,  7,7,6,8,7,   -1
+     DATA 99, 3,10,3,  8,8,7,6,10,   -1
+     DATA 57, 15,6,4,  8,8,6,6,2,   -1
+     DATA 97, 11,5,3,  6,20,3,2,15, -1
+     DATA 74, 5,24,10, 2,4,5,1,1,   -1
+     DATA 13,  20,4,9,  9,9,4,80,1,   0
+     DATA 1,  2,16,16, 3,3,8,1,3,    0
+     DATA 55, 15,8,8,  8,9,6,5,10,  -1
+     DATA 99, 2,18,12, 5,8,7,1,7,   -1
+     DATA 99, 12,12,6, 7,8,8,6,11,  -1
+     DATA 1,  1,10,13, 4,8,6,2,4,    0
+     DATA 1,  1,20,18, 3,3,6,2,6,    0
+     DATA 1,  5,20,20, 1,4,4,2,28,   0
+     DATA 73, 20,18,8, 9,6,5,1,1,   -1
+     DATA 99, 5,30,4,  2,6,4,6,10,  -1
+     DATA 1,  3,10,25, 1,1,5,4,12,   0
+     DATA 99, 4,12,12, 1,6,15,9,27, -1
+     DATA 1,  1,20,18, 1,1,5,1,29,   0
+     DATA 1,  1,15,18, 1,1,8,1,18,   0
+     'typ(energy-mass), fatg,uses,cmplx, dic,dam,2hitbon,rnge,damtyp, rechrg
+     'S Junk
+     'typ(energy-mass), fatig,uses,complex, recharge
+     DATA 1, 1,-1,25,  0
+     DATA 1, 1,-1,25,  0
+     DATA 4, 3,-1,10, 0
+     DATA 1, 1,-1,25,  0
+     DATA 99, 3,1,2,   0
+     DATA 97, 5,40,9,  -1
+     DATA 2, 1,-1,22,  0
+     DATA 93, 8,15,15, -1
+     DATA 3, 2,-1,15,  0
+     DATA 1, 1,-1,20,  0
+     DATA 22, 2,12,10,  -1
+     DATA 1, 1,-1,20,  0
+     DATA 1, 1,1,25,   0
+     DATA 62, 15,1,7,  0
+     DATA 1, 3,1,17,   0
+     DATA 9, 1,-1,30,  0
+     DATA 95, 12,20,9, -1
+     DATA 82, 2,15,15,  -1
+
+     'typ(energy-mass), fatig,uses,complex, recharge
+lsd: DATA 2, 20,-1,10,  0
+     DATA 1, 40,-1,20,  0
+     DATA 3, 3,-1,15,   0
+     DATA 93, 400,10,2, -1
+     DATA 96, 100,4,1,  -1
+     DATA 94, 100,25,8, -1
+     DATA 2, 30,-1,17,  0
+     DATA 1, 300,-1,14, 0
+     DATA 99, 10,10,5,  -1
+     DATA 91, 200,6,8,   -1
+     DATA 32, 60,10,6,   -1
+     DATA 92, 250,14,8, -1
+     DATA 1, 20,-1,18,  0
+     DATA 97, 50,10,4,  -1
+     DATA 1, 80,-1,18, 0
+     DATA 1, 30,-1,25,  0
+     DATA 93, 25,8,15,  -1
+     DATA 1, 10,-1,30,  0
+     DATA 1, 5,-1,20,   0
+     DATA 2, 20,-1,15,  0
+     DATA 96, 25,8,5,   -1
+     DATA 96, 50,15,5,  -1
+     DATA 81, 80,25,20, -1
+     DATA 1, 12,-1,18,  0
+     DATA 1, 50,-1,10,  0
+     
+     'L Junk
+     'typ(energy-mass),fatig,uses,complex, recharge
+     DATA 1, 300,-1,10, 0
+     DATA 1, 80,-1,20,   0
+     DATA 92, 100,4,4,   -1
+     DATA 63, 100,12,5,   -1
+     DATA 93, 200,1,3,   -1
+     DATA 94, 50,10,5,   -1
+     DATA 93, 100,20,5,  -1
+     DATA 2, 20,-1,18,   0
+     DATA 93, 200,3,2,   -1
+     DATA 0, 250,-1,19,  0
+     DATA 1, 60,-1,10,   0
+     DATA 92, 150,3,5,    -1
+     DATA 93, 40,10,4,  -1
+
+  OPEN "alphaman.3" FOR BINARY AS #1
+
+  RESTORE wepnames
+  FOR i = 1 TO nwep + nrwep + nsh + narm
+    FOR j = 1 TO 3: READ sss: PUT #1, , sss: NEXT j
+  NEXT i
+
+  RESTORE technames
+  FOR i = 1 TO nssd + ntechwep + nstrash + nlsd + nltrash
+    FOR j = 1 TO 3: READ sss: PUT #1, , sss: NEXT j
+  NEXT i
+   
+  RESTORE syms
+  FOR i = 1 TO 10
+    FOR j = 1 TO 3
+      READ sss: PUT #1, , sss
+    NEXT j
+  NEXT i
+
+  RESTORE wep
+  FOR i = 1 TO nwep + nrwep
+    FOR j = 1 TO 6
+      READ sss: PUT #1, , sss
+    NEXT j
+  NEXT i
+
+  RESTORE sh
+  FOR i = 1 TO nsh
+    FOR j = 1 TO 2: READ sss: PUT #1, , sss: NEXT j
+  NEXT i
+
+  RESTORE arm
+  FOR i = 1 TO narm
+    FOR j = 1 TO 2: READ sss: PUT #1, , sss: NEXT j
+  NEXT i
+
+  RESTORE ssd
+  FOR i = 1 TO nssd
+    FOR j = 1 TO 5
+      READ sss: PUT #1, , sss: IF i = nssd THEN PRINT sss;
+    NEXT j
+  NEXT i
+  PRINT
+ 
+  FOR i = 1 TO ntechwep
+    FOR j = 1 TO 10
+      READ sss: PUT #1, , sss: IF i = ntechwep THEN PRINT sss;
+    NEXT j
+  NEXT i
+  PRINT
+
+  FOR i = 1 TO nstrash
+    FOR j = 1 TO 5
+      READ sss: PUT #1, , sss: IF i = nstrash THEN PRINT sss;
+    NEXT j
+  NEXT i
+  PRINT
+
+  RESTORE lsd
+  FOR i = 1 TO nlsd + nltrash
+    FOR j = 1 TO 5
+      READ sss: PUT #1, , sss: IF i = nlsd + nltrash THEN PRINT sss;
+    NEXT j
+  NEXT i
+  PRINT
+
+  GET #1, 6 * (nwep + nrwep + nsh + narm + nssd + ntechwep + nstrash + nlsd + nltrash) - 5, i
+  GET #1, , j: GET #1, , k
+  PRINT i; j; k;
+  CLOSE #1
+ 
+END
+

@@ -1,0 +1,502 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DEFINT A-Z
+CLS
+OPEN "alphaman.4" FOR BINARY AS #1
+location = 13: PUT #1, 1, location 'pos of first castle's data (6*2 bytes+1)
+
+
+RESTORE elvcas
+READ numrooms: PUT #1, location, numrooms
+FOR j = 1 TO numrooms
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+READ numremove: PUT #1, , numremove
+FOR j = 1 TO numremove
+  READ a, b, c
+  PUT #1, , a: PUT #1, , b: PUT #1, , c
+NEXT j
+READ numdoors: PUT #1, , numdoors
+FOR j = 1 TO numdoors
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numlocked: PUT #1, , numlocked
+FOR j = 1 TO numlocked
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numsecret: PUT #1, , numsecret
+FOR j = 1 TO numsecret
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numitems: PUT #1, , numitems
+FOR j = 1 TO numitems
+  READ a, b, c, d, e
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d: PUT #1, , e
+NEXT j
+READ numtraps: PUT #1, , numtraps
+FOR j = 1 TO numtraps
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+location = LOC(1) + 1: PUT #1, 3, location
+elvcas: '++++++++++++++++++++++++++++++++++++++++++++
+  'numrooms
+  DATA 48
+  DATA 31,29,9,3, 48,31,14,12, 24,22,20,14, 22,5,11,9
+  DATA 13,5,6,3, 18,13,6,3, 25,18,6,3, 29,25,6,3
+  DATA 10,5,9,6, 16,10,9,6, 21,16,9,6, 29,21,9,6
+  DATA 38,31,7,3, 42,38,7,3, 44,42,7,3, 48,44,9,3
+  DATA 36,31,12,7, 40,36,12,7, 44,40,12,7, 48,44,12,9
+  DATA 8,5,14,11, 12,8,14,11, 15,12,14,11, 19,15,14,11, 22,19,14,11
+  DATA 9,5,17,14, 12,9,17,14, 16,12,17,14, 19,16,17,14, 22,19,17,14
+  DATA 8,5,20,17, 11,8,20,17, 15,11,20,17, 18,15,20,17, 22,18,20,17
+  DATA 26,24,18,14, 30,26,16,14, 36,30,16,14, 41,36,16,14
+  DATA 32,26,18,16, 32,24,20,18, 34,32,20,16, 41,34,18,16, 41,34,20,18
+  DATA 43,41,20,14, 48,43,16,14, 48,43,18,16, 48,43,20,18
+
+  'numremove
+  DATA 2
+  DATA 205,33,16, 186,44,4
+
+  'numdoors
+  DATA 4
+  DATA 30,9, 22,10, 23,14, 31,13
+  'numlocked
+  DATA 0
+  'numsecret
+  DATA 42
+  DATA 11,6, 10,7, 18,4, 17,6, 16,8, 21,7, 29,4, 28,6
+  DATA 33,7, 37,7, 39,7, 42,5, 44,8, 47,12       
+  DATA 12,13, 19,13, 7,14, 10,14, 14,14, 18,14, 21,14
+  DATA 9,15, 16,15, 17,17, 21,17, 11,18, 15,18, 8,19,  6,11
+  DATA 24,19, 26,15, 26,17, 30,15, 31,18, 34,19, 36,15
+  DATA 41,15, 40,18, 43,19, 44,16, 47,18, 44,11
+  'numitems
+  DATA 0
+  'numtraps
+  DATA 0
+
+
+RESTORE muncas
+READ numrooms: PUT #1, location, numrooms
+FOR j = 1 TO numrooms
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+READ numremove: PUT #1, , numremove
+FOR j = 1 TO numremove
+  READ a, b, c
+  PUT #1, , a: PUT #1, , b: PUT #1, , c
+NEXT j
+READ numdoors: PUT #1, , numdoors
+FOR j = 1 TO numdoors
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numlocked: PUT #1, , numlocked
+FOR j = 1 TO numlocked
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numsecret: PUT #1, , numsecret
+FOR j = 1 TO numsecret
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numitems: PUT #1, , numitems
+FOR j = 1 TO numitems
+  READ a, b, c, d, e
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d: PUT #1, , e
+NEXT j
+READ numtraps: PUT #1, , numtraps
+FOR j = 1 TO numtraps
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+location = LOC(1) + 1: PUT #1, 5, location
+muncas: '++++++++++++++++++++++++++++++++++++++++++++                                    
+  'numrooms
+  DATA 30
+  DATA 10,5,7,3, 16,10,7,3, 18,16,9,3, 23,18,6,3, 23,18,9,6
+  DATA 16,7,9,7, 7,5,13,7, 16,7,13,9, 22,16,13,9, 30,23,9,3
+  DATA 35,30,6,3, 35,30,9,6, 37,35,9,3, 43,37,7,3, 48,43,7,3
+  DATA 46,37,9,7, 48,46,13,7, 46,37,13,9, 37,31,13,9, 48,44,18,13
+  DATA 44,35,18,13, 35,31,18,13, 48,31,20,18, 31,29,20,14, 29,24,20,14
+  DATA 24,22,20,14, 22,5,20,18, 9,5,18,13, 18,9,18,13, 22,18,18,13
+  'numremove
+  DATA 4
+  DATA 186,7,8, 186,46,8, 186,22,19, 186,31,19
+
+  'numdoors
+  DATA 9
+  DATA 16,4, 37,4, 17,9, 26,9, 36,9, 16,11, 22,11, 31,11, 37,11
+  'numlocked
+  DATA 5
+  DATA 6,13, 47,13, 22,15, 7,18, 46,18
+  'numsecret
+  DATA 12
+  DATA 10,5, 14,7, 23,4, 30,4, 43,5, 39,7
+  DATA 23,8, 30,8, 20,13, 33,13, 42,13, 29,15
+  'numitems    ' sym,x,y,fc,iop
+  DATA 5
+  DATA 7,13,15,15,4
+  DATA 22,19,16,5,11, 22,42,17,5,11
+  DATA 254,39,14,6,12, 254,21,17,6,12
+  'numtraps
+  DATA 2
+  DATA 19,25,15,8, 19,15,15,8
+
+
+RESTORE gilcas
+READ numrooms: PUT #1, location, numrooms
+FOR j = 1 TO numrooms
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+READ numremove: PUT #1, , numremove
+FOR j = 1 TO numremove
+  READ a, b, c
+  PUT #1, , a: PUT #1, , b: PUT #1, , c
+NEXT j
+READ numdoors: PUT #1, , numdoors
+FOR j = 1 TO numdoors
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numlocked: PUT #1, , numlocked
+FOR j = 1 TO numlocked
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numsecret: PUT #1, , numsecret
+FOR j = 1 TO numsecret
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numitems: PUT #1, , numitems
+FOR j = 1 TO numitems
+  READ a, b, c, d, e
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d: PUT #1, , e
+NEXT j
+READ numtraps: PUT #1, , numtraps
+FOR j = 1 TO numtraps
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+location = LOC(1) + 1: PUT #1, 7, location
+gilcas: '++++++++++++++++++++++++++++++++++++++++++++
+  'numrooms
+  DATA 28
+  DATA 15,10,9,5,   20,15,8,3,   27,20,7,3,   32,27,7,3,   24,22,9,7
+  DATA 22,18,12,10, 20,17,14,12, 17,11,16,12, 17,11,20,16, 11,5,18,13
+  DATA 27,25,16,14, 28,25,18,16, 25,19,20,16, 28,25,20,18, 31,28,20,15
+  DATA 35,31,14,12, 35,33,16,14, 41,35,17,13, 41,35,20,17, 48,41,15,12
+  DATA 48,41,20,15, 35,31,11,9,  38,35,11,7,  40,38,10,7
+  DATA 46,40,10,6,  48,46,8,6,   48,40,6,3,   40,35,7,3
+  'numremove
+  DATA 5
+  DATA 205,19,12, 186,25,17, 186,28,19, 205,34,14, 186,38,9
+  'numdoors
+  DATA 3
+  DATA 31,13, 35,15, 41,14
+  'numlocked
+  DATA 13
+  DATA 20,5, 27,5, 23,7, 23,9, 22,11, 17,13, 11,15, 26,14, 26,16
+  DATA 31,10, 35,10, 37,7, 40,8
+  'numsecret
+  DATA 7
+  DATA 15,6, 11,17, 28,17, 41,16, 41,18, 46,7, 47,6
+  'numitems
+  DATA 12
+  DATA 11, 26,19, 14,1
+  DATA 135,30,16, 14,10
+  DATA 5,  37,19, 4,-1
+  DATA 236,39,18, 12,-1
+  DATA 22, 46,18, 5,11
+  DATA 254,43,17, 6,12
+  DATA 8,  12,6,  7,13
+  DATA 9,  11,7,  3,14
+  DATA 24, 14,8,  1,15
+  DATA 12, 47,7,  14,1
+  DATA 11, 15,19, 14,1
+  DATA 35, 47,14, 6,8
+  'numtraps
+  DATA 5
+  DATA 247,45,13,1, 247,46,13,1, 247,47,13,1, 247,45,14,1, 247,46,14,1
+
+
+RESTORE trucas
+READ numrooms: PUT #1, location, numrooms
+FOR j = 1 TO numrooms
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+READ numremove: PUT #1, , numremove
+FOR j = 1 TO numremove
+  READ a, b, c
+  PUT #1, , a: PUT #1, , b: PUT #1, , c
+NEXT j
+READ numdoors: PUT #1, , numdoors
+FOR j = 1 TO numdoors
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numlocked: PUT #1, , numlocked
+FOR j = 1 TO numlocked
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numsecret: PUT #1, , numsecret
+FOR j = 1 TO numsecret
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numitems: PUT #1, , numitems
+FOR j = 1 TO numitems
+  READ a, b, c, d, e
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d: PUT #1, , e
+NEXT j
+READ numtraps: PUT #1, , numtraps
+FOR j = 1 TO numtraps
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+location = LOC(1) + 1: PUT #1, 9, location
+trucas: '++++++++++++++++++++++++++++++++++++++++++++
+  'numrooms
+  DATA 39
+  DATA 22,5,7,3, 15,12,4,3, 15,12,7,6, 31,22,7,3, 48,31,7,3, 41,38,4,3, 41,38,7,6
+  DATA 24,15,9,7, 29,24,9,7, 31,29,9,7, 12,5,15,7, 15,12,11,7, 34,31,13,7
+  DATA 41,34,11,7, 48,41,13,7, 18,15,11,9, 22,18,13,9, 15,12,15,11
+  DATA 18,15,13,11, 41,34,13,11, 21,15,18,13, 23,21,16,13, 25,23,15,13
+  DATA 28,25,15,13, 30,28,15,13, 33,30,16,13, 42,33,16,13, 48,42,20,13
+  DATA 15,5,20,15, 30,23,20,15, 23,21,18,16, 32,30,18,16, 34,32,18,16
+  DATA 41,34,18,16, 23,15,20,18, 25,23,20,19, 30,28,20,19, 36,30,20,18
+  DATA 42,36,20,18
+  'numremove
+  DATA 16
+  DATA 186,12,8, 186,31,8, 186,18,10, 205,17,13, 186,15,14, 205,38,13
+  DATA 186,23,14, 186,30,14, 205,38,16, 186,23,17, 186,30,17
+  DATA 205,27,7, 205,27,9, 205,27,13, 205,27,15, 205,33,18
+  'numdoors
+  DATA 0
+  'numlocked
+  DATA 10
+  DATA 22,5, 31,5, 26,8, 27,8, 38,11, 26,14, 27,14, 21,17, 32,17, 34,17
+  'numsecret
+  DATA 12
+  DATA 23,7, 46,7, 20,9, 15,10, 32,13, 24,15, 29,15, 22,18, 38,18
+  DATA 41,17, 15,19, 42,19
+  'numitems
+  DATA 18
+  DATA 22,32,8,5,11, 254,33,8,6,12
+  DATA 8,7,4,7,13, 8,7,6,7,13, 8,46,4,7,13, 8,46,6,7,13
+  DATA 9,10,4,3,14, 9,10,6,3,14, 9,43,4,3,14, 9,43,6,3,14
+  DATA 24,17,4,1,15, 24,17,6,1,15, 24,20,4,1,15, 24,20,6,1,15
+  DATA 24,33,4,1,15, 24,33,6,1,15, 24,36,4,1,15, 24,36,6,1,15
+  'numtraps
+  DATA 18
+  DATA 19,19,8,-1, 19,21,8,-1, 19,32,11,-1, 19,33,11,-1, 10,17,10,12
+  DATA 10,46,8,12, 19,23,14,-1, 19,30,14,-1, 10,33,18,12, 19,19,19,-1
+  DATA 10,21,19,4, 19,40,19,-1
+  DATA 204,24,8,9, 205,25,8,9, 205,28,8,9, 185,29,8,9
+  DATA 204,25,14,9, 185,28,14,9
+
+
+RESTORE twocas
+READ numrooms: PUT #1, location, numrooms
+FOR j = 1 TO numrooms
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+READ numremove: PUT #1, , numremove
+FOR j = 1 TO numremove
+  READ a, b, c
+  PUT #1, , a: PUT #1, , b: PUT #1, , c
+NEXT j
+READ numdoors: PUT #1, , numdoors
+FOR j = 1 TO numdoors
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numlocked: PUT #1, , numlocked
+FOR j = 1 TO numlocked
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numsecret: PUT #1, , numsecret
+FOR j = 1 TO numsecret
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numitems: PUT #1, , numitems
+FOR j = 1 TO numitems
+  READ a, b, c, d, e
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d: PUT #1, , e
+NEXT j
+READ numtraps: PUT #1, , numtraps
+FOR j = 1 TO numtraps
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+location = LOC(1) + 1: PUT #1, 11, location
+twocas: '++++++++++++++++++++++++++++++++++++++++++++
+  'numrooms
+  DATA 82
+  DATA 12,5,5,3, 14,12,5,3, 18,16,5,3, 20,18,5,3, 27,20,5,3, 29,27,5,3, 35,29,5,3, 40,35,5,3, 48,42,5,3
+  DATA 16,14,7,3, 42,40,7,3
+  DATA 10,7,7,5, 14,10,7,5, 20,16,7,5, 22,20,7,5, 24,22,7,5, 26,24,7,5
+  DATA 32,26,7,5, 36,32,7,5, 40,38,7,5, 48,42,7,5
+  DATA 7,5,10,5, 38,36,10,5
+  DATA 10,7,10,7, 10,9,10,9, 14,12,9,7, 18,14,9,7, 24,18,9,7, 30,24,9,7
+  DATA 32,30,9,7, 34,32,9,7, 36,34,9,7, 41,38,9,7, 43,41,9,7, 46,43,9,7
+  DATA 12,10,11,7, 48,46,16,7
+  DATA 15,12,11,9, 36,31,11,9, 44,40,11,9
+  DATA 17,15,12,9, 22,17,15,9, 20,19,13,11, 40,38,13,9, 46,44,16,9
+  DATA 10,5,12,10, 38,36,13,10
+  DATA 33,31,13,11, 36,34,13,11, 12,10,14,11, 42,40,14,11, 44,42,16,11
+  DATA 10,5,14,12, 17,12,14,12
+  DATA 26,22,15,13, 32,28,15,13, 38,32,15,13, 40,38,16,13, 28,26,16,13
+  DATA 17,5,20,14, 42,40,16,14
+  DATA 24,22,17,15, 31,28,17,15, 33,31,17,15, 36,33,17,15
+  DATA 22,20,18,15, 26,24,18,15, 38,36,18,15
+  DATA 28,26,18,16, 41,38,18,16, 46,41,18,16, 48,46,20,16
+  DATA 34,28,20,17, 31,30,20,19, 34,33,20,19, 24,22,20,17, 36,34,20,17
+  DATA 22,17,20,18, 28,24,20,18, 39,36,20,18, 46,39,20,18
+  DATA 13,9,18,16
+  'numremove
+  DATA 32
+  DATA 186,16,4, 186,40,4, 205,23,5, 205,28,5, 186,7,6,  205,11,7, 205,17,7
+  DATA 205,21,7, 205,25,7, 205,33,7, 205,39,7, 205,44,7, 186,36,8
+  DATA 205,8,10, 186,15,10, 205,32,11, 205,35,11
+  DATA 186,38,11, 205,41,11, 186,26,14, 186,28,14
+  DATA 186,40,15, 186,42,15, 186,22,16, 186,24,16, 186,36,16, 205,32,17
+  DATA 186,38,17, 205,27,18, 186,22,19, 186,36,19, 186,46,19
+
+  'numdoors
+  DATA 0
+  'numlocked
+  DATA 16
+  DATA 31,5, 46,5, 22,6, 38,6, 15,7, 30,8, 34,8, 23,9, 40,12, 17,13, 35,13
+  DATA 21,15, 27,16, 45,16, 47,16, 39,19
+  'numsecret
+  DATA 31
+  DATA 14,4, 18,4, 6,5, 11,5, 37,5
+  DATA 20,6, 32,6, 29,7, 47,7, 7,8, 14,8, 25,9, 33,9, 42,9
+  DATA 45,9, 12,10, 37,10, 17,11, 7,12, 39,13, 44,13, 7,14, 11,14, 23,15
+  DATA 31,16, 29,17, 11,18, 34,18, 40,18, 24,19, 28,19
+  'numitems
+  DATA 2
+  DATA 254,10,17,6,12, 254,12,17,6,12
+  'numtraps
+  DATA 4
+  DATA 19,9,15,8, 19,13,15,8, 19,9,19,8, 19,13,19,8
+
+
+RESTORE gricas
+READ numrooms: PUT #1, location, numrooms
+FOR j = 1 TO numrooms
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+READ numremove: PUT #1, , numremove
+FOR j = 1 TO numremove
+  READ a, b, c
+  PUT #1, , a: PUT #1, , b: PUT #1, , c
+NEXT j
+READ numdoors: PUT #1, , numdoors
+FOR j = 1 TO numdoors
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numlocked: PUT #1, , numlocked
+FOR j = 1 TO numlocked
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numsecret: PUT #1, , numsecret
+FOR j = 1 TO numsecret
+  READ a, b
+  PUT #1, , a: PUT #1, , b
+NEXT j
+READ numitems: PUT #1, , numitems
+FOR j = 1 TO numitems
+  READ a, b, c, d, e
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d: PUT #1, , e
+NEXT j
+READ numtraps: PUT #1, , numtraps
+FOR j = 1 TO numtraps
+  READ a, b, c, d
+  PUT #1, , a: PUT #1, , b: PUT #1, , c: PUT #1, , d
+NEXT j
+gricas: '++++++++++++++++++++++++++++++++++++++++++++
+  'numrooms
+  DATA 91
+  DATA 24,5,6,3, 28,24,7,3, 31,28,5,3, 31,28,7,5, 15,5,8,6, 20,15,10,6
+  DATA 22,20,8,6, 24,22,9,6, 31,24,9,7, 22,20,14,8, 20,15,12,10, 15,5,14,8
+  DATA 15,5,16,14, 20,15,16,12, 22,20,16,14, 24,22,16,13, 31,24,15,13
+  DATA 24,5,19,16, 28,24,19,15, 31,28,19,17, 31,28,17,15
+  DATA 33,31,5,3, 36,33,5,3, 38,36,5,3, 41,38,5,3, 43,41,5,3, 46,43,5,3, 48,46,5,3
+  DATA 33,31,7,5, 36,33,7,5, 38,36,7,5, 41,38,7,5, 43,41,7,5, 46,43,7,5, 48,46,7,5
+  DATA 33,31,9,7, 36,33,9,7, 38,36,9,7, 41,38,9,7, 43,41,9,7, 46,43,9,7, 48,46,9,7
+  DATA 33,31,11,9, 36,33,11,9, 38,36,11,9, 41,38,11,9, 43,41,11,9, 46,43,11,9, 48,46,11,9
+  DATA 33,31,13,11, 36,33,13,11, 38,36,13,11, 41,38,13,11, 43,41,13,11, 46,43,13,11, 48,46,13,11
+  DATA 33,31,15,13, 36,33,15,13, 38,36,15,13, 41,38,15,13, 43,41,15,13, 46,43,15,13, 48,46,15,13
+  DATA 33,31,17,15, 36,33,17,15, 38,36,17,15, 41,38,17,15, 43,41,17,15, 46,43,17,15, 48,46,17,15
+  DATA 33,31,19,17, 36,33,19,17, 38,36,19,17, 41,38,19,17, 43,41,19,17, 46,43,19,17, 48,46,19,17
+  DATA 6,5,4,3, 9,8,4,3, 12,11,4,3, 15,14,4,3, 18,17,4,3, 21,20,4,3, 24,23,4,3
+  DATA 6,5,19,18, 9,8,19,18, 12,11,19,18, 15,14,19,18, 18,17,19,18, 21,20,19,18, 24,23,19,18
+  'numremove
+  DATA 5
+  DATA 186,22,7, 186,24,8, 186,20,11, 186,22,15, 186,24,14
+
+  'numdoors
+  DATA 0
+  'numlocked
+  DATA 5
+  DATA 28,4, 6,6, 15,11, 6,16, 28,18
+  'numsecret
+  DATA 67
+  DATA 31,4, 43,4, 46,4, 24,5, 32,5, 35,5, 37,5, 40,5, 45,5, 47,5
+  DATA 31,6, 33,6, 36,6, 38,6, 43,6, 39,7, 42,7, 47,7
+  DATA 31,8, 33,8, 36,8, 41,8, 46,8, 20,9, 23,9, 34,9, 47,9
+  DATA 33,10, 36,10, 38,10, 41,10, 43,10, 46,10, 35,11, 40,11, 42,11, 44,11
+  DATA 33,12, 38,12, 46,12, 20,13, 42,13, 47,13
+  DATA 31,14, 33,14, 36,14, 38,14, 46,14, 32,15, 40,15, 47,15
+  DATA 31,16, 33,16, 38,16, 46,16, 24,17, 34,17, 37,17, 40,17, 42,17, 45,17
+  DATA 47,17, 31,18, 33,18, 41,18, 43,18, 15,7
+  'numitems
+  DATA 0
+  'numtraps
+  DATA 39
+  DATA 19,21,10,-1, 19,21,12,-1, 19,20,11,-1, 19,18,11,-1, 19,16,11,-1
+  DATA 19,9,7,8, 19,10,7,8, 19,11,7,8, 19,9,15,8, 19,10,15,8, 19,11,15,8
+  DATA 19,11,12,-1, 19,11,9,-1, 19,11,11,-1, 19,11,10,-1
+  DATA 19,12,12,-1, 19,12,9,-1, 19,12,11,-1, 19,12,10,-1
+  DATA 19,13,12,1,  19,13,9,1,  19,13,11,1,  19,13,10,1
+  DATA 10,14,12,4,  10,14,9,4,  10,14,11,12,  10,14,10,12
+  DATA 19,7,4,-1,  19,10,4,-1,  19,13,4,-1,  19,16,4,-1,  19,19,4,-1,  19,22,4,-1
+  DATA 19,7,17,-1, 19,10,17,-1, 19,13,17,-1, 19,16,17,-1, 19,19,17,-1, 19,22,17,-1
+

@@ -1,0 +1,8 @@
+CASE 255  'create gas
+  FOR ix = localx - 1 TO localx + 1
+    FOR iy = localy - 1 TO localy + 1
+      GetSym nsym, ix, iy, nfc, nbc, 1
+      IF nsym = 250 THEN PutSym gas, ix, iy, 8, 0, -1
+  NEXT iy, ix
+  didstuff = false
+

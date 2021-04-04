@@ -1,0 +1,175 @@
+' Copyright (c) 1995 Jeffrey R. Olson
+' 
+' Permission is hereby granted, free of charge, to any person obtaining a copy
+' of this software and associated documentation files (the "Software"), to deal
+' in the Software without restriction, including without limitation the rights
+' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+' copies of the Software, and to permit persons to whom the Software is
+' furnished to do so, subject to the following conditions:
+' 
+' The above copyright notice and this permission notice shall be included in all
+' copies or substantial portions of the Software.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+' SOFTWARE.
+
+DEFINT A-Z
+DIM wep(26, 6), sh(9, 2), arm(12, 2)
+DIM symb(10, 3)
+DIM gdy(21) AS STRING, goody(21, 12)
+DIM bakpak(10) AS STRING, backpack(10, 12)
+DIM saf(10) AS STRING, safe(10, 12)
+DIM drgdy(30) AS STRING, drgoody(30, 16)
+DIM ncre(0 TO 50, 0 TO 15), scratch(50), localgoody(30, 3)
+DIM goodythere(2 TO 51, 2 TO 21), goodycastle(0 TO 6, -10 TO 10)
+DIM knownb(0 TO 40), berry$(0 TO 40), berord(0 TO 40)
+DIM ssd(95, 9), ssdtyp(95), ssdknown(95)
+DIM lsd(40, 4), lsdtyp(40), lsdknown(40)
+DIM radzone(10, 3), savcrn(30, 2), monozone(10, 3)
+DIM xstairs(-10 TO 10), ystairs(-10 TO 10), pag2(1 TO 52, 1 TO 22)
+DIM lsave(1 TO 3, 0 TO 10) AS STRING * 54
+
+COMMON SHARED nnear, ncre(), incastle, dots, finishedcastles
+COMMON SHARED vpage, mainx, mainy, localx, localy, terrain, terrf, terrb
+COMMON SHARED currsym, currf, currb, ncastle, looksym
+COMMON SHARED str, stradd, dex, dexadd, con, rr, mr, intl, hitmax, hits
+COMMON SHARED hunger, fatigue!, expr&, lvl
+COMMON SHARED shield, armor, pmut, mmut
+COMMON SHARED lwall, rwall, twall, bwall, lwscr, rwscr, bwscr, twscr
+COMMON SHARED ssdknown(), lsdknown()
+COMMON SHARED goody(), ngoody, knownb()
+COMMON SHARED goodythere(), localgoody(), goodycastle()
+COMMON SHARED backpack(), npack, drgoody(), ndropped
+COMMON SHARED safe(), nsafe
+COMMON SHARED wep(), sh(), arm(), ssd(), lsd(), symb(), berord()
+COMMON SHARED radzone(), ssdtyp(), lsdtyp()
+COMMON SHARED ac, str2hit, strdam, dex2hit, other2hitc, other2hitr, otherdam
+COMMON SHARED tohitbase, fatig!, lpoint
+COMMON SHARED radsuit, heatsuit, reflecsuit, flashlight, gasmask, sunglasses
+COMMON SHARED wetsuit, mask, boots, ffgen, sunscreen, camosuit, pinsuit
+COMMON SHARED uvhelmet, neutronsuit
+COMMON SHARED forcefield, shock, touch, mheal, pmutturns, mmutturns, looking
+COMMON SHARED teleporting, inwater, waterturns, inpit, inweb, zippy, wpturns
+COMMON SHARED seed!, rdisp, fatadd!, didstuff, pooped, messturn, tentgrab
+COMMON SHARED castle, castlelevel, bldg, nruins, starting
+COMMON SHARED xstairs(), ystairs(), crtyp, savecorn, savcrn()
+COMMON SHARED xenter, yenter, xenterscr, yenterscr, enterdir, bitit
+COMMON SHARED berstr, berdex, bercon, berrr, bermr, berintl, berac, skinac
+COMMON SHARED berpmut, bermmut, berconfuse, berdet, berblind, berhic
+COMMON SHARED berscience, berscare, berrambo, berfresh
+COMMON SHARED berklutz, klutzdex, berregen, beryum, berff
+COMMON SHARED berhpmut, berhmmut
+COMMON SHARED strtox, dextox, contox, hittox
+COMMON SHARED weather, wind, gt!, rside, roachdef, radint, attractx, attracty
+COMMON SHARED agin, keysave1, keysave2, keysave3, scratch()
+COMMON SHARED dark, confu, grabbed, vehicle, asleep, invisible, sick, udder
+COMMON SHARED moon, stopfastmove, wimpsym, wimpcolr, flare
+COMMON SHARED mirror, coffee, tapenum, elvislevel, grinchlevel, grinchzone
+COMMON SHARED serum!, bsshoes, spacesuit, bergreen, map, tapeworm, didmusk
+COMMON SHARED turbo!, bulletsuit, brandy, inglue, inbog, insand, hail, tent
+COMMON SHARED monozone(), xmono, ymono, mononum, notoxin, metshat, answer
+COMMON SHARED grinchstole AS LONG, mindweb, sousa, repulse, ripehrs, spore
+COMMON SHARED difficulty, fastfight, pag2()
+COMMON SHARED l1 AS STRING * 54, l2 AS STRING * 54, l3 AS STRING * 54
+COMMON SHARED lsave() AS STRING * 54
+COMMON SHARED st1 AS STRING
+COMMON SHARED name$, pmutn$, mmutn$, berry$(), s$, t$, ber$, wimpname$
+COMMON SHARED bakpak() AS STRING, saf() AS STRING
+COMMON SHARED drgdy() AS STRING, gdy() AS STRING
+
+CONST blk = 0, blu = 1, grn = 2, cyn = 3, red = 4, mag = 5, brn = 6, wht = 7
+CONST wallcolr = 9, pit = 10, trap = 19, secretdoor = 228, lockeddoor = 43
+CONST gas = 64, monosym = 227, nmonolith = 10, chasm = 31
+CONST pi = 3.141593, true = -1, false = 0, bl = " "
+CONST plains = 32, woods = 42, forest = 15, marsh = 176, swamp = 177, water = 247
+CONST ul = 201, um = 203, ur = 187, ml = 204, cen = 206, mrt = 185, ll = 200, lm = 202, lr = 188, hor = 205, ver = 186
+CONST hardplay = 0, moderateplay = 2, easyplay = 5
+CONST versiondate = 91094
+
+CONST nberry = 35
+CONST nphysmut = 17, nmentmut = 13
+CONST nwep = 14, nrwep = 12
+CONST nsh = 9, narm = 12
+CONST nssd = 38, ngrenade = 14, ntechwep = 37, nstrash = 18
+CONST nlsd = 25, nltrash = 13
+                       
+CONST ncreat = 66
+CONST crecas = 18
+CONST crefor = 17
+CONST creswa = 17
+CONST crepla = 17
+CONST creh2o = 23
+CONST creextra = crecas + crefor + creswa + crepla + creh2o
+
+CONST wimp = 1, centi = wimp + 2
+CONST snail = centi + 1, daff = snail + 3
+CONST aspa = daff + 1, dung = aspa + 1, ant = dung + 1, gspore = ant + 2
+CONST dfly = gspore + 1
+CONST lotus = dfly + 5, cb = lotus + 1, fish = cb + 3
+CONST rose = fish + 1, zap = rose + 1, mant = zap + 1
+CONST japb = mant + 1, mph = japb + 1
+CONST sunf = mph + 1, rweed = sunf + 1, bee = rweed + 1
+CONST roach = bee + 3, pryor = roach + 2, goat = pryor + 2
+CONST icew = goat + 1, rotf = icew + 1
+CONST pokey = rotf + 1, gumby = pokey + 1, tworm = gumby + 1
+CONST slug = tworm + 1, venus = slug + 3, blob = venus + 1
+CONST bush = blob + 2, quayle = bush + 1
+CONST tara = quayle + 2, phoe = tara + 1, scor = phoe + 1
+CONST robot = scor + 2, bwid = robot + 1, mosq = bwid + 2
+CONST kong = mosq + 5, rodan = kong + 1, godz = rodan + 1
+
+CONST slime = ncreat + 1
+CONST ooze = slime + 1, rdro = ooze + 2, magg = rdro + 1
+CONST rat = magg + 1, pmold = rat + 1, ddro = pmold + 2
+CONST gmold = ddro + 1, wspid = gmold + 2, efung = wspid + 1
+CONST volte = efung + 1, brecl = volte + 1
+CONST sdro = brecl + 1, brain = sdro + 1
+CONST wdro = brain + 1
+
+ '10000*move+10*HD+AC+, spec.def, 1000*clr+sym , susceptibility, exp
+ '100*str+2hitbase, 100*attack type+range, ..., ..., ..., ...
+
+CONST tfrog = ncreat + crecas + 1
+CONST svine = tfrog + 1, pivy = svine + 1, stool = pivy + 1
+CONST term = stool + 1, mush = term + 1, nshade = mush + 4
+CONST algore = nshade + 1, fern = algore + 1
+CONST bfoot = fern + 1, wil = bfoot + 2, raptor = wil + 1
+
+CONST leec = ncreat + crecas + crefor + 2
+CONST mold = leec + 1, gcrab = mold + 1, bbeet = gcrab + 3
+CONST tick = bbeet + 1, puff = tick + 1
+CONST dweed = puff + 1, gworm = dweed + 2, bogh = gworm + 5
+
+CONST chick = ncreat + crecas + crefor + creswa + 1
+CONST moth = chick + 3, stink = moth + 2, hyena = stink + 3, fox = hyena + 1
+CONST gwasp = fox + 1, locust = gwasp + 1, bunny = locust + 2
+CONST cact = bunny + 2
+
+CONST kelp = ncreat + crecas + crefor + creswa + crepla + 1
+CONST sard = kelp + 1, sgull = sard + 2, lobstr = sgull + 1
+CONST urchin = lobstr + 4, jelly = urchin + 1, squid = jelly + 1
+CONST rsnap = squid + 3, octopus = rsnap + 3
+
+CONST webspid = ncreat + creextra + 1
+
+CONST gill = webspid + 1
+CONST skip = gill + 1, prof = skip + 1, ging = prof + 1, mary = ging + 1
+CONST mrhow = mary + 1, mrshow = mrhow + 1
+
+CONST herm = mrshow + 1, lily = herm + 1, gramp = lily + 1, eddie = gramp + 1
+CONST mara = eddie + 1, spot = mara + 1, igor = spot + 1, fester = igor + 1
+
+CONST elvimp = fester + 1, elvis = elvimp + 1
+
+CONST buzz = elvis + 1, zola = buzz + 1, mdeck = zola + 1, ghart = mdeck + 1
+CONST saddam = ghart + 1, cubs = saddam + 1
+
+CONST trump = cubs + 1, ivana = trump + 1, marla = ivana + 1
+
+CONST grinch = marla + 1, gdog = grinch + 1
+

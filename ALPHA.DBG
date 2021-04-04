@@ -1,0 +1,79 @@
+'    CASE 199     'test KillItem
+'      l1 = "Test": PauseForKey: s = VAL(st1)
+'      KillItem s: MessPause 11, 0
+'    CASE 202: Lightning
+    CASE 222
+      FOR i = 1 TO 52: FOR j = 1 TO 22
+        attr = pag2(i, j): sym = attr MOD 256: attr = attr \ 256
+        fc = attr MOD 16: bc = attr \ 16: PutSym sym, i, j, fc, bc, 3
+      NEXT j, i
+      SCREEN , , 3: PauseForKey: SCREEN , , vpage: didstuff = false
+    CASE 230
+      SCREEN , , 3: COLOR 11, 1: ccls 3: LOCATE 1, 1
+      PRINT "ndropped -- "; ndropped
+      FOR i = 1 TO ndropped
+        PRINT i; drgdy(i), drgoody(i, 1), drgoody(i, 13); drgoody(i, 14)
+      NEXT i
+      PauseForKey
+      ccls 3: LOCATE 1, 1: PRINT "ngoody ---- "; ngoody;
+      FOR i = 1 TO ngoody
+        PRINT : PRINT i; gdy(i), : FOR j = 1 TO 11: PRINT goody(i, j); : NEXT j
+      NEXT i: PauseForKey: ccls 3: LOCATE 1, 1
+      PRINT "suits ------- "; radsuit; heatsuit; reflecsuit; wetsuit; camosuit; pinsuit; bulletsuit; spacesuit
+      PRINT "flaslght etc  "; flashlight; gasmask; mask; boots; ffgen; sunglasses
+      PRINT "vehicle ----- "; vehicle
+      PRINT "spore ------- "; spore
+      PRINT "skinac ------ "; skinac
+      PRINT "berac ------- "; berac
+      PRINT "fastfight -- "; fastfight
+      PRINT "difficulty -- "; difficulty
+      PRINT "Elvis,Grnchlev"; elvislevel; grinchlevel
+      PRINT "Other2hitC, Other2hitR"; other2hitc; other2hitr
+      didstuff = false: PauseForKey: COLOR 7, 0: SCREEN , , vpage
+    CASE 231
+      SCREEN , , 3: COLOR 11, 1: ccls 3: LOCATE 1, 1
+      PRINT "Name"; TAB(16); "sameroom,  xdel,ydel,  hits,hitmax,"; TAB(62); "regen, move, ac";
+      FOR i = 1 TO nnear: LOCATE (i MOD 23) + 1, 1
+        IF i = 23 THEN PauseForKey: CLS
+        PRINT CreatNam(ncre(i, 1), i); TAB(22); SameRoom(ncre(i, 4), ncre(i, 5)); bl; bl;
+        PRINT ncre(i, 4); ncre(i, 5); bl; bl; ncre(i, 2); ncre(i, 3); bl; bl; TAB(50);
+        IF ncre(i, 11) AND 1 THEN PRINT "awake ";
+        IF ncre(i, 11) AND 2 THEN PRINT "blind ";
+        IF ncre(i, 11) AND 4 THEN PRINT "confused ";
+        IF ncre(i, 11) AND 8 THEN PRINT "sick ";
+        IF ncre(i, 11) AND 16 THEN PRINT "burping ";
+        IF ncre(i, 11) AND 32 THEN PRINT "sneezing ";
+        defens = ncre(i, 10): regen = 0
+        IF defens AND 256 THEN regen = 1
+        IF defens AND 2048 THEN regen = regen + 3
+        PRINT TAB(65); regen; ncre(i, 6); ncre(i, 9)
+      NEXT
+      didstuff = false: PauseForKey: COLOR 7, 0: SCREEN , , vpage
+    CASE 232
+      FOR i = 2 TO 51
+        FOR j = 2 TO 21
+          IF SameRoom((i - localx), (j - localy)) THEN
+            GetSym sym, i, j, fc, bc, 1
+            PutSym sym, i, j, fc, 1, 1
+          END IF
+        NEXT j
+      NEXT i
+      PauseForKey
+      FOR i = 2 TO 51
+        FOR j = 2 TO 21
+          GetSym sym, i, j, fc, bc, 1
+          PutSym sym, i, j, fc, 0, 1
+        NEXT j
+      NEXT i
+      didstuff = false
+    CASE 233
+      SCREEN , , 3: COLOR 11, 1: ccls 3: LOCATE 1, 1
+      FOR i = 1 TO nmonolith
+        monozone(i, 3) = 0
+        PRINT monozone(i, 1); monozone(i, 2); monozone(i, 3)
+      NEXT
+      didstuff = false: PauseForKey: COLOR 7, 0: SCREEN , , vpage
+'    CASE 234: lx = localx: ly = localy: crtyp = algore
+'      MakeCreature lx, ly, false, false
+'    CASE 235: nnear = 0
+
